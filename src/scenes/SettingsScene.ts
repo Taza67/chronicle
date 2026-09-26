@@ -6,7 +6,16 @@ import {
 	saveSettings,
 	settings,
 } from "../core/state.ts";
-import { COLORS, FONT, H, hex, ui, W } from "../ui/theme.ts";
+import {
+	COLORS,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	ui,
+	W,
+} from "../ui/theme.ts";
 import { Button, fadeIn, go } from "../ui/widgets.ts";
 
 /**
@@ -123,29 +132,53 @@ export class SettingsScene extends Phaser.Scene {
 
 		// 7. Navigation Actions
 		if (this.overlay) {
-			new Button(this, W / 2, 915, "‹  Return to Court", () => this.close(), {
-				w: 430,
-				h: 68,
-			});
-			new Button(this, W / 2, 996, "⚔  Abandon Reign", () => this.abandon(), {
-				w: 390,
-				h: 58,
-				primary: false,
-				color: COLORS.blood,
-				size: 21,
-			});
+			const returnY = H - SAFE_BOTTOM - 130;
+			const abandonY = H - SAFE_BOTTOM - 54;
+			new Button(
+				this,
+				W / 2,
+				returnY,
+				"‹  Return to Court",
+				() => this.close(),
+				{
+					w: 430,
+					h: 68,
+				},
+			);
+			new Button(
+				this,
+				W / 2,
+				abandonY,
+				"⚔  Abandon Reign",
+				() => this.abandon(),
+				{
+					w: 390,
+					h: 58,
+					primary: false,
+					color: COLORS.blood,
+					size: 21,
+				},
+			);
 		} else {
-			new Button(this, W / 2, 948, "◆  Seal Chronometer", () => this.close(), {
-				w: 390,
-				h: 72,
-			});
+			const sealY = H - SAFE_BOTTOM - 90;
+			new Button(
+				this,
+				W / 2,
+				sealY,
+				"◆  Seal Chronometer",
+				() => this.close(),
+				{
+					w: 390,
+					h: 72,
+				},
+			);
 		}
 
 		// 8. Footer Hackathon Credit
 		this.add
 			.text(
 				W / 2,
-				1230,
+				H - SAFE_BOTTOM + 16,
 				"Chronicle · made for the Voodoo × Gradium × Cognition × DeepMind hackathon",
 				ui(14, hex(COLORS.muted)),
 			)
@@ -155,7 +188,7 @@ export class SettingsScene extends Phaser.Scene {
 
 	/** Header bar with antique winding crown back button and imperial horological title. */
 	private createHeader() {
-		const headerY = 74;
+		const headerY = SAFE_TOP + 18;
 
 		// Antique Brass Winding Crown / Back Escutcheon
 		const btn = this.add.container(62, headerY);
@@ -194,7 +227,8 @@ export class SettingsScene extends Phaser.Scene {
 			.setOrigin(0.5);
 
 		btn.add([bg, glyph]);
-		btn.setSize(crownR * 2 + 16, crownR * 2 + 16).setInteractive({
+		const crownHit = Math.max(crownR * 2 + 24, 72);
+		btn.setSize(crownHit, crownHit).setInteractive({
 			useHandCursor: true,
 		});
 
