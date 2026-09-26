@@ -159,7 +159,9 @@ export class SelectScene extends Phaser.Scene {
 		this.input.on(
 			Phaser.Input.Events.POINTER_DOWN,
 			(p: Phaser.Input.Pointer) => {
-				if (p.y > H * 0.12 && p.y < H * 0.86 && p.x > 90 && p.x < W - 90) {
+				const onArrow =
+					(p.x < 96 || p.x > W - 96) && Math.abs(p.y - this.track.y) < 48;
+				if (p.y > H * 0.12 && p.y < H * 0.86 && !onArrow) {
 					this.dragging = true;
 					this.dragX = p.x;
 				}
