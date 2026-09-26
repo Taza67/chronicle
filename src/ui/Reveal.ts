@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, title, W } from "./theme.ts";
+import { COLORS, FONT, H, hex, SAFE_BOTTOM, title, W } from "./theme.ts";
 import { Button } from "./widgets.ts";
 
 /**
@@ -19,7 +19,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 	constructor(scene: Phaser.Scene, kind: "history" | "whatif", text: string) {
 		super(scene, 0, 0);
-		this.ph = H - this.top - 200;
+		this.ph = H - this.top - SAFE_BOTTOM - 130;
 
 		const isHist = kind === "history";
 		const primaryColor = isHist ? COLORS.goldDeep : COLORS.blood;
@@ -343,17 +343,23 @@ export class Reveal extends Phaser.GameObjects.Container {
 	/** Present the royal decree continue button. */
 	waitContinue(label = "Continue"): Promise<void> {
 		return new Promise((done) => {
-			this.continueBtn = new Button(this.scene, W / 2, H - 110, label, () => {
-				this.scene.tweens.add({
-					targets: this,
-					alpha: 0,
-					y: -36,
-					duration: 280,
-					ease: "Cubic.in",
-					onComplete: () => this.destroy(),
-				});
-				done();
-			});
+			this.continueBtn = new Button(
+				this.scene,
+				W / 2,
+				H - SAFE_BOTTOM - 60,
+				label,
+				() => {
+					this.scene.tweens.add({
+						targets: this,
+						alpha: 0,
+						y: -36,
+						duration: 280,
+						ease: "Cubic.in",
+						onComplete: () => this.destroy(),
+					});
+					done();
+				},
+			);
 			this.continueBtn.setAlpha(0);
 			this.add(this.continueBtn);
 			this.scene.tweens.add({
