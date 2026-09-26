@@ -95,13 +95,11 @@ export class SettingsScene extends Phaser.Scene {
 			const fill = this.add
 				.rectangle(x0, cy, w * get(), 6, COLORS.gold)
 				.setOrigin(0, 0.5);
-			const knob = this.add
-				.circle(x0 + w * get(), cy, 18, COLORS.parchment)
-				.setInteractive({ useHandCursor: true, draggable: true });
+			const knob = this.add.circle(x0 + w * get(), cy, 18, COLORS.parchment);
 			knob.setStrokeStyle(3, COLORS.gold);
 			const zone = this.add
-				.rectangle(x0 + w / 2, cy, w + 40, 60, 0, 0)
-				.setInteractive();
+				.rectangle(x0 + w / 2, cy, w + 60, 72, 0, 0)
+				.setInteractive({ useHandCursor: true });
 			const apply = (px: number) => {
 				const v = Phaser.Math.Clamp((px - x0) / w, 0, 1);
 				knob.x = x0 + w * v;
@@ -109,9 +107,20 @@ export class SettingsScene extends Phaser.Scene {
 				set(Math.round(v * 20) / 20);
 				saveSettings();
 			};
-			this.input.setDraggable(knob);
-			knob.on("drag", (_p: Phaser.Input.Pointer, dx: number) => apply(dx));
-			zone.on("pointerdown", (p: Phaser.Input.Pointer) => apply(p.x));
+			let held = false;
+			zone.on("pointerdown", (p: Phaser.Input.Pointer) => {
+				held = true;
+				apply(p.x);
+			});
+			this.input.on(
+				Phaser.Input.Events.POINTER_MOVE,
+				(p: Phaser.Input.Pointer) => {
+					if (held && p.isDown) apply(p.x);
+				},
+			);
+			this.input.on(Phaser.Input.Events.POINTER_UP, () => {
+				held = false;
+			});
 		};
 
 		toggle(

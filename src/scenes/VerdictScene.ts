@@ -112,19 +112,19 @@ export class VerdictScene extends Phaser.Scene {
 		audio.sfx("drum");
 		this.cameras.main.shake(250, 0.006);
 		this.add
-			.image(W / 2, H * 0.3, "spark")
+			.image(W / 2, H * 0.22, "spark")
 			.setScale(22)
 			.setTint(COLORS.gold)
 			.setAlpha(0.18)
 			.setBlendMode(Phaser.BlendModes.ADD);
 		const k = this.add
-			.text(W / 2, H * 0.13, "THE VERDICT", ui(22, hex(COLORS.gold)))
+			.text(W / 2, H * 0.08, "THE VERDICT", ui(22, hex(COLORS.gold)))
 			.setOrigin(0.5)
 			.setAlpha(0);
 		k.setLetterSpacing(9);
 		const t = this.add
-			.text(W / 2, H * 0.2, v.title.toUpperCase(), {
-				...title(56, hex(COLORS.text)),
+			.text(W / 2, H * 0.15, v.title.toUpperCase(), {
+				...title(50, hex(COLORS.text)),
 				wordWrap: { width: W - 80 },
 				align: "center",
 			})
@@ -132,9 +132,11 @@ export class VerdictScene extends Phaser.Scene {
 			.setAlpha(0);
 		t.setShadow(0, 5, "#000", 16, false, true);
 		const ep = this.add
-			.text(W / 2, H * 0.28, v.epithet, {
-				...body(32, hex(COLORS.gold)),
+			.text(W / 2, H * 0.235, v.epithet, {
+				...body(30, hex(COLORS.gold)),
 				fontStyle: "italic",
+				wordWrap: { width: W - 100 },
+				align: "center",
 			})
 			.setOrigin(0.5)
 			.setAlpha(0);
@@ -150,11 +152,11 @@ export class VerdictScene extends Phaser.Scene {
 		this.tweens.add({
 			targets: ep,
 			alpha: 1,
-			y: H * 0.29,
+			y: H * 0.245,
 			duration: 500,
 			delay: 800,
 		});
-		const p = this.add.particles(W / 2, H * 0.2, "spark", {
+		const p = this.add.particles(W / 2, H * 0.15, "spark", {
 			speed: { min: 80, max: 300 },
 			scale: { start: 0.8, end: 0 },
 			lifespan: 1200,
@@ -166,7 +168,8 @@ export class VerdictScene extends Phaser.Scene {
 		this.time.delayedCall(350, () => p.explode(60));
 
 		// scorecard
-		const card = this.add.container(W / 2, H * 0.4).setAlpha(0);
+		const card = this.add.container(W / 2, H * 0.33).setAlpha(0);
+		card.setDepth(6);
 		const cg = this.add.graphics();
 		cg.fillStyle(COLORS.night, 0.7);
 		cg.fillRoundedRect(-300, -50, 600, 100, 16);
@@ -200,13 +203,14 @@ export class VerdictScene extends Phaser.Scene {
 		this.tweens.add({
 			targets: card,
 			alpha: 1,
-			y: H * 0.39,
+			y: H * 0.32,
 			duration: 500,
 			delay: 1100,
 		});
 
 		// narrator comment
-		const sub = new Subtitle(this, H * 0.62);
+		const sub = new Subtitle(this, H * 0.5);
+		sub.setDepth(7);
 		const narr = await say(v.comment, VOICES.narrator);
 		sub.show("Narrator", v.comment, COLORS.gold, narr.duration * 1000);
 		await narr.done;
@@ -216,9 +220,9 @@ export class VerdictScene extends Phaser.Scene {
 		const portrait = new Portrait(
 			this,
 			W / 2,
-			H * 0.62,
+			H * 0.56,
 			portraitKeys(g.leader, "leader"),
-			640,
+			440,
 		);
 		portrait.setDepth(5);
 		portrait.enter(W / 2, 700);
@@ -234,6 +238,14 @@ export class VerdictScene extends Phaser.Scene {
 		sub.show(g.leader.name, v.leaderLine, COLORS.gold, lv.duration * 1000);
 		await lv.done;
 		sub.hide();
+		// make room for the actions
+		this.tweens.add({
+			targets: portrait,
+			y: H * 0.5,
+			scale: 0.72,
+			duration: 600,
+			ease: "Sine.inOut",
+		});
 
 		// record the reign
 		addReign({
@@ -248,7 +260,7 @@ export class VerdictScene extends Phaser.Scene {
 		});
 
 		// actions
-		const y = H * 0.83;
+		const y = H * 0.68;
 		new Button(
 			this,
 			W / 2,
@@ -259,8 +271,8 @@ export class VerdictScene extends Phaser.Scene {
 		);
 		if (v.nextEra) {
 			const hook = this.add
-				.text(W / 2, y + 62, v.nextEra.hook, {
-					...body(22, hex(COLORS.muted)),
+				.text(W / 2, y + 70, v.nextEra.hook, {
+					...body(21, hex(COLORS.muted)),
 					fontStyle: "italic",
 					wordWrap: { width: W - 120 },
 					align: "center",
@@ -275,7 +287,7 @@ export class VerdictScene extends Phaser.Scene {
 			new Button(
 				this,
 				W / 2,
-				y + 130,
+				y + 150,
 				`Change era: ${v.nextEra.name}`,
 				() => this.changeEra(target, v.nextEra?.name ?? ""),
 				{ w: 460, primary: false, size: 22 },
@@ -284,7 +296,7 @@ export class VerdictScene extends Phaser.Scene {
 		new Button(
 			this,
 			W / 2,
-			y + 220,
+			y + 240,
 			"Share verdict card",
 			() => void this.share(v, matched),
 			{ w: 300, h: 60, primary: false, size: 20 },

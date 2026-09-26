@@ -47,8 +47,9 @@ async function normalize(
 	const src = await loadImg(dataUrl);
 	const c = canvas(w, h);
 	c.getContext("2d")!.drawImage(src, 0, 0, w, h);
-	const url = c.toDataURL("image/png");
-	return { url, b64: url.split(",")[1], img: await loadImg(url) };
+	const png = c.toDataURL("image/png");
+	const url = c.toDataURL("image/webp", 0.86);
+	return { url, b64: png.split(",")[1], img: await loadImg(png) };
 }
 
 function pad(
@@ -248,7 +249,7 @@ export async function summon(
 		generated: true,
 		art,
 	};
-	addCustomLeader(leader);
+	await addCustomLeader(leader);
 	progress("The court assembles.", 1);
 	return { ok: true, leader };
 }

@@ -6,6 +6,7 @@ import type {
 	Leader,
 	Turn,
 } from "../types.ts";
+import { deleteArt, getArt, putArt } from "./artStore.ts";
 
 export interface Settings {
 	subtitles: boolean;
@@ -104,12 +105,27 @@ export function newGame(leader: Leader): GameState {
 	};
 }
 
+/** Leader without its (huge) art payload; art lives in IndexedDB and in-memory. */
+const stripArt = (l: Leader): Leader => {
+	const { art: _art, ...rest } = l;
+	return rest;
+};
+
 export const saveGame = (g: GameState | null) =>
-	g ? write(K.save, g) : localStorage.removeItem(K.save);
+	g
+		? write(K.save, { ...g, leader: stripArt(g.leader) })
+		: localStorage.removeItem(K.save);
 export const loadGame = (): GameState | null => {
 	try {
 		const v = localStorage.getItem(K.save);
-		return v ? (JSON.parse(v) as GameState) : null;
+		if (!v) return null;
+		const g = JSON.parse(v) as GameState;
+		if (g.leader.generated) {
+			const full = customLeaders.find((l) => l.id === g.leader.id);
+			if (!full?.art) return null;
+			g.leader = full;
+		}
+		return g;
 	} catch {
 		return null;
 	}
@@ -137,13 +153,24 @@ export function addReign(r: Omit<ReignRecord, "at">) {
 	write(K.reigns, reigns.slice(0, 50));
 }
 
-/** Player-summoned leaders (art stored as data URLs in IndexedDB-less localStorage is too big → kept in sessionless memory + meta). */
+/** Player-summoned leaders. Metadata in localStorage, art in IndexedDB (hydrated at boot). */
 export const customLeaders = readArr<Leader>(K.leaders);
-export function addCustomLeader(l: Leader) {
+export async function addCustomLeader(l: Leader) {
+	if (l.art) await putArt(l.id, l.art);
 	const i = customLeaders.findIndex((x) => x.id === l.id);
 	if (i >= 0) customLeaders[i] = l;
 	else customLeaders.unshift(l);
-	write(K.leaders, customLeaders.slice(0, 12));
+	for (const old of customLeaders.splice(12)) void deleteArt(old.id);
+	write(K.leaders, customLeaders.map(stripArt));
+}
+
+/** Attach stored art to summoned leaders; drops any whose art is missing. */
+export async function hydrateCustomLeaders() {
+	const arts = await Promise.all(customLeaders.map((l) => getArt(l.id)));
+	for (let i = customLeaders.length - 1; i >= 0; i--) {
+		if (arts[i]) customLeaders[i].art = arts[i];
+		else customLeaders.splice(i, 1);
+	}
 }
 
 export const clamp10 = (n: number) => Math.max(0, Math.min(10, n));

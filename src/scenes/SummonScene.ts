@@ -30,7 +30,7 @@ const EXAMPLES = [
 
 /** Leader-on-demand: type or speak a name; the Royal Archivist judges, painters paint. */
 export class SummonScene extends Phaser.Scene {
-	private field!: Phaser.GameObjects.DOMElement;
+	private field!: HTMLInputElement;
 	private busy = false;
 	private prefill = "";
 
@@ -79,8 +79,20 @@ export class SummonScene extends Phaser.Scene {
 		el.value = this.prefill;
 		el.autocomplete = "off";
 		el.maxLength = 60;
-		el.style.cssText = `width:${W - 120}px;height:84px;border-radius:18px;border:3px solid ${hex(COLORS.gold)};background:rgba(20,16,32,.85);color:${hex(COLORS.text)};font:600 32px ${FONT.body};padding:0 28px;outline:none;text-align:center;`;
-		this.field = this.add.dom(W / 2, 320, el);
+		el.style.cssText = `position:fixed;box-sizing:border-box;width:${W - 120}px;height:84px;border-radius:18px;border:3px solid ${hex(COLORS.gold)};background:rgba(20,16,32,.85);color:${hex(COLORS.text)};font:600 32px ${FONT.body};padding:0 28px;outline:none;text-align:center;transform-origin:0 0;z-index:10;`;
+		document.body.appendChild(el);
+		this.field = el;
+		// Follow the scaled canvas (Phaser's DOM container drifts under FIT + autoCenter on mobile).
+		const place = () => {
+			const r = this.game.canvas.getBoundingClientRect();
+			const s = r.width / W;
+			el.style.left = `${r.left + 60 * s}px`;
+			el.style.top = `${r.top + (320 - 42) * s}px`;
+			el.style.transform = `scale(${s})`;
+		};
+		place();
+		this.events.on(Phaser.Scenes.Events.UPDATE, place);
+		this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => el.remove());
 		el.addEventListener("keydown", (e) => {
 			if (e.key === "Enter") void this.go(el.value);
 		});
@@ -145,7 +157,8 @@ export class SummonScene extends Phaser.Scene {
 		if (!request || this.busy) return;
 		this.busy = true;
 		audio.unlock();
-		this.field.setVisible(false);
+		this.field.style.display = "none";
+		this.field.blur();
 		const shade = this.add
 			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.88)
 			.setDepth(90)
@@ -197,7 +210,7 @@ export class SummonScene extends Phaser.Scene {
 		sub.setDepth(93);
 		const cleanup = () => {
 			for (const o of [shade, label, barBg, bar, quill, p, sub]) o.destroy();
-			this.field.setVisible(true);
+			this.field.style.display = "";
 			this.busy = false;
 		};
 		try {

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { LEADERS } from "../content/leaders.ts";
 import { setManifest } from "../core/art.ts";
+import { hydrateCustomLeaders } from "../core/state.ts";
 import type { ArtManifest } from "../types.ts";
 import { COLORS, H, W } from "../ui/theme.ts";
 
@@ -29,7 +30,7 @@ export class BootScene extends Phaser.Scene {
 		this.makeGrain();
 		this.makeSpark();
 		this.makeCoin();
-		this.scene.start("Title");
+		void hydrateCustomLeaders().finally(() => this.scene.start("Title"));
 	}
 
 	private makeVignette() {

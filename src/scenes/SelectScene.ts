@@ -159,7 +159,7 @@ export class SelectScene extends Phaser.Scene {
 		this.input.on(
 			Phaser.Input.Events.POINTER_DOWN,
 			(p: Phaser.Input.Pointer) => {
-				if (p.y > H * 0.2 && p.y < H * 0.7) {
+				if (p.y > H * 0.12 && p.y < H * 0.86 && p.x > 100 && p.x < W - 100) {
 					this.dragging = true;
 					this.dragX = p.x;
 				}
@@ -176,13 +176,25 @@ export class SelectScene extends Phaser.Scene {
 			if (!this.dragging) return;
 			this.dragging = false;
 			const dx = p.x - this.dragX;
-			if (dx < -60)
-				this.index = Math.min(this.leaders.length - 1, this.index + 1);
-			else if (dx > 60) this.index = Math.max(0, this.index - 1);
-			this.snap();
+			if (dx < -60) this.step(1);
+			else if (dx > 60) this.step(-1);
+			else {
+				// tap on a side card brings it to the front
+				const rel = Math.round((p.x - W / 2) / GAP);
+				if (rel !== 0 && Math.abs(p.y - this.track.y) < CARD_W * 0.66)
+					this.step(rel);
+				else this.snap();
+			}
 		});
+		iconButton(this, 48, H * 0.43, "‹", () => this.step(-1));
+		iconButton(this, W - 48, H * 0.43, "›", () => this.step(1));
 		this.track.x = -this.index * GAP;
 		this.snap(true);
+	}
+
+	private step(d: number) {
+		this.index = Phaser.Math.Clamp(this.index + d, 0, this.leaders.length - 1);
+		this.snap();
 	}
 
 	private snap(instant = false) {

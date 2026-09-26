@@ -244,6 +244,8 @@ export class CourtScene extends Phaser.Scene {
 			this.showNameplate(advisor, turn.emotion);
 		}
 		this.subtitle.hide();
+		this.tweens.killTweensOf(this.nameplate);
+		this.tweens.add({ targets: this.nameplate, alpha: 0, duration: 200 });
 
 		// --- the decision
 		const picked = await this.decide(turn, advisor, pushIndex);
