@@ -118,25 +118,29 @@ async function handleTts(req: Request, env: Env, h: Record<string, string>) {
 		return new Response(hit, {
 			headers: { ...h, "content-type": "audio/wav", "x-cache": "hit" },
 		});
-	const r = await fetch(`${GRADIUM}/speech/tts`, {
-		method: "POST",
-		headers: {
-			"x-api-key": env.GRADIUM_API_KEY,
-			"content-type": "application/json",
-		},
-		body: JSON.stringify({
-			text,
-			voice_id,
-			output_format: "wav",
-			only_audio: true,
-		}),
-	});
-	if (!r.ok)
-		return json(
-			{ error: `gradium ${r.status} ${(await r.text()).slice(0, 200)}` },
-			h,
-			502,
-		);
+	let r: Response | null = null;
+	let err = "";
+	for (let i = 0; i < 4; i++) {
+		r = await fetch(`${GRADIUM}/speech/tts`, {
+			method: "POST",
+			headers: {
+				"x-api-key": env.GRADIUM_API_KEY,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				text,
+				voice_id,
+				output_format: "wav",
+				only_audio: true,
+			}),
+		});
+		if (r.ok) break;
+		err = (await r.text()).slice(0, 200);
+		// concurrency limit / rate limit: back off and retry
+		if (!/Concurrency|429|rate/i.test(err) && r.status !== 429) break;
+		await new Promise((res) => setTimeout(res, 600 * (i + 1)));
+	}
+	if (!r?.ok) return json({ error: `gradium ${r?.status} ${err}` }, h, 502);
 	const buf = await r.arrayBuffer();
 	if (buf.byteLength < 25_000_000)
 		await env.CACHE.put(key, buf, { expirationTtl: 60 * 60 * 24 * 30 });

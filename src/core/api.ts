@@ -69,6 +69,23 @@ async function hash(s: string) {
 
 const ttsMem = new Map<string, Promise<ArrayBuffer>>();
 
+// Gradium allows 2 concurrent TTS sessions per key: gate network calls.
+const TTS_SLOTS = 2;
+let ttsActive = 0;
+const ttsQueue: (() => void)[] = [];
+const acquire = () =>
+	new Promise<void>((res) => {
+		if (ttsActive < TTS_SLOTS) {
+			ttsActive++;
+			res();
+		} else ttsQueue.push(res);
+	});
+const release = () => {
+	const next = ttsQueue.shift();
+	if (next) next();
+	else ttsActive--;
+};
+
 /** Gradium TTS → WAV bytes, cached in memory + Cache API. */
 export function tts(text: string, voice: string): Promise<ArrayBuffer> {
 	const key = `${voice}|${text}`;
@@ -85,13 +102,19 @@ export function tts(text: string, voice: string): Promise<ArrayBuffer> {
 			} catch {
 				/* Cache API unavailable */
 			}
-			const r = await post(
-				"/tts",
-				JSON.stringify({ text, voice_id: voice }),
-				{ "content-type": "application/json" },
-				45000,
-			);
-			const buf = await r.arrayBuffer();
+			await acquire();
+			let buf: ArrayBuffer;
+			try {
+				const r = await post(
+					"/tts",
+					JSON.stringify({ text, voice_id: voice }),
+					{ "content-type": "application/json" },
+					45000,
+				);
+				buf = await r.arrayBuffer();
+			} finally {
+				release();
+			}
 			if (cache && buf.byteLength > 1000)
 				void cache
 					.put(

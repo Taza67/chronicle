@@ -17,6 +17,7 @@ export class CodexScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.tabs = [];
 		fadeIn(this);
 		this.add.rectangle(W / 2, H / 2, W, H, COLORS.night);
 		const bg = this.add.image(W / 2, H / 2, "title_bg");

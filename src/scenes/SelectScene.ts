@@ -37,6 +37,8 @@ export class SelectScene extends Phaser.Scene {
 
 	init(data: { focus?: string }) {
 		this.leaders = [...customLeaders, ...LEADERS];
+		this.cards = [];
+		this.dragging = false;
 		this.index = Math.max(
 			0,
 			this.leaders.findIndex((l) => l.id === data?.focus),
@@ -233,7 +235,9 @@ export class SelectScene extends Phaser.Scene {
 	update() {
 		// masks follow the track
 		for (const c of this.cards) {
-			const mg = c.getData("mask") as Phaser.GameObjects.Graphics;
+			if (!c.active) continue;
+			const mg = c.getData("mask") as Phaser.GameObjects.Graphics | undefined;
+			if (!mg?.active) continue;
 			mg.setScale(c.scale);
 			mg.x = this.track.x + c.x * (1 - c.scale);
 			mg.y = this.track.y * (1 - c.scale);
