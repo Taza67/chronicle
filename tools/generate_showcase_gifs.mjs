@@ -128,10 +128,10 @@ const video = path.join(TMP_VID_DIR, files[0]);
 console.log("⚡ Generating final GIF showcase suite...");
 
 // 1. Itch.io Animated Cover (630x500)
-// Focuses on the speaking advisor + leader screen
+// Focuses on the speaking advisor + leader screen (kept < 3MB for itch.io limit)
 const coverGif = path.join(OUT_DIR, "itch-cover.gif");
 execSync(
-	`ffmpeg -y -ss 00:00:36 -t 5.0 -i "${video}" -vf "crop=414:328:0:140,scale=630:500:flags=lanczos,fps=12,split[s0][s1];[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3" "${coverGif}"`,
+	`ffmpeg -y -ss 00:00:36 -t 4.0 -i "${video}" -vf "crop=414:328:0:140,scale=630:500:flags=lanczos,fps=10,split[s0][s1];[s0]palettegen=max_colors=96:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3" "${coverGif}"`,
 	{ stdio: "inherit" },
 );
 console.log("✔ Generated", coverGif);
