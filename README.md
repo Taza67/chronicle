@@ -18,35 +18,15 @@ Chronicle turns history into an interactive story:
 
 ---
 
-## 🎮 Game Guide: How to Play
+## 🎮 How to Play
 
-### 1. Goal of the Game
-Guide your empire through a **5-turn reign**. You must manage your kingdom's 3 core resources, make critical choices, bet on historical truth, and finish with a strong legacy without triggering a crisis.
+Survive a **5-turn reign** while keeping your kingdom's 3 resources (**Gold, Stability, Legacy**) balanced:
 
-### 2. The 3 Kingdom Pillars
-Every decision you make affects three gauges:
-* 🪙 **Gold:** Your treasury. Letting it drop too low triggers a **Bankruptcy** crisis.
-* ⚖️ **Stability:** Peace and civil order. Letting it collapse sparks a **Revolt**.
-* 👑 **Legacy:** Your historical fame and score. Reaching high legacy unlocks special **Prophecy** events.
+1. **Choose a decree:** An advisor presents a historical crisis. Pick your action by tapping a card or speaking out loud.
+2. **Bet with the Oracle:** Guess whether the real historical leader made that exact choice to earn bonus combo points.
+3. **Discover the outcome:** The game reveals the true historical event, or generates an alternate "What If" timeline if you chose differently.
 
-### 3. Step-by-Step Turn Walkthrough
-Each turn follows 4 clear steps:
-
-1. **The Council Dilemma:**
-   A court advisor brings a crisis to your throne. Review the situation and examine the 3 proposed decrees. Each decree shows which pillars it will likely impact.
-2. **Make Your Decree (Tap or Voice):**
-   Choose your decision by tapping a decree card, or use the microphone button to decree hands-free by speaking your own words.
-3. **The Oracle's Wager:**
-   Before the result is revealed, place a bet: *Did the real historical leader make this choice, or did they do something else?* Guessing correctly chains a combo multiplier for your score.
-4. **Historical Reveal & "What If":**
-   * **If your choice matched history:** You learn what really took place and collect verified facts in your Codex.
-   * **If your choice differed:** The game generates an alternate history timeline explaining how your decision would have changed world events.
-
-### 4. End of Reign: The Verdict
-After surviving 5 turns, you reach the **Verdict screen**:
-* View your final Pillar scores (Gold, Stability, Legacy).
-* Check your Oracle prediction accuracy.
-* Receive an assessment of your rule and a historical epithet (e.g., *"Napoleon the Visionary"*, *"Cleopatra the Stern"*).
+Survive all 5 turns to unlock verified facts in your **Codex** and earn your final royal title!
 
 ---
 
