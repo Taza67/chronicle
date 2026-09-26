@@ -2,7 +2,7 @@
 
 > **Rule as history's greatest leaders. Learn history through play.**
 
-🎮 **Play directly in your browser:** [https://chronicle-five-kohl.vercel.app](https://chronicle-five-kohl.vercel.app) *(or on [itch.io](https://taza67.itch.io/chronicle))*
+🎮 **Play now on itch.io:** [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle)
 
 **Chronicle** is a mobile-first historical decision visual novel. You take the throne of real world leaders, listen to your court advisors present real crises from history, choose how to act, and discover what actually happened versus what an alternate timeline would have produced.
 
@@ -83,6 +83,5 @@ npm run package
 
 ## 🔗 Links
 
-* **Hosted Game (Vercel):** [https://chronicle-five-kohl.vercel.app](https://chronicle-five-kohl.vercel.app)
-* **Itch.io Page:** [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle)
+* **Playable Game (itch.io):** [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle)
 * **GitHub Repository:** [https://github.com/Taza67/chronicle](https://github.com/Taza67/chronicle)
