@@ -67,27 +67,120 @@ function pad(
 	];
 }
 
-/** Crop a variant to a bbox and alpha-feather its edges. */
+const pixels = (img: HTMLImageElement) => {
+	const c = canvas(img.width, img.height);
+	const ctx = c.getContext("2d")!;
+	ctx.drawImage(img, 0, 0);
+	return ctx.getImageData(0, 0, img.width, img.height);
+};
+
+/**
+ * Crop a variant to a bbox, shifted to best match the base on the ring around the
+ * feature (edited images drift by a few px), colour-matched to the base, then feathered.
+ */
 function patch(
+	base: HTMLImageElement,
 	img: HTMLImageElement,
 	box: [number, number, number, number],
 ): string {
 	const [y0, x0, y1, x1] = box;
-	const sx = (x0 / 1000) * img.width;
-	const sy = (y0 / 1000) * img.height;
-	const sw = ((x1 - x0) / 1000) * img.width;
-	const sh = ((y1 - y0) / 1000) * img.height;
-	const c = canvas(Math.max(2, Math.round(sw)), Math.max(2, Math.round(sh)));
+	const bx = Math.round((x0 / 1000) * base.width);
+	const by = Math.round((y0 / 1000) * base.height);
+	const bw = Math.max(2, Math.round(((x1 - x0) / 1000) * base.width));
+	const bh = Math.max(2, Math.round(((y1 - y0) / 1000) * base.height));
+	const B = pixels(base);
+	const V = pixels(img);
+	const my = Math.floor(bh * 0.28);
+	const mx = Math.floor(bw * 0.22);
+	const onRing = (x: number, y: number) =>
+		y < my || y >= bh - my || x < mx || x >= bw - mx;
+	const at = (d: ImageData, x: number, y: number) => (y * d.width + x) * 4;
+	const r = Math.round(Math.max(bw, bh) * 0.12);
+	let best = Number.POSITIVE_INFINITY;
+	let bdx = 0;
+	let bdy = 0;
+	for (let dy = -r; dy <= r; dy += 2)
+		for (let dx = -r; dx <= r; dx += 2) {
+			if (
+				by + dy < 0 ||
+				bx + dx < 0 ||
+				by + dy + bh > V.height ||
+				bx + dx + bw > V.width
+			)
+				continue;
+			let err = 0;
+			let n = 0;
+			for (let y = 0; y < bh; y += 2)
+				for (let x = 0; x < bw; x += 2) {
+					if (!onRing(x, y)) continue;
+					const a = at(B, bx + x, by + y);
+					const b = at(V, bx + x + dx, by + y + dy);
+					for (let c = 0; c < 3; c++) {
+						const d = B.data[a + c] - V.data[b + c];
+						err += d * d;
+					}
+					n++;
+				}
+			err /= Math.max(1, n);
+			if (err < best) {
+				best = err;
+				bdx = dx;
+				bdy = dy;
+			}
+		}
+	// per-channel mean/std match on the ring
+	const sb = [0, 0, 0];
+	const sv = [0, 0, 0];
+	const qb = [0, 0, 0];
+	const qv = [0, 0, 0];
+	let n = 0;
+	for (let y = 0; y < bh; y++)
+		for (let x = 0; x < bw; x++) {
+			if (!onRing(x, y)) continue;
+			const a = at(B, bx + x, by + y);
+			const b = at(V, bx + x + bdx, by + y + bdy);
+			for (let c = 0; c < 3; c++) {
+				sb[c] += B.data[a + c];
+				qb[c] += B.data[a + c] ** 2;
+				sv[c] += V.data[b + c];
+				qv[c] += V.data[b + c] ** 2;
+			}
+			n++;
+		}
+	const out = new ImageData(bw, bh);
+	const gain = [0, 1, 2].map((c) => {
+		const mb = sb[c] / n;
+		const mv = sv[c] / n;
+		const sdb = Math.sqrt(Math.max(0, qb[c] / n - mb * mb)) + 1e-3;
+		const sdv = Math.sqrt(Math.max(0, qv[c] / n - mv * mv)) + 1e-3;
+		return { mb, mv, g: Math.min(1.4, Math.max(0.7, sdb / sdv)) };
+	});
+	for (let y = 0; y < bh; y++)
+		for (let x = 0; x < bw; x++) {
+			const b = at(V, bx + x + bdx, by + y + bdy);
+			const o = (y * bw + x) * 4;
+			for (let c = 0; c < 3; c++) {
+				const { mb, mv, g } = gain[c];
+				out.data[o + c] = Math.max(
+					0,
+					Math.min(255, (V.data[b + c] - mv) * g + mb),
+				);
+			}
+			out.data[o + 3] = 255;
+		}
+	const cut = canvas(bw, bh);
+	cut.getContext("2d")!.putImageData(out, 0, 0);
+	const c = canvas(bw, bh);
 	const ctx = c.getContext("2d")!;
-	const m = Math.max(2, Math.min(c.width, c.height) / 8);
+	const m = Math.max(2, Math.min(bw, bh) / 8);
 	ctx.filter = `blur(${m / 2}px)`;
 	ctx.fillStyle = "#fff";
 	ctx.beginPath();
-	ctx.roundRect(m, m, c.width - 2 * m, c.height - 2 * m, m);
+	ctx.roundRect(m, m, bw - 2 * m, bh - 2 * m, m);
 	ctx.fill();
 	ctx.filter = "none";
 	ctx.globalCompositeOperation = "source-in";
-	ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+	ctx.drawImage(cut, 0, 0);
 	return c.toDataURL("image/webp", 0.9);
 }
 
@@ -122,9 +215,14 @@ async function character(
 		768,
 	);
 	onStep();
-	const [open, blink, bb] = await Promise.all([
+	const [open, half, blink, bb] = await Promise.all([
 		image(
 			`${EDIT}the character is now mid-sentence, mouth clearly open showing teeth slightly as if pronouncing 'ah'. Same eyes, same expression otherwise.`,
+			"3:4",
+			base.b64,
+		).then((r) => normalize(toDataUrl(r), 576, 768)),
+		image(
+			`${EDIT}the lips are slightly parted, as if pronouncing 'mm' or 'oo', small rounded opening. Same eyes.`,
 			"3:4",
 			base.b64,
 		).then((r) => normalize(toDataUrl(r), 576, 768)),
@@ -138,12 +236,11 @@ async function character(
 	onStep();
 	const mouth = pad(bb.mouth, 0.55);
 	const eyes = pad(bb.eyes, 0.35);
-	const mouthOpen = patch(open.img, mouth);
 	return {
 		src: base.url,
-		mouthOpen,
-		mouthHalf: mouthOpen,
-		eyesClosed: patch(blink.img, eyes),
+		mouthOpen: patch(base.img, open.img, mouth),
+		mouthHalf: patch(base.img, half.img, mouth),
+		eyesClosed: patch(base.img, blink.img, eyes),
 		bbox: { mouth, eyes, head: bb.head },
 	};
 }

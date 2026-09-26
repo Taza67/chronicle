@@ -28,6 +28,8 @@ export class Portrait extends Phaser.GameObjects.Container {
 	private nextBlink = 0;
 	private voice: VoiceHandle | null = null;
 	private mouth = 0;
+	private lvl = 0;
+	private mouthBaseH = 1;
 	private emotion: Emotion = "calm";
 	private pose = { rot: 0, sx: 1, sy: 1, dy: 0, dx: 0 };
 	private shake = 0;
@@ -82,6 +84,11 @@ export class Portrait extends Phaser.GameObjects.Container {
 			scene.add.image(0, 0, keys.mouthOpen),
 			keys.bbox.mouth,
 		).setAlpha(0);
+		this.mouthBaseH = this.mouthOpen.displayHeight;
+		// anchor the open mouth at the upper lip so the jaw drop grows downward
+		this.mouthOpen
+			.setOrigin(0.5, 0)
+			.setY(this.mouthOpen.y - this.mouthBaseH / 2);
 		this.eyes = place(
 			scene.add.image(0, 0, keys.eyesClosed),
 			keys.bbox.eyes,
@@ -143,7 +150,7 @@ export class Portrait extends Phaser.GameObjects.Container {
 			alpha: e === "calm" ? 0.08 : 0.28,
 			duration: 500,
 		});
-		if (e === "alarmed") this.shake = 1;
+		if (e === "alarmed" && !settings.reducedMotion) this.shake = 1;
 		if (e === "amused")
 			this.scene.tweens.add({
 				targets: this.rig,
@@ -194,8 +201,8 @@ export class Portrait extends Phaser.GameObjects.Container {
 		const drift = Math.sin(this.t * 0.45) * 5 * m;
 		let shakeX = 0;
 		if (this.shake > 0) {
-			shakeX = Math.sin(this.t * 90) * 7 * this.shake;
-			this.shake = Math.max(0, this.shake - dt * 2.2);
+			shakeX = Math.sin(this.t * 34) * 4 * this.shake * this.shake;
+			this.shake = Math.max(0, this.shake - dt * 3);
 		}
 		this.rig.setScale(this.pose.sx, this.pose.sy + breath);
 		this.rig.setRotation(this.pose.rot + sway);
@@ -216,17 +223,22 @@ export class Portrait extends Phaser.GameObjects.Container {
 			});
 			if (Math.random() < 0.2) this.nextBlink = 0.25; // double blink
 		}
-		// lip-sync
-		const lvl = this.voice ? this.voice.level() : 0;
-		const target = lvl < 0.08 ? 0 : lvl < 0.28 ? 0.5 : 1;
-		this.mouth += (target - this.mouth) * Math.min(1, dt * 22);
-		const openA = Phaser.Math.Clamp((this.mouth - 0.5) * 2, 0, 1);
-		const halfA = Phaser.Math.Clamp(this.mouth * 2, 0, 1) * (1 - openA);
+		// lip-sync: fast attack, slower release, then a continuous cross-fade
+		// (no hard thresholds, no whole-portrait motion → no visible jitter)
+		const raw = this.voice ? this.voice.level() : 0;
+		this.lvl += (raw - this.lvl) * Math.min(1, dt * (raw > this.lvl ? 30 : 12));
+		const target = Phaser.Math.Clamp((this.lvl - 0.06) / 0.3, 0, 1);
+		this.mouth += (target - this.mouth) * Math.min(1, dt * 18);
+		const openA = Phaser.Math.Easing.Sine.InOut(
+			Phaser.Math.Clamp((this.mouth - 0.45) / 0.55, 0, 1),
+		);
+		const halfA =
+			Phaser.Math.Easing.Sine.InOut(Phaser.Math.Clamp(this.mouth / 0.5, 0, 1)) *
+			(1 - openA);
 		this.mouthOpen.setAlpha(openA);
 		this.mouthHalf.setAlpha(halfA);
-		// slight jaw motion while speaking
-		if (lvl > 0.08 && !settings.reducedMotion)
-			this.rig.y += Math.sin(this.t * 24) * lvl * 1.5;
+		// subtle jaw drop on the mouth patch only
+		this.mouthOpen.displayHeight = this.mouthBaseH * (1 + 0.06 * this.mouth);
 	}
 }
 

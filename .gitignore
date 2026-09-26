@@ -27,3 +27,4 @@ dist-ssr
 chronicle-itch.zip
 .env.local
 .wrangler
+tools/art_raw

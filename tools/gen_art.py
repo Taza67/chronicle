@@ -79,6 +79,41 @@ def feather(patch):
     patch = patch.convert("RGBA"); patch.putalpha(mask); return patch
 
 
+def align_patch(base, variant, box, search=0.12):
+    """Cut `box` from `variant`, shifted to best match `base` on the ring around the feature,
+    then colour-match the cut to the base so the patch disappears into the portrait."""
+    import numpy as np
+    w, h = base.size
+    y0, x0, y1, x1 = [int(v / 1000 * d) for v, d in zip(box, (h, w, h, w))]
+    bw, bh = x1 - x0, y1 - y0
+    B = np.asarray(base.convert("RGB"), dtype=np.float32)
+    V = np.asarray(variant.convert("RGB"), dtype=np.float32)
+    ring = np.ones((bh, bw), dtype=bool)
+    my, mx = int(bh * 0.28), int(bw * 0.22)
+    ring[my:bh - my, mx:bw - mx] = False
+    ref = B[y0:y1, x0:x1]
+    r = int(max(bw, bh) * search)
+    best, bdx, bdy = None, 0, 0
+    for dy in range(-r, r + 1, 2):
+        for dx in range(-r, r + 1, 2):
+            ys, xs = y0 + dy, x0 + dx
+            if ys < 0 or xs < 0 or ys + bh > h or xs + bw > w:
+                continue
+            cand = V[ys:ys + bh, xs:xs + bw]
+            err = ((cand - ref) ** 2)[ring].mean()
+            if best is None or err < best:
+                best, bdx, bdy = err, dx, dy
+    cut = V[y0 + bdy:y1 + bdy, x0 + bdx:x1 + bdx].copy()
+    # per-channel gain/offset from the ring statistics
+    for c in range(3):
+        bm, bs = ref[..., c][ring].mean(), ref[..., c][ring].std() + 1e-3
+        vm, vs = cut[..., c][ring].mean(), cut[..., c][ring].std() + 1e-3
+        gain = float(np.clip(bs / vs, 0.7, 1.4))
+        cut[..., c] = np.clip((cut[..., c] - vm) * gain + bm, 0, 255)
+    print(f"    patch shift dx={bdx} dy={bdy}")
+    return Image.fromarray(cut.astype(np.uint8))
+
+
 def save(img, path, q=88):
     img.save(path, "WEBP", quality=q, method=6)
 
@@ -104,13 +139,46 @@ def character(dirpath, key, prompt):
     mouth_c, mouth_box = crop(base, bb["mouth"], 0.55)
     eyes_c, eyes_box = crop(base, bb["eyes"], 0.35)
     save(base, base_p)
-    for name, src, box in (("mouth_open", open_, mouth_box), ("mouth_half", half, mouth_box), ("eyes_closed", blink, eyes_box)):
-        patch, _ = crop(src, box, 0)
-        feather(patch).save(os.path.join(dirpath, f"{key}_{name}.webp"), "WEBP", quality=90, method=6)
+    write_patches(dirpath, key, base, open_, half, blink, mouth_box, eyes_box)
     meta = {"src": f"art/{os.path.basename(dirpath)}/{key}.webp",
             "bbox": {"mouth": mouth_box, "eyes": eyes_box, "head": bb["head"]}}
     json.dump(meta, open(os.path.join(dirpath, f"{key}.json"), "w"))
     return meta
+
+
+RAW = os.path.join(ROOT, "tools", "art_raw")
+
+
+def write_patches(dirpath, key, base, open_, half, blink, mouth_box, eyes_box):
+    os.makedirs(os.path.join(RAW, os.path.basename(dirpath)), exist_ok=True)
+    for name, src, box in (("mouth_open", open_, mouth_box), ("mouth_half", half, mouth_box), ("eyes_closed", blink, eyes_box)):
+        src.save(os.path.join(RAW, os.path.basename(dirpath), f"{key}_{name}.png"))
+        feather(align_patch(base, src, box)).save(os.path.join(dirpath, f"{key}_{name}.webp"), "WEBP", quality=90, method=6)
+
+
+def refresh_patches(dirpath, key):
+    """Regenerate only the speaking/blink patches for an existing portrait (reuses cached raw variants)."""
+    meta = json.load(open(os.path.join(dirpath, f"{key}.json")))
+    base = Image.open(os.path.join(dirpath, f"{key}.webp")).convert("RGB")
+    rawdir = os.path.join(RAW, os.path.basename(dirpath))
+
+    def variant(name, prompt):
+        p = os.path.join(rawdir, f"{key}_{name}.png")
+        if os.path.exists(p):
+            return Image.open(p).convert("RGB")
+        return gen_image(prompt, "3:4", base).resize(base.size, Image.LANCZOS)
+
+    print("  variants", key)
+    with ThreadPoolExecutor(3) as ex:
+        f_open = ex.submit(variant, "mouth_open", "Edit this exact image: keep everything identical (framing, lighting, colors, pose, clothing) "
+                           "but the character is now mid-sentence, mouth clearly open showing teeth slightly as if pronouncing 'ah'. "
+                           "Same eyes, same expression otherwise.")
+        f_half = ex.submit(variant, "mouth_half", "Edit this exact image: keep everything identical (framing, lighting, colors, pose, clothing) "
+                           "but the lips are slightly parted, as if pronouncing 'mm' or 'oo', small rounded opening. Same eyes.")
+        f_blink = ex.submit(variant, "eyes_closed", "Edit this exact image: keep everything identical (framing, lighting, colors, pose, clothing) "
+                            "but both eyes are fully closed, eyelids down, relaxed. Same mouth.")
+        open_, half, blink = f_open.result(), f_half.result(), f_blink.result()
+    write_patches(dirpath, key, base, open_, half, blink, meta["bbox"]["mouth"], meta["bbox"]["eyes"])
 
 
 def scene(dirpath, prompt):
@@ -134,7 +202,18 @@ def load_leaders():
 def main():
     os.makedirs(OUT, exist_ok=True)
     leaders = load_leaders()
-    only = set(sys.argv[1:])
+    args = sys.argv[1:]
+    if args and args[0] == "--patches":
+        only = set(args[1:])
+        for L in leaders:
+            if only and L["id"] not in only:
+                continue
+            print("==", L["id"])
+            d = os.path.join(OUT, L["id"])
+            for key in ["leader"] + [a["role"] for a in L["advisors"]]:
+                refresh_patches(d, key)
+        return
+    only = set(args)
     manifest_p = os.path.join(OUT, "manifest.json")
     manifest = json.load(open(manifest_p)) if os.path.exists(manifest_p) else {}
     for L in leaders:
