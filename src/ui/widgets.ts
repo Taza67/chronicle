@@ -570,6 +570,8 @@ export class Subtitle extends Phaser.GameObjects.Container {
 	private bg: Phaser.GameObjects.Graphics;
 	private timer?: Phaser.Time.TimerEvent;
 	private full = "";
+	private words: string[] = [];
+	private shown = 0;
 	private contentBottom = 154;
 
 	private containerY = 0;
@@ -757,23 +759,43 @@ export class Subtitle extends Phaser.GameObjects.Container {
 		// Typewriter: reveal words over the speech duration
 		if (settings.subtitles && !settings.reducedMotion) {
 			const words = formattedText.split(" ");
+			this.words = words;
+			this.shown = 0;
 			const per = Math.max(
 				28,
 				Math.min(110, (durationMs * 0.9) / Math.max(1, words.length)),
 			);
-			let i = 0;
 			this.txt.setText("");
 			this.timer = this.scene.time.addEvent({
 				delay: per,
 				repeat: words.length - 1,
 				callback: () => {
-					i++;
-					this.txt.setText(words.slice(0, i).join(" "));
+					this.shown++;
+					this.txt.setText(words.slice(0, this.shown).join(" "));
 				},
 			});
 		} else {
+			this.words = [];
+			this.shown = 0;
 			this.txt.setText(formattedText);
 		}
+	}
+
+	/** Re-pace the remaining typewriter words to a now-known speech duration. */
+	retime(durationMs: number) {
+		if (!this.timer || !this.scene) return;
+		const remaining = this.words.length - this.shown;
+		if (remaining <= 0) return;
+		this.timer.remove();
+		const per = Math.max(28, Math.min(110, (durationMs * 0.9) / remaining));
+		this.timer = this.scene.time.addEvent({
+			delay: per,
+			repeat: remaining - 1,
+			callback: () => {
+				this.shown++;
+				this.txt.setText(this.words.slice(0, this.shown).join(" "));
+			},
+		});
 	}
 
 	/** Reveal the whole line at once (speech skipped). */
