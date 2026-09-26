@@ -29,10 +29,16 @@ export class Portrait extends Phaser.GameObjects.Container {
 	private voice: VoiceHandle | null = null;
 	private mouth = 0;
 	private lvl = 0;
+	private openLvl = 0;
+	private sibLvl = 0;
+	private targetOpenness = 0;
+	private targetSibilance = 0;
 	private mouthBaseH = 1;
+	private mouthBaseW = 1;
 	private emotion: Emotion = "calm";
 	private pose = { rot: 0, sx: 1, sy: 1, dy: 0, dx: 0 };
 	private shake = 0;
+	private currentRimColor = 0xe0b64a;
 	readonly displayH: number;
 	private readonly scaleF: number;
 
@@ -85,6 +91,7 @@ export class Portrait extends Phaser.GameObjects.Container {
 			keys.bbox.mouth,
 		).setAlpha(0);
 		this.mouthBaseH = this.mouthOpen.displayHeight;
+		this.mouthBaseW = this.mouthOpen.displayWidth;
 		// anchor the open mouth at the upper lip so the jaw drop grows downward
 		this.mouthOpen
 			.setOrigin(0.5, 0)
@@ -144,7 +151,26 @@ export class Portrait extends Phaser.GameObjects.Container {
 			proud: 0xffd86b,
 			bold: 0xff9b3d,
 		}[e];
-		this.rim.setTint(roleColor ?? rimColor);
+		const targetRimColor = roleColor ?? rimColor;
+		const fromColor = Phaser.Display.Color.IntegerToColor(this.currentRimColor);
+		const toColor = Phaser.Display.Color.IntegerToColor(targetRimColor);
+		this.scene.tweens.addCounter({
+			from: 0,
+			to: 1,
+			duration: 450,
+			onUpdate: (tw) => {
+				const v = tw.getValue() ?? 0;
+				const c = Phaser.Display.Color.Interpolate.ColorWithColor(
+					fromColor,
+					toColor,
+					1,
+					v,
+				);
+				const col = Phaser.Display.Color.GetColor(c.r, c.g, c.b);
+				this.rim.setTint(col);
+				this.currentRimColor = col;
+			},
+		});
 		this.scene.tweens.add({
 			targets: this.rim,
 			alpha: e === "calm" ? 0.08 : 0.28,
@@ -171,7 +197,7 @@ export class Portrait extends Phaser.GameObjects.Container {
 			x: tx,
 			alpha: 1,
 			duration: settings.reducedMotion ? 200 : ms,
-			ease: "Cubic.out",
+			ease: "Back.out",
 		});
 	}
 
@@ -191,6 +217,7 @@ export class Portrait extends Phaser.GameObjects.Container {
 	}
 
 	private tick(_time: number, deltaMs: number) {
+		if (!this.scene?.tweens) return;
 		const dt = deltaMs / 1000;
 		this.t += dt;
 		const m = settings.reducedMotion ? 0.3 : 1;
@@ -225,10 +252,29 @@ export class Portrait extends Phaser.GameObjects.Container {
 		}
 		// lip-sync: fast attack, slower release, then a continuous cross-fade
 		// (no hard thresholds, no whole-portrait motion → no visible jitter)
-		const raw = this.voice ? this.voice.level() : 0;
+		const shape = this.voice
+			? this.voice.shape()
+			: { amplitude: 0, openness: 0, sibilance: 0 };
+		const raw = shape.amplitude;
 		this.lvl += (raw - this.lvl) * Math.min(1, dt * (raw > this.lvl ? 30 : 12));
+		this.openLvl +=
+			(shape.openness - this.openLvl) *
+			Math.min(1, dt * (shape.openness > this.openLvl ? 30 : 12));
+		this.sibLvl +=
+			(shape.sibilance - this.sibLvl) *
+			Math.min(1, dt * (shape.sibilance > this.sibLvl ? 30 : 12));
+
 		const target = Phaser.Math.Clamp((this.lvl - 0.06) / 0.3, 0, 1);
 		this.mouth += (target - this.mouth) * Math.min(1, dt * 18);
+
+		const openTarget = Phaser.Math.Clamp((this.openLvl - 0.06) / 0.3, 0, 1);
+		this.targetOpenness +=
+			(openTarget - this.targetOpenness) * Math.min(1, dt * 18);
+
+		const sibTarget = Phaser.Math.Clamp(this.sibLvl / 0.35, 0, 1);
+		this.targetSibilance +=
+			(sibTarget - this.targetSibilance) * Math.min(1, dt * 18);
+
 		const openA = Phaser.Math.Easing.Sine.InOut(
 			Phaser.Math.Clamp((this.mouth - 0.45) / 0.55, 0, 1),
 		);
@@ -237,8 +283,24 @@ export class Portrait extends Phaser.GameObjects.Container {
 			(1 - openA);
 		this.mouthOpen.setAlpha(openA);
 		this.mouthHalf.setAlpha(halfA);
-		// subtle jaw drop on the mouth patch only
-		this.mouthOpen.displayHeight = this.mouthBaseH * (1 + 0.06 * this.mouth);
+
+		const targetOpenness = this.targetOpenness;
+		const targetSibilance = this.targetSibilance;
+
+		// jaw drop modulated by vowel openness and horizontal stretch by sibilance
+		this.mouthOpen.displayHeight = this.mouthBaseH * (1 + 0.1 * targetOpenness);
+		this.mouthOpen.displayWidth =
+			this.mouthBaseW * (1 + 0.08 * targetSibilance);
+
+		// Subtle organic speech gesture: rhythmic micro-nod on open syllables & slight head tilt on emphasis
+		const speechNod =
+			this.lvl > 0.04 ? Math.sin(this.t * 16) * 1.8 * targetOpenness * m : 0;
+		const speechTilt =
+			this.lvl > 0.04 ? Math.sin(this.t * 8) * 0.007 * this.lvl * m : 0;
+
+		this.rig.setRotation(this.pose.rot + sway + speechTilt);
+		if (this.emotion !== "amused")
+			this.rig.setY(this.pose.dy + Math.sin(this.t * 1.7) * 2 * m + speechNod);
 	}
 }
 

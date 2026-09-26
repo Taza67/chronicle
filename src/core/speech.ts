@@ -29,6 +29,17 @@ function mimed(text: string): VoiceHandle {
 			const pause = Math.sin(t * 1.9) > 0.85 ? 0 : 1;
 			return pulse * pause;
 		},
+		shape: () => {
+			if (stopped) return { amplitude: 0, openness: 0, sibilance: 0 };
+			const t = (performance.now() - t0) / 1000;
+			const pulse = Math.max(
+				0,
+				Math.sin(t * 28) * 0.6 + Math.sin(t * 9.3) * 0.3 + 0.35,
+			);
+			const pause = Math.sin(t * 1.9) > 0.85 ? 0 : 1;
+			const amp = pulse * pause;
+			return { amplitude: amp, openness: amp, sibilance: 0 };
+		},
 		stop: () => {
 			clearTimeout(timer);
 			stopped = true;
@@ -38,17 +49,22 @@ function mimed(text: string): VoiceHandle {
 }
 
 /** Prefetch TTS so the next line plays instantly. */
-export function warm(text: string, voice: string) {
-	if (online()) void tts(text, voice).catch(() => {});
+export function warm(text: string, voice: string, style?: string) {
+	if (online()) void tts(text, voice, style).catch(() => {});
 }
 
-/** Speak a line with Gradium TTS (cached), falling back to a timed mime when offline/failing. */
-export async function say(text: string, voice: string): Promise<VoiceHandle> {
+/** Speak a line with TTS (cached), falling back to a timed mime when offline/failing. */
+export async function say(
+	text: string,
+	voice: string,
+	style?: string,
+	pan = 0,
+): Promise<VoiceHandle> {
 	if (online()) {
 		try {
-			const raw = await tts(text, voice);
+			const raw = await tts(text, voice, style);
 			const buf = await audio.decode(raw);
-			return audio.speak(buf);
+			return audio.speak(buf, pan);
 		} catch (e) {
 			console.warn("tts failed", e);
 		}

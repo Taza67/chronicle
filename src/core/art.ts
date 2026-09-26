@@ -13,7 +13,17 @@ export const texKey = (leaderId: string, name: string) => `${leaderId}/${name}`;
 
 /** Queue every image of a leader into the scene loader (manifest for default leaders, data URLs for summoned ones). */
 export function queueLeaderArt(scene: Phaser.Scene, leader: Leader) {
-	const has = (k: string) => scene.textures.exists(k);
+	const has = (k: string) => {
+		if (scene.textures.exists(k)) return true;
+		const load = scene.load as unknown as {
+			list?: { entries?: { key?: string }[] };
+			inflight?: { entries?: { key?: string }[] };
+			queue?: { entries?: { key?: string }[] };
+		};
+		const inSet = (s?: { entries?: { key?: string }[] }) =>
+			Boolean(s?.entries?.some?.((e) => e?.key === k));
+		return inSet(load.list) || inSet(load.inflight) || inSet(load.queue);
+	};
 	const load = scene.load;
 	if (leader.art) {
 		const a = leader.art;

@@ -69,8 +69,8 @@ async function hash(s: string) {
 
 const ttsMem = new Map<string, Promise<ArrayBuffer>>();
 
-// Gradium allows 2 concurrent TTS sessions per key: gate network calls.
-const TTS_SLOTS = 2;
+// Concurrency gate for TTS requests
+const TTS_SLOTS = 6;
 let ttsActive = 0;
 const ttsQueue: (() => void)[] = [];
 const acquire = () =>
@@ -86,9 +86,13 @@ const release = () => {
 	else ttsActive--;
 };
 
-/** Gradium TTS → WAV bytes, cached in memory + Cache API. */
-export function tts(text: string, voice: string): Promise<ArrayBuffer> {
-	const key = `${voice}|${text}`;
+/** TTS → WAV bytes, cached in memory + Cache API. */
+export function tts(
+	text: string,
+	voice: string,
+	style?: string,
+): Promise<ArrayBuffer> {
+	const key = `${voice}|${style ?? ""}|${text}`;
 	let p = ttsMem.get(key);
 	if (!p) {
 		p = (async () => {
@@ -107,7 +111,7 @@ export function tts(text: string, voice: string): Promise<ArrayBuffer> {
 			try {
 				const r = await post(
 					"/tts",
-					JSON.stringify({ text, voice_id: voice }),
+					JSON.stringify({ text, voice_id: voice, style }),
 					{ "content-type": "application/json" },
 					45000,
 				);
@@ -130,6 +134,40 @@ export function tts(text: string, voice: string): Promise<ArrayBuffer> {
 	return p;
 }
 
+/** Design a brand-new persistent character voice via Google Gemini Voice Design. */
+export async function designVoice(opts: {
+	name: string;
+	description: string;
+	gender?: "male" | "female";
+	language?: string;
+}): Promise<{ id: string; sampleAudio?: string }> {
+	const r = await post(
+		"/voice/design",
+		JSON.stringify({
+			store: true,
+			voice: {
+				model: "gemini-3.8-flash-tts",
+				type: "prompted",
+				display_name: opts.name,
+				gender: opts.gender ?? "male",
+				language_code: opts.language ?? "en-US",
+				prompted: {
+					input: opts.description,
+				},
+			},
+		}),
+		{ "content-type": "application/json" },
+		60000,
+	);
+	const data = (await r.json()) as {
+		id?: string;
+		name?: string;
+		sample_audio?: { data?: string };
+	};
+	const id = data.id || data.name?.replace("voices/", "") || "";
+	return { id, sampleAudio: data.sample_audio?.data };
+}
+
 export async function stt(blob: Blob): Promise<string> {
 	const r = await post(
 		"/stt",
@@ -141,19 +179,49 @@ export async function stt(blob: Blob): Promise<string> {
 	return j.text ?? "";
 }
 
-/** Google image generation. `ref` = base64 PNG to edit. Returns base64 image + mime. */
+const IMAGE_SLOTS = 3;
+let imageActive = 0;
+const imageQueue: (() => void)[] = [];
+const acquireImage = () =>
+	new Promise<void>((res) => {
+		if (imageActive < IMAGE_SLOTS) {
+			imageActive++;
+			res();
+		} else imageQueue.push(res);
+	});
+const releaseImage = () => {
+	const next = imageQueue.shift();
+	if (next) next();
+	else imageActive--;
+};
+
+/** Google image generation with queue gating and retries. `ref` = base64 PNG to edit. */
 export async function image(
 	prompt: string,
 	aspect: string,
 	ref?: string,
 ): Promise<{ data: string; mime: string }> {
-	const r = await post(
-		"/image",
-		JSON.stringify({ prompt, aspect, ref }),
-		{ "content-type": "application/json" },
-		120000,
-	);
-	return (await r.json()) as { data: string; mime: string };
+	await acquireImage();
+	try {
+		for (let attempt = 0; attempt < 3; attempt++) {
+			try {
+				const r = await post(
+					"/image",
+					JSON.stringify({ prompt, aspect, ref }),
+					{ "content-type": "application/json" },
+					90000,
+				);
+				const data = (await r.json()) as { data: string; mime: string };
+				if (data.data) return data;
+			} catch (e) {
+				if (attempt === 2) throw e;
+				await new Promise((res) => setTimeout(res, 1000 * (attempt + 1)));
+			}
+		}
+		throw new Error("image generation failed after retries");
+	} finally {
+		releaseImage();
+	}
 }
 
 export async function music(

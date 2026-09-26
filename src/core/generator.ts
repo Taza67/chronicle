@@ -162,8 +162,8 @@ export async function generateChapter(
 			"\nLegacy is legendary. Turn 1 must be a special 'Prophecy': the faith advisor foretells how posterity will remember this reign, offering a bold opportunity.";
 	if (season === 1) extra += TUTORIAL_HINT;
 	const prompt = `${leaderBrief(l)}
-Write chapter ${season} of this reign: exactly 5 turns, chronological, each a REAL documented dilemma this leader faced (or a decision with real historical consequences). ${covered ? `Do NOT reuse these already-played dilemmas: ${covered}.` : ""}
-Exactly one choice per turn is what history records (historical:true); the two others are plausible alternatives (historical:false, each with a whatif). Effects are integers between -2 and 2 and reflect realistic consequences for gold, stability and legacy. Vary which advisor speaks. Include a rebuttal on at least 3 turns.${reignBrief(g)}${extra}`;
+Write chapter ${season} of this reign: exactly 8 turns, chronological, each a REAL documented dilemma this leader faced (or a decision with real historical consequences). ${covered ? `Do NOT reuse these already-played dilemmas: ${covered}.` : ""}
+Exactly one choice per turn is what history records (historical:true); the two others are plausible alternatives (historical:false, each with a whatif). Effects are integers between -2 and 2 and reflect realistic consequences for gold, stability and legacy. Vary which advisor speaks. Include a rebuttal on at least 4 turns.${reignBrief(g)}${extra}`;
 	return gemini<Chapter>({
 		system: RULES,
 		parts: [{ text: prompt }],
@@ -201,7 +201,13 @@ Narrate, as the omniscient narrator, a plausible counterfactual in 55-80 words: 
 export async function generateVerdict(g: GameState): Promise<VerdictRecord> {
 	const l = g.leader;
 	const matched = g.history.filter((h) => h.historical).length;
-	const prompt = `${leaderBrief(l)}${reignBrief(g)}
+	let collapseInstruction = "";
+	if (g.collapse === "bankruptcy") {
+		collapseInstruction = `\nCRITICAL: The reign COLLAPSED due to BANKRUPTCY (treasury reached 0). The leader has been ruined. Title must reflect this (e.g. "The Fallen Monarch", "The Bankrupt Sovereign", epithet "<Name> the Ruined"). The comment and leaderLine must reflect this tragic defeat, empty coffers, and loss of the throne.`;
+	} else if (g.collapse === "revolt") {
+		collapseInstruction = `\nCRITICAL: The reign COLLAPSED due to OPEN REVOLT (stability reached 0). The leader was overthrown by the populace. Title must reflect this (e.g. "Deposed in Chaos", "The Overthrown", epithet "<Name> the Overthrown"). The comment and leaderLine must reflect this rebellion and violent loss of power.`;
+	}
+	const prompt = `${leaderBrief(l)}${reignBrief(g)}${collapseInstruction}
 The chapter is over. ${matched}/${g.history.length} decisions matched history.
 Produce:
 - title: a 2-4 word verdict title earned by THIS reign (e.g. "The Cautious Reformer", "Chaos Incarnate"), unique and flavourful.
@@ -414,6 +420,346 @@ export async function loadFallbackChapters(
 	return c;
 }
 
+function deriveFallbackYears(era: string, season: number): string[] {
+	const isBC = /\b(bc|bce)\b/i.test(era);
+	const nums = era.match(/\d+/g);
+	if (nums && nums.length > 0) {
+		const baseYear = parseInt(nums[0], 10);
+		const step = 3;
+		const offset = (season - 1) * 24;
+		return Array.from({ length: 8 }, (_, i) => {
+			if (isBC) {
+				const y = baseYear - offset - i * step;
+				return y > 0 ? `${y} BC` : `${Math.abs(y) + 1} AD`;
+			}
+			const y = baseYear + offset + i * step;
+			return `${y}`;
+		});
+	}
+	const startYear = (season - 1) * 8 + 1;
+	return Array.from({ length: 8 }, (_, i) => `Year ${startYear + i}`);
+}
+
+/** Generic historical archetype fallback chapter for custom or summoned leaders offline. */
+export function createArchetypeFallbackChapter(
+	g: GameState,
+	season: number,
+): Chapter {
+	const l = g.leader;
+	const warAdv = l.advisors?.find((a) => a.role === "war") ?? {
+		role: "war" as AdvisorRole,
+		name: "Marshal",
+		title: "Commander of the Host",
+		trait: "bold and martial",
+		voice: "onyx",
+	};
+	const goldAdv = l.advisors?.find((a) => a.role === "gold") ?? {
+		role: "gold" as AdvisorRole,
+		name: "Treasurer",
+		title: "Master of the Mint",
+		trait: "calculating and cautious",
+		voice: "toby",
+	};
+	const faithAdv = l.advisors?.find((a) => a.role === "faith") ?? {
+		role: "faith" as AdvisorRole,
+		name: "High Priest",
+		title: "Voice of the Sacred",
+		trait: "devout and insightful",
+		voice: "declan",
+	};
+
+	const years = deriveFallbackYears(l.era, season);
+
+	const turn1Speech =
+		season === 1
+			? `${l.name}, your ascension over ${l.civ} is proclaimed, but our rivals test our resolve. Our court watches three sacred scales: the treasury gold, the stability of our provinces, and the eternal legacy you carve in stone. Even the Oracle will test if your decrees mirror what history recorded. Conspirators whisper in the shadow of the throne. Shall we strike down the faction leaders swiftly, or offer them royal pardons?`
+			: `${l.name}, factions within ${l.civ} challenge our latest decrees as rival powers watch from our borders. We must project sovereign strength before internal strife fractures the realm. Shall we purge the seditious ministers, or convene the high council to negotiate terms?`;
+
+	const turns: Turn[] = [
+		{
+			year: years[0],
+			title: "Consolidation of Power",
+			advisor: warAdv.role,
+			emotion: "bold",
+			speech: turn1Speech,
+			rebuttal: {
+				advisor: goldAdv.role,
+				line: `Rash violence will frighten our wealthiest merchants, ${warAdv.name}, and empty the markets of ${l.civ}.`,
+				emotion: "alarmed",
+			},
+			choices: [
+				{
+					label: "Purge conspirators and centralize rule",
+					historical: true,
+					effects: { gold: -1, stability: 2, legacy: 1 },
+				},
+				{
+					label: "Offer pardons and seat rivals on council",
+					historical: false,
+					effects: { gold: 0, stability: -2, legacy: -1 },
+					whatif: `Welcoming unrepentant conspirators into the royal council paralyzed the state. Within months, rival factions bribed provincial garrisons and challenged imperial edicts across ${l.civ}. In reality, ${l.name} moved decisively to neutralize opposition and secure executive authority during ${l.era}.`,
+				},
+				{
+					label: "Impose harsh martial law across realm",
+					historical: false,
+					effects: { gold: -2, stability: 1, legacy: -2 },
+					whatif: `Stationing armed cohorts in every marketplace choked commerce and stirred bitter resentment among the common folk of ${l.civ}. Royal revenue plunged under military upkeep. In truth, ${l.name} balanced authority with institutional legitimacy to maintain civil peace.`,
+				},
+			],
+			reveal: `At the dawn of ${l.name}'s rule, securing the throne against factional intrigue was critical. By consolidating loyalists while establishing administrative discipline, the authority of ${l.civ} was firmly preserved throughout ${l.era}.`,
+			fun_fact:
+				"In ancient courts, royal proclamations were authenticated with personal cylinder seals or signet rings pressed into soft wax or wet clay to prevent forgery.",
+		},
+		{
+			year: years[1],
+			title: "Reform of the Treasury",
+			advisor: goldAdv.role,
+			emotion: "calm",
+			speech: `${l.name}, the royal treasury of ${l.civ} faces a severe reckoning. Trade caravans report harassment, road maintenance has halted, and our provincial administrators demand back pay. We must restore fiscal balance. Shall we overhaul tax collection and invest in secure trade roads, or dilute the metal content of our coinage?`,
+			rebuttal: {
+				advisor: faithAdv.role,
+				line: `Wealth without virtue is fleeting, ${goldAdv.name}. A sovereign who burdens the devout will answer to higher powers.`,
+				emotion: "bold",
+			},
+			choices: [
+				{
+					label: "Reform tax collection and secure trade",
+					historical: true,
+					effects: { gold: 2, stability: 1, legacy: 0 },
+				},
+				{
+					label: "Debase the silver and gold currency",
+					historical: false,
+					effects: { gold: 2, stability: -2, legacy: -1 },
+					whatif: `Mixing base metals into the coinage yielded a brief windfall, but traders across foreign ports soon refused ${l.civ}'s money. Runaway inflation wiped out merchant savings and triggered citywide bread strikes. Historically, ${l.name} stabilized revenues through legitimate administration and trade protection.`,
+				},
+				{
+					label: "Levy punitive levies on sacred temples",
+					historical: false,
+					effects: { gold: 2, stability: -2, legacy: -2 },
+					whatif: `Seizing consecrated treasures turned influential priests and scholars into vehement critics of the throne. Devout citizens refused to pay taxes, declaring the regime illegitimate. In truth, ${l.name} protected cultural sanctuaries to keep social order intact.`,
+				},
+			],
+			reveal: `Pragmatic financial management kept ${l.civ} solvent during crucial years. By encouraging commerce and rooting out corrupt provincial extortion, ${l.name} funded public defenses and sustained stability across ${l.era}.`,
+			fun_fact:
+				"Historical royal treasuries regularly inspected circulating coinage by dropping pieces onto stone tables; experienced moneyers could detect debased copper alloys by pitch alone.",
+		},
+		{
+			year: years[2],
+			title: "Sanctuary of the Gods",
+			advisor: faithAdv.role,
+			emotion: "bold",
+			speech: `Sire, the sages and temple keepers of ${l.civ} implore you to remember posterity. Grand monuments and codified sacred traditions unite our diverse peoples under one shared identity and preserve your name for eternity. Shall we commission a monumental sanctuary and patronize the scholars, or dismiss these holy traditions as costly distractions?`,
+			rebuttal: {
+				advisor: warAdv.role,
+				line: `Splendid temples will not parry enemy spears if our border ramparts crumble into ruin, ${faithAdv.name}.`,
+				emotion: "alarmed",
+			},
+			choices: [
+				{
+					label: "Commission monument and codify rites",
+					historical: true,
+					effects: { gold: -1, stability: 1, legacy: 2 },
+				},
+				{
+					label: "Proclaim sovereign divinity above gods",
+					historical: false,
+					effects: { gold: 0, stability: -2, legacy: -1 },
+					whatif: `Demanding personal worship triggered severe theological outrage among orthodox elders in ${l.civ}. Devout commanders mutinied rather than sacrifice at the ruler's altar. In reality, ${l.name} ruled as the protector of sacred customs rather than claiming divine personhood.`,
+				},
+				{
+					label: "Disband monastic orders and seize land",
+					historical: false,
+					effects: { gold: 1, stability: -2, legacy: -2 },
+					whatif: `Dissolving sacred orders created legions of displaced monks who stirred peasant revolts across the provinces of ${l.civ}. The crown lost its primary cultural scribes and historians. Historically, ${l.name} cultivated the alliance of spiritual leaders to reinforce royal legitimacy.`,
+				},
+			],
+			reveal: `Monumental architecture and cultural patronage were indispensable tools of statecraft for ${l.name}. The enduring structures and chronicles commissioned during ${l.era} came to define the heritage of ${l.civ} for subsequent millennia.`,
+			fun_fact:
+				"Monument builders often hid stone foundation deposits containing precious gems, bronze models, and inscribed dedication tablets underneath major temple pillars.",
+		},
+		{
+			year: years[3],
+			title: "The Frontier Ultimatum",
+			advisor: warAdv.role,
+			emotion: "alarmed",
+			speech: `${l.name}, scouts ride in from the frontier marches of ${l.civ}. A hostile foreign confederation amasses along our border and their emissaries demand heavy tribute under threat of total invasion. Our cohorts await your command. Shall we fortify strategic passes and negotiate from strength, or yield frontier outposts to avoid war?`,
+			rebuttal: {
+				advisor: goldAdv.role,
+				line: `War is ruinously expensive, ${warAdv.name}; a clever diplomat with sacks of silver can buy peace for half the cost of an army.`,
+				emotion: "amused",
+			},
+			choices: [
+				{
+					label: "Fortify frontier and deter invasion",
+					historical: true,
+					effects: { gold: -1, stability: 1, legacy: 1 },
+				},
+				{
+					label: "Cede border fortifications for peace",
+					historical: false,
+					effects: { gold: 1, stability: -2, legacy: -2 },
+					whatif: `Ceding the frontier mountains left the core provinces of ${l.civ} exposed to sudden invasion. Emboldened by weakness, enemy armies demanded the capital itself within two campaigns. Historically, ${l.name} understood that firm deterrence was essential to preserve peace.`,
+				},
+				{
+					label: "Launch reckless charge into enemy land",
+					historical: false,
+					effects: { gold: -2, stability: -1, legacy: 0 },
+					whatif: `Marching blindly into hostile wilderness exhausted supplies and led ${l.civ}'s legions into a devastating mountain trap. The resulting slaughter crippled the realm's military capacity. In truth, ${l.name} fought defensively and chose battlefields with calculated advantage.`,
+				},
+			],
+			reveal: `Disciplined frontier deterrence defended ${l.civ} against external catastrophe. By fortifying critical choke points while leaving diplomatic channels open, ${l.name} secured the sovereignty of ${l.civ} throughout ${l.era}.`,
+			fun_fact:
+				"Frontier fortresses in this era were routinely designed with bent-axis gateways so attackers could not charge straight through an opened gate without exposing their unshielded sides.",
+		},
+		{
+			year: years[4],
+			title: "The Great Calamity",
+			advisor: goldAdv.role,
+			emotion: "alarmed",
+			speech: `${l.name}, disaster strikes the heartland: prolonged drought and severe frost threaten the harvest across ${l.civ}. Food prices soar in the capital and anxious crowds gather around the palace gates. Neighboring realms watch eagerly for our collapse. How will your majesty steer the empire through this existential crisis?`,
+			rebuttal: {
+				advisor: warAdv.role,
+				line: `We can enforce order with our shields, ${goldAdv.name}, but a sovereign who starves their own subjects rules over a kingdom of ghosts.`,
+				emotion: "bold",
+			},
+			choices: [
+				{
+					label: "Open royal granaries and direct relief",
+					historical: true,
+					effects: { gold: -1, stability: 2, legacy: 2 },
+				},
+				{
+					label: "Bar palace gates and hoard provisions",
+					historical: false,
+					effects: { gold: 1, stability: -2, legacy: -2 },
+					whatif: `Hoarding state grain behind palace gates sparked an uncontrollable rebellion. Furious citizens stormed the courtyards of ${l.civ} and regular troops refused orders to fire on their own families. In reality, ${l.name} opened emergency granaries and personally coordinated relief to keep the realm united.`,
+				},
+				{
+					label: "Expel starving populace beyond walls",
+					historical: false,
+					effects: { gold: 0, stability: -2, legacy: -1 },
+					whatif: `Driving desperate citizens into the countryside formed massive rogue raiding bands that ravaged farmsteads and severed food caravans destined for ${l.civ}. In truth, ${l.name} maintained civic solidarity and preserved public trust through decisive statesmanship.`,
+				},
+			],
+			reveal: `Meeting systemic crisis with decisive compassion and administrative organization proved the crowning triumph of ${l.name}'s reign. The resilience of ${l.civ} during ${l.era} earned an indelible place in the memory of posterity.`,
+			fun_fact:
+				"State granaries in the ancient world frequently utilized elevated cypress floors and sulfur fumigation to keep grain dry and edible for up to five years in reserve.",
+		},
+		{
+			year: years[5],
+			title: "The Great Alliance",
+			advisor: faithAdv.role,
+			emotion: "calm",
+			speech: `Emissaries from neighboring realms seek royal audience, ${l.name}. They propose an enduring treaty of peace, sealed by sacred oaths and shared trade routes across the borders of ${l.civ}. Will you ratify this covenant of friendship, or press for total vassalage?`,
+			rebuttal: {
+				advisor: warAdv.role,
+				line: `Treaties are only parchment, ${faithAdv.name}. A wise ruler trusts hardened steel over foreign smiles.`,
+				emotion: "alarmed",
+			},
+			choices: [
+				{
+					label: "Ratify treaty and foster open trade",
+					historical: true,
+					effects: { gold: 1, stability: 1, legacy: 1 },
+				},
+				{
+					label: "Demand humiliating tribute and hostages",
+					historical: false,
+					effects: { gold: 2, stability: -1, legacy: -2 },
+					whatif: `Extorting punitive tribute provoked an immediate regional coalition against ${l.civ}. Former neutrals mobilized across all frontiers to break your hegemony. In truth, ${l.name} balanced imperial prestige with diplomatic reciprocity to ensure durable stability.`,
+				},
+				{
+					label: "Expel the ambassadors without audience",
+					historical: false,
+					effects: { gold: 0, stability: -1, legacy: -1 },
+					whatif: `Refusing diplomatic engagement isolated ${l.civ} completely from the major trade networks of the era. Merchants redirected their caravans through rival capitals. Historically, ${l.name} welcomed foreign envoys to elevate the realm's standing.`,
+				},
+			],
+			reveal: `Astute diplomacy and reciprocal pacts allowed ${l.civ} to consolidate its golden age without squandering blood in needless border wars throughout ${l.era}.`,
+			fun_fact:
+				"Ancient peace treaties were frequently carved onto bronze tablets or temple walls in multiple languages so travelers and merchants could read the terms.",
+		},
+		{
+			year: years[6],
+			title: "The Golden Academy",
+			advisor: goldAdv.role,
+			emotion: "proud",
+			speech: `The fame of ${l.civ} has attracted the finest astronomers, poets, and jurists of the known world, Sire. They beseech your Majesty to establish an imperial academy and translate the wisdom of all nations into our royal library. Shall we fund this renaissance of knowledge?`,
+			rebuttal: {
+				advisor: faithAdv.role,
+				line: `Let us ensure these foreign philosophers do not question the ancient traditions of ${l.civ}, ${goldAdv.name}.`,
+				emotion: "alarmed",
+			},
+			choices: [
+				{
+					label: "Endow the academy and codify laws",
+					historical: true,
+					effects: { gold: -1, stability: 1, legacy: 2 },
+				},
+				{
+					label: "Censor foreign texts and enforce dogma",
+					historical: false,
+					effects: { gold: 0, stability: -1, legacy: -2 },
+					whatif: `Banning foreign treatises sparked clandestine intellectual dissent throughout ${l.civ}. The brightest scholars fled to rival courts, taking their knowledge with them. In truth, ${l.name} fostered learning as the hallmark of an enlightened civilization.`,
+				},
+				{
+					label: "Tax schools as unproductive luxuries",
+					historical: false,
+					effects: { gold: 1, stability: -2, legacy: -1 },
+					whatif: `Taxing scholars closed the civic academies within a generation, leaving ${l.civ} with an administrative shortage of competent magistrates. Historically, ${l.name} understood that legal clarity and education were vital pillars of the crown.`,
+				},
+			],
+			reveal: `The intellectual flourishing patronized by ${l.name} became the enduring beacon of ${l.civ}, ensuring its cultural dominance outlasted even its physical monuments.`,
+			fun_fact:
+				"Royal archives in this era stored clay tablets in wicker baskets lined with cedar oil to repel moisture and insects.",
+		},
+		{
+			year: years[7],
+			title: "The Sovereign's Testament",
+			advisor: faithAdv.role,
+			emotion: "bold",
+			speech: `Your twilight years approach, ${l.name}. The realm of ${l.civ} is vast and prosperous, but ambitious ministers already eye the succession. How will your Majesty decree the eternal governance of the realm and seal your name for posterity?`,
+			rebuttal: {
+				advisor: goldAdv.role,
+				line: `A peaceful transfer of authority is worth more than ten victorious campaigns, ${faithAdv.name}.`,
+				emotion: "calm",
+			},
+			choices: [
+				{
+					label: "Inscribe royal codex and confirm chosen heir",
+					historical: true,
+					effects: { gold: 0, stability: 2, legacy: 2 },
+				},
+				{
+					label: "Partition the empire among rival claimants",
+					historical: false,
+					effects: { gold: -1, stability: -2, legacy: -2 },
+					whatif: `Dividing the empire among multiple successors triggered a devastating civil war the moment ${l.name} was laid to rest. Provinces were reduced to ash. In truth, ${l.name} fought to maintain the unbroken unity of ${l.civ}.`,
+				},
+				{
+					label: "Exhaust treasury on a colossal mausoleum",
+					historical: false,
+					effects: { gold: -2, stability: -1, legacy: 1 },
+					whatif: `Bankrupting the state to construct an extravagant tomb left the incoming ruler unable to pay the army garrisons. The empire fell into immediate disarray. In reality, ${l.name} left a solvent treasury and enduring institutional reforms.`,
+				},
+			],
+			reveal: `By establishing orderly succession and codifying royal law, ${l.name} completed one of history's most celebrated reigns, leaving ${l.civ} unified and revered across generations.`,
+			fun_fact:
+				"Many sovereign testament stelae were intentionally inscribed with curses against any future monarch who dared erase the founder's laws or monuments.",
+		},
+	];
+
+	return {
+		season_title:
+			season === 1
+				? `${l.name}: The Dawn of Rule`
+				: `${l.name}: Season ${season}`,
+		intro: `The court of ${l.civ} gathers before ${l.name}. Through intrigue, economic trials, and foreign threats, the destiny of ${l.era} is forged in the council chambers.`,
+		turns,
+	};
+}
+
 /** Live generation when online, otherwise pre-generated chapters (rotating). */
 export async function getChapter(
 	g: GameState,
@@ -438,8 +784,17 @@ export async function getChapter(
 		}
 	}
 	if (fallback.length === 0)
-		throw new Error("No content available for this leader");
-	return { chapter: fallback[(season - 1) % fallback.length], live: false };
+		return {
+			chapter: createArchetypeFallbackChapter(g, season),
+			live: false,
+		};
+	return {
+		chapter:
+			season <= fallback.length
+				? fallback[season - 1]
+				: createArchetypeFallbackChapter(g, season),
+		live: false,
+	};
 }
 
 export const emotionOr = (e: string | undefined): Emotion =>

@@ -1,7 +1,7 @@
 [
 	{
 		"season_title": "Gloriana: The Virgin Queen",
-		"intro": "The crown of England rests upon your young brow, but your treasury is hollow and your realm fractured by religious fury. Surrounded by scheming courtiers and hungry foreign empires, your every word will forge a golden age or invite the axe.",
+		"intro": "Ascending a divided throne surrounded by Catholic superpowers and conspiracy, Elizabeth must navigate religious strife, piracy, foreign marriage proposals, and the threat of the Armada across ten defining moments of English history.",
 		"turns": [
 			{
 				"year": "1559",
@@ -228,13 +228,7 @@
 				],
 				"reveal": "The royal army easily scattered the northern earls, who fled into Scotland. Elizabeth showed ruthless severity: she ordered over seven hundred rebel commoners hanged across northern villages and seized vast northern estates for the Crown. The brutal suppression broke the feudal power of the northern Catholic aristocracy forever.",
 				"fun_fact": "So many rebel bodies were hanged along northern highways that the Queen's officers complained they could not find enough timber to construct gallows."
-			}
-		]
-	},
-	{
-		"season_title": "The Virgin Queen: Shadows and Sovereignty",
-		"intro": "Papal excommunication and foreign treachery now encircle your realm like winter frost. From secret ciphers to oceanic plunder, every choice tests the spine of your golden age.",
-		"turns": [
+			},
 			{
 				"year": "1572",
 				"title": "The Traitor Duke",

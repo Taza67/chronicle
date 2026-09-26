@@ -1,7 +1,7 @@
 [
 	{
-		"season_title": "Cleopatra: The Last Pharaoh",
-		"intro": "Egypt sits upon a knife edge between Roman greed and civil war as the old king dies. You inherit the double crown of the Nile at eighteen, surrounded by scheming courtiers and hungry legions.",
+		"season_title": "The Last Pharaoh of the Nile",
+		"intro": "The Ptolemaic crown sits upon your brow, but Alexandria is surrounded by Roman legions. Across ten fateful years of civil war, romance, and imperial diplomacy, will you safeguard Egypt's independence against the might of Rome?",
 		"turns": [
 			{
 				"year": "51 BC",
@@ -228,13 +228,7 @@
 				],
 				"reveal": "Wrapped inside a coarse bed sack carried by her loyal servant Apollodorus, twenty-one-year-old Cleopatra was secretly slipped past Egyptian guards and carried directly into Caesar's apartments. Captivated by her wit, courage, and political brilliance, Caesar immediately took her side, restoring her to the throne and igniting the dramatic Alexandrian War.",
 				"fun_fact": "Popular myth claims Cleopatra was wrapped in a carpet, but Greek historian Plutarch specifically used the word for a leather bed-linen sack."
-			}
-		]
-	},
-	{
-		"season_title": "Cleopatra: The Roman Entanglement",
-		"intro": "Caesar's swords have shattered your brother's rebellion, leaving you the undisputed master of Alexandria under Roman protection. Yet holding an empire requires far more than winning a civil war, as the fate of Egypt now entangles with Rome's bloody destiny.",
-		"turns": [
+			},
 			{
 				"year": "47 BC",
 				"title": "The Golden Barge",

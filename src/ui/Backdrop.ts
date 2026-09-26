@@ -8,6 +8,8 @@ export class Backdrop extends Phaser.GameObjects.Container {
 	private far: Phaser.GameObjects.Image;
 	private near: Phaser.GameObjects.Image;
 	private mood: Phaser.GameObjects.Rectangle;
+	private vignette: Phaser.GameObjects.Image;
+	private accentColor: number;
 	private px = 0;
 	private py = 0;
 	private tx = 0;
@@ -31,9 +33,9 @@ export class Backdrop extends Phaser.GameObjects.Container {
 			img.setScale(s);
 		};
 		this.far = scene.add.image(W / 2, H / 2, farKey);
-		cover(this.far, 1.08);
+		cover(this.far, 1.14);
 		this.near = scene.add.image(W / 2, H / 2, nearKey);
-		cover(this.near, 1.16);
+		cover(this.near, 1.2);
 		this.near.setAlpha(0.0);
 		// near layer: only the lower half (foreground) so the far layer gives depth at the top
 		const maskG = scene.make.graphics({ x: 0, y: 0 });
@@ -42,40 +44,49 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		this.near.setMask(maskG.createGeometryMask());
 		this.near.setAlpha(0.95);
 
+		this.accentColor = Phaser.Display.Color.HexStringToColor(
+			leader.palette.accent ?? "#e0b64a",
+		).color;
+		const bgHex = leader.palette.bg ?? leader.palette.primary ?? "#062a33";
 		this.mood = scene.add
 			.rectangle(
 				W / 2,
 				H / 2,
-				W,
-				H,
-				Phaser.Display.Color.HexStringToColor(leader.palette.bg).color,
+				W * 1.2,
+				H * 1.2,
+				Phaser.Display.Color.HexStringToColor(bgHex).color,
 				0.25,
 			)
 			.setBlendMode(Phaser.BlendModes.MULTIPLY);
-		const vignette = scene.add
+		this.vignette = scene.add
 			.image(W / 2, H / 2, "vignette")
-			.setDisplaySize(W, H);
+			.setDisplaySize(W * 1.15, H * 1.15)
+			.setAlpha(0.75);
 		const grain = scene.add
-			.tileSprite(W / 2, H / 2, W, H, "grain")
+			.tileSprite(W / 2, H / 2, W * 1.2, H * 1.2, "grain")
 			.setAlpha(0.06)
 			.setBlendMode(Phaser.BlendModes.OVERLAY);
-		const accent = Phaser.Display.Color.HexStringToColor(
-			leader.palette.accent,
-		).color;
 		this.emitter = scene.add.particles(0, 0, "spark", {
-			x: { min: 0, max: W },
-			y: { min: H * 0.1, max: H * 1.05 },
+			x: { min: -40, max: W + 40 },
+			y: { min: H * 0.05, max: H * 1.05 },
 			lifespan: { min: 5000, max: 9000 },
 			speedY: { min: -14, max: -34 },
 			speedX: { min: -8, max: 8 },
 			scale: { start: 0.35, end: 0 },
 			alpha: { start: 0, end: 0.9, ease: "Sine.out" },
-			tint: [accent, 0xffffff, accent],
+			tint: [this.accentColor, 0xffffff, this.accentColor],
 			quantity: 1,
 			frequency: settings.reducedMotion ? 400 : 140,
 			blendMode: Phaser.BlendModes.ADD,
 		});
-		this.add([this.far, this.near, this.mood, this.emitter, vignette, grain]);
+		this.add([
+			this.far,
+			this.near,
+			this.mood,
+			this.emitter,
+			this.vignette,
+			grain,
+		]);
 		scene.add.existing(this);
 		this.setDepth(-10);
 
@@ -91,11 +102,67 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		this.once(Phaser.GameObjects.Events.DESTROY, () => {
 			window.removeEventListener("deviceorientation", this.onTilt);
 			scene.events.off(Phaser.Scenes.Events.UPDATE, this.tick, this);
+			scene.tweens.killTweensOf(this.vignette);
 		});
 		scene.events.on(Phaser.Scenes.Events.UPDATE, (_t: number, d: number) => {
 			grain.tilePositionX += d * 0.7;
 			grain.tilePositionY -= d * 0.9;
 		});
+	}
+
+	/** Adjusts throne-room particles and vignette based on realm stability and gold. */
+	setAtmosphere(stability: number, gold: number) {
+		const isCrisis = stability <= 2 || gold <= 2;
+		const isProsperity = !isCrisis && stability >= 5 && gold >= 5;
+
+		this.scene.tweens.killTweensOf(this.vignette);
+		if (isCrisis) {
+			this.emitter.setFrequency(settings.reducedMotion ? 260 : 70);
+			this.emitter.timeScale = settings.reducedMotion ? 1.0 : 1.45;
+			this.emitter.speedY = { min: -22, max: -48 };
+			this.emitter.setParticleTint([0xd9381e, 0xff7b25, 0x8a1515, 0xff4500]);
+			this.scene.tweens.add({
+				targets: this.vignette,
+				alpha: 1.0,
+				duration: 800,
+				ease: "Sine.out",
+			});
+		} else if (isProsperity) {
+			this.emitter.setFrequency(settings.reducedMotion ? 450 : 180);
+			this.emitter.timeScale = settings.reducedMotion ? 0.75 : 0.85;
+			this.emitter.speedY = { min: -10, max: -24 };
+			this.emitter.setParticleTint([0xffd700, 0xffe57f, 0xffffff, 0xf6ad55]);
+			this.scene.tweens.add({
+				targets: this.vignette,
+				alpha: 0.55,
+				duration: 800,
+				ease: "Sine.out",
+			});
+		} else {
+			this.emitter.setFrequency(settings.reducedMotion ? 400 : 140);
+			this.emitter.timeScale = 1.0;
+			this.emitter.speedY = { min: -14, max: -34 };
+			this.emitter.setParticleTint([
+				this.accentColor,
+				0xffffff,
+				this.accentColor,
+			]);
+			this.scene.tweens.add({
+				targets: this.vignette,
+				alpha: 0.75,
+				duration: 800,
+				ease: "Sine.out",
+			});
+		}
+	}
+
+	/** Direct crisis tension toggle. */
+	setTension(crisis: boolean) {
+		if (crisis) {
+			this.setAtmosphere(1, 1);
+		} else {
+			this.setAtmosphere(4, 4);
+		}
 	}
 
 	/** Emotion-driven lighting: warm/cool/danger. */

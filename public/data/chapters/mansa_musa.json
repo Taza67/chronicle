@@ -1,7 +1,7 @@
 [
 	{
-		"season_title": "The Golden Lion of Mali",
-		"intro": "The previous Mansa vanished into the Atlantic Ocean with two thousand ships, leaving the throne of Mali to you. From the red earth of Niani to the salt flats of the Sahara, the empire awaits your command.",
+		"season_title": "The Golden Sovereign of Mali",
+		"intro": "Across the Sahara to the minarets of Cairo and Mecca, Mali's boundless wealth captures the imagination of the medieval world. Guide the empire through ten legendary decisions of trade, diplomacy, scholarship, and faith.",
 		"turns": [
 			{
 				"year": "1312",
@@ -227,13 +227,7 @@
 				],
 				"reveal": "Musa hired the Andalusian poet-architect Abu Ishaq al-Sahili, awarding him two hundred kilograms of gold to construct the legendary Djinguereber Mosque in Timbuktu. Musa also built an imperial palace in Gao. These grand projects transformed Timbuktu into the intellectual beacon of Africa, attracting scholars, books, and merchants from across the Mediterranean basin.",
 				"fun_fact": "The Djinguereber Mosque in Timbuktu was built with an earthy mortar of mud, papyrus, and straw, and still stands after seven centuries."
-			}
-		]
-	},
-	{
-		"season_title": "The Golden Hegemony",
-		"intro": "Having dazzled the Mediterranean with your boundless wealth and crowned your cities with majestic mudbrick mosques, you return to rule an empire at its zenith. Yet vast borders bring greedy neighbors, unpaid foreign debts, and the delicate challenge of transforming raw conquest into an enduring civilization.",
-		"turns": [
+			},
 			{
 				"year": "1328",
 				"title": "Princes of the River",

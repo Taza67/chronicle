@@ -8,6 +8,21 @@ export interface Effects {
 	legacy: number;
 }
 
+export interface RoyalSeals {
+	prescience: number;
+	treasury: number;
+	decree: number;
+}
+
+export interface Relic {
+	id: string;
+	name: string;
+	leaderId?: string;
+	icon: string;
+	desc: string;
+	lore: string;
+}
+
 export interface Choice {
 	label: string;
 	historical: boolean;
@@ -114,4 +129,17 @@ export interface GameState {
 	liar: AdvisorRole | null;
 	liedLastTurn: boolean;
 	seasonsPlayed: number;
+	collapse?: "bankruptcy" | "revolt" | null;
+	/** Available royal seals for tactical decisions. */
+	seals: RoyalSeals;
+	/** Whether the player activated the Prescience seal for the current dilemma. */
+	prescienceActive?: boolean;
+	/** Role of an advisor exposed by the player this turn. */
+	exposedLiar?: AdvisorRole | null;
+	/** Relic IDs currently active in this run. */
+	relics?: string[];
+	/** Has the revolt collapse already been averted by Ashoka's relic? */
+	avertedRevolt?: boolean;
+	/** Whether the popular petitions audience has been completed this chapter. */
+	petitionsDone?: boolean;
 }

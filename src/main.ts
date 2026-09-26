@@ -10,10 +10,23 @@ import { SettingsScene } from "./scenes/SettingsScene.ts";
 import { SummonScene } from "./scenes/SummonScene.ts";
 import { TitleScene } from "./scenes/TitleScene.ts";
 import { VerdictScene } from "./scenes/VerdictScene.ts";
-import { COLORS, H, W } from "./ui/theme.ts";
+import {
+	COLORS,
+	computeViewportMetrics,
+	H,
+	updateThemeMetrics,
+	W,
+} from "./ui/theme.ts";
 
 audio.musicVolume = settings.musicVolume;
 audio.voiceVolume = settings.voiceVolume;
+
+const initialMetrics = computeViewportMetrics();
+updateThemeMetrics(
+	initialMetrics.height,
+	initialMetrics.safeTop,
+	initialMetrics.safeBottom,
+);
 
 const game = new Phaser.Game({
 	type: Phaser.AUTO,
@@ -45,7 +58,17 @@ const game = new Phaser.Game({
 	],
 });
 
-if (import.meta.env.DEV) (globalThis as { __game?: Phaser.Game }).__game = game;
+(globalThis as unknown as { __game?: Phaser.Game }).__game = game;
+
+const handleResize = () => {
+	const metrics = computeViewportMetrics();
+	if (metrics.height !== H) {
+		updateThemeMetrics(metrics.height, metrics.safeTop, metrics.safeBottom);
+		game.scale.setGameSize(W, metrics.height);
+	}
+};
+window.addEventListener("resize", handleResize);
+window.addEventListener("orientationchange", handleResize);
 
 // iOS: unlock audio on the first gesture anywhere.
 const unlock = () => {

@@ -1,3 +1,4 @@
+import { getLeaderDefaultRelic } from "../content/relics.ts";
 import type {
 	AdvisorRole,
 	Chapter,
@@ -8,6 +9,8 @@ import type {
 } from "../types.ts";
 import { deleteArt, getArt, putArt } from "./artStore.ts";
 
+export type CampaignLength = 5 | 8 | 10;
+
 export interface Settings {
 	subtitles: boolean;
 	musicVolume: number;
@@ -15,6 +18,7 @@ export interface Settings {
 	timer: boolean;
 	reducedMotion: boolean;
 	playedOnce: boolean;
+	campaignLength: CampaignLength;
 }
 
 export interface CodexEntry {
@@ -36,6 +40,7 @@ export interface ReignRecord {
 	total: number;
 	stats: Effects;
 	verdict: { title: string; epithet: string; comment: string };
+	collapse?: "bankruptcy" | "revolt" | null;
 	at: number;
 }
 
@@ -53,6 +58,7 @@ const K = {
 	codex: "chronicle.codex",
 	reigns: "chronicle.reigns",
 	leaders: "chronicle.leaders",
+	relics: "chronicle.relics",
 };
 
 function read<T>(key: string, fallback: T): T {
@@ -86,15 +92,44 @@ export const settings: Settings = read<Settings>(K.settings, {
 	timer: false,
 	reducedMotion: false,
 	playedOnce: false,
+	campaignLength: 10,
 });
 export const saveSettings = () => write(K.settings, settings);
 
+export const unlockedRelics = readArr<string>(K.relics);
+export function unlockRelic(id: string): boolean {
+	if (unlockedRelics.includes(id)) return false;
+	unlockedRelics.push(id);
+	write(K.relics, unlockedRelics);
+	return true;
+}
+
+export function hasRelic(g: GameState, id: string): boolean {
+	return (g.relics ?? []).includes(id);
+}
+
+export function restoreRandomSeal(
+	g: GameState,
+): keyof GameState["seals"] | null {
+	const empty = (Object.keys(g.seals) as (keyof GameState["seals"])[]).filter(
+		(k) => g.seals[k] <= 0,
+	);
+	if (empty.length === 0) return null;
+	const picked = empty[Math.floor(Math.random() * empty.length)];
+	g.seals[picked] = 1;
+	saveGame(g);
+	return picked;
+}
+
 export function newGame(leader: Leader): GameState {
+	const defaultRelic = getLeaderDefaultRelic(leader.id);
+	if (defaultRelic) unlockRelic(defaultRelic);
+	const startingGold = defaultRelic === "relic_mansa_musa" ? 7 : 5;
 	return {
 		leader,
 		season: 1,
 		turnIndex: 0,
-		stats: { gold: 5, stability: 5, legacy: 5 },
+		stats: { gold: startingGold, stability: 5, legacy: 5 },
 		trust: { war: 0, gold: 0, faith: 0 },
 		combo: 0,
 		history: [],
@@ -102,6 +137,9 @@ export function newGame(leader: Leader): GameState {
 		liar: null,
 		liedLastTurn: false,
 		seasonsPlayed: 0,
+		collapse: null,
+		seals: { prescience: 1, treasury: 1, decree: 1 },
+		relics: defaultRelic ? [defaultRelic] : [],
 	};
 }
 
@@ -124,6 +162,13 @@ export const loadGame = (): GameState | null => {
 			const full = customLeaders.find((l) => l.id === g.leader.id);
 			if (!full?.art) return null;
 			g.leader = full;
+		}
+		if (!g.seals) {
+			g.seals = { prescience: 1, treasury: 1, decree: 1 };
+		}
+		if (!g.relics) {
+			const def = getLeaderDefaultRelic(g.leader.id);
+			g.relics = def ? [def] : [];
 		}
 		return g;
 	} catch {
@@ -189,6 +234,12 @@ export function cascadeFor(stats: Effects): Turn["special"] {
 	if (stats.gold <= 1) return "bankruptcy";
 	if (stats.stability <= 1) return "revolt";
 	if (stats.legacy >= 9) return "prophecy";
+	return null;
+}
+
+export function checkCollapse(stats: Effects): "bankruptcy" | "revolt" | null {
+	if (stats.gold <= 0) return "bankruptcy";
+	if (stats.stability <= 0) return "revolt";
 	return null;
 }
 

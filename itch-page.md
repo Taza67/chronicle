@@ -37,12 +37,21 @@ Powered by **Gemini** (dilemmas, alternate histories, verdicts, on-demand leader
 
 Works in any modern mobile or desktop browser. Headphones recommended.
 
-## Screenshots to take (phone, portrait)
+## Visual Assets (Cover & Gameplay GIFs)
 
-1. Title screen
-2. Leader carousel (Choose your reign)
-3. Court with advisor speaking + subtitles
-4. Choice cards
-5. Oracle bet
-6. Historical reveal parchment
-7. Verdict scorecard
+Pre-generated in `showcase/` (run `npm run showcase:gifs` to re-record anytime):
+- **Cover Image**: `showcase/itch-cover.gif` (630 × 500 px, animated Berthier speaking with lip-sync)
+- **Advisor Gameplay GIF**: `showcase/court-advisor.gif` (portrait with audio lip-sync and dialogue box)
+- **Leader Carousel GIF**: `showcase/leader-carousel.gif` (painted leader carousel: Cleopatra, Napoleon, Mansa Musa)
+- **Oracle Wager GIF**: `showcase/oracle-bet.gif` (card choice & 3D gold coin flip)
+
+## Screenshots (Pre-generated in `showcase/screenshots/`)
+
+All 7 official mobile screenshots are captured and ready to upload to itch.io:
+1. `01-title-screen.png` — Écran titre avec les 5 souverains, braises dorées et menu
+2. `02-leader-carousel.png` — Galerie impériale et carrousel des souverains (Napoléon Bonaparte)
+3. `03-court-advisor-speaking.png` — Chambre des Tuileries, Berthier en uniforme parlant avec sous-titres
+4. `04-choice-cards.png` — Décrets royaux I, II, III avec les trois Sceaux Royaux (Prescience, Trésorerie, Décret)
+5. `05-oracle-wager.png` — Sanctuaire de l'Oracle avec astrolabe, pièce d'or 3D et stèles de pari
+6. `06-historical-reveal.png` — Parchemin historique révélé avec sceau de cire impérial
+7. `07-verdict-scorecard.png` — Proclamation impériale, bilan du règne (4/5 Accord, Piliers, Paris de l'Oracle)

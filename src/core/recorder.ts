@@ -5,7 +5,7 @@ export const micSupported = () =>
 	!!navigator.mediaDevices?.getUserMedia &&
 	typeof AudioContext !== "undefined";
 
-function encodeWav(chunks: Float32Array[], sampleRate: number): Blob {
+export function encodeWav(chunks: Float32Array[], sampleRate: number): Blob {
 	const len = chunks.reduce((n, c) => n + c.length, 0);
 	const buf = new ArrayBuffer(44 + len * 2);
 	const v = new DataView(buf);

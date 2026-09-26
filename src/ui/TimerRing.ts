@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
+import { settings } from "../core/state.ts";
 import { COLORS, FONT, hex } from "./theme.ts";
 
 /** Court hourglass: a ring that drains over N seconds, ticking faster as it empties. */
@@ -12,6 +13,8 @@ export class TimerRing extends Phaser.GameObjects.Container {
 	private lastTick = -1;
 	private onHalf: () => void;
 	private onZero: () => void;
+	private isCritical = false;
+	private pulseTween: Phaser.Tweens.Tween | null = null;
 
 	constructor(
 		scene: Phaser.Scene,
@@ -45,13 +48,25 @@ export class TimerRing extends Phaser.GameObjects.Container {
 			ease: "Back.out",
 		});
 		scene.events.on(Phaser.Scenes.Events.UPDATE, this.tick, this);
-		this.once(Phaser.GameObjects.Events.DESTROY, () =>
-			scene.events.off(Phaser.Scenes.Events.UPDATE, this.tick, this),
-		);
+		this.once(Phaser.GameObjects.Events.DESTROY, () => {
+			scene.events.off(Phaser.Scenes.Events.UPDATE, this.tick, this);
+			if (this.pulseTween) {
+				this.pulseTween.stop();
+				this.pulseTween = null;
+			}
+		});
 	}
 
 	stop() {
 		this.running = false;
+		if (this.isCritical) {
+			audio.setMusicSituation("normal");
+		}
+		if (this.pulseTween) {
+			this.pulseTween.stop();
+			this.pulseTween = null;
+		}
+		this.scene.tweens.killTweensOf(this);
 		this.scene.tweens.add({
 			targets: this,
 			scale: 0,
@@ -72,7 +87,34 @@ export class TimerRing extends Phaser.GameObjects.Container {
 			if (whole === Math.round(this.total / 2)) this.onHalf();
 			this.label.setText(`${whole}`);
 		}
-		const col = f > 0.5 ? COLORS.gold : f > 0.25 ? 0xe08a3a : COLORS.blood;
+
+		const isCritical = this.remaining <= 3;
+		if (isCritical && !this.isCritical) {
+			this.isCritical = true;
+			audio.setMusicSituation("tension");
+			this.scene.tweens.killTweensOf(this);
+			this.setScale(1);
+			if (!settings.reducedMotion) {
+				this.pulseTween = this.scene.tweens.add({
+					targets: this,
+					scale: 1.08,
+					duration: 180,
+					yoyo: true,
+					repeat: -1,
+					ease: "Sine.easeInOut",
+				});
+			}
+		}
+
+		const col = isCritical
+			? COLORS.blood
+			: f > 0.5
+				? COLORS.gold
+				: f > 0.25
+					? 0xe08a3a
+					: COLORS.blood;
+		this.label.setColor(hex(isCritical ? COLORS.blood : COLORS.text));
+
 		this.g.clear();
 		this.g.fillStyle(COLORS.night, 0.7);
 		this.g.fillCircle(0, 0, 40);
@@ -89,7 +131,7 @@ export class TimerRing extends Phaser.GameObjects.Container {
 			false,
 		);
 		this.g.strokePath();
-		if (f < 0.25) this.setScale(1 + Math.sin(this.remaining * 20) * 0.04);
+
 		if (this.remaining <= 0) {
 			this.running = false;
 			this.onZero();

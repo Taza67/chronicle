@@ -1,7 +1,7 @@
 [
 	{
-		"season_title": "The First Consul",
-		"intro": "The smoke of the Brumaire coup clears to reveal France on the brink of ruin and surrounded by hostile kings. From the Tuileries Palace, a thirty-year-old Corsican general prepares to remake Europe in his image.",
+		"season_title": "The Emperor's Destiny",
+		"intro": "The smoke of the Brumaire coup clears to reveal France surrounded by hostile monarchs. From the alpine snows of Marengo to the crowns of Europe and the frozen plains of Moscow, a thirty-year-old Corsican general commands the fate of a continent across ten historic trials.",
 		"turns": [
 			{
 				"year": "1800",
@@ -232,13 +232,7 @@
 				],
 				"reveal": "French dragoons crossed the Rhine, seized the twenty-three-year-old Duke of Enghien, and hurried him to Vincennes where a drumhead court-martial sentenced him to death. The execution stunned royal courts across Europe, but it secured domestic peace and cleared the path for Napoleon to crown himself Emperor.",
 				"fun_fact": "The execution prompted the diplomat Fouche to utter the famous remark: it is worse than a crime, it is a blunder."
-			}
-		]
-	},
-	{
-		"season_title": "The Master of Europe",
-		"intro": "Having crushed conspiracies and consolidated power, Napoleon sets his sights beyond the borders of France. The revolutionary general prepares to forge an empire unmatched since the Caesars.",
-		"turns": [
+			},
 			{
 				"year": "1804",
 				"title": "The Laurel and the Cross",

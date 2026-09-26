@@ -60,7 +60,7 @@ async function callGemini<T>(opts: {
 gen.useGeminiClient(callGemini);
 
 function validate(c: Chapter) {
-	if (c.turns.length !== 5) throw new Error(`turns=${c.turns.length}`);
+	if (c.turns.length < 5) throw new Error(`turns=${c.turns.length}`);
 	for (const t of c.turns) {
 		if (t.choices.length !== 3) throw new Error("choices!=3");
 		if (t.choices.filter((x) => x.historical).length !== 1)

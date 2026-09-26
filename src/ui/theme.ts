@@ -1,6 +1,55 @@
-/** Design tokens. Logical resolution is portrait 720×1280, scaled to fit the device. */
+/** Design tokens. Logical base resolution is portrait 720×1280. Dynamic H expands on modern mobile screens. */
 export const W = 720;
-export const H = 1280;
+export const BASE_H = 1280;
+
+/** Computes dynamic dimensions and safe area insets based on device viewport. */
+export function computeViewportMetrics() {
+	if (typeof window === "undefined") {
+		return { width: W, height: BASE_H, safeTop: 48, safeBottom: 40 };
+	}
+	const winW = window.innerWidth;
+	const winH = window.innerHeight;
+	const aspect = winH / winW;
+
+	// In portrait orientation where aspect is taller than 16:9 (1.777)
+	// adapt height up to 22:9 (~2.44) to completely fill modern mobile screens (19.5:9, 20:9).
+	let targetH = BASE_H;
+	if (aspect >= 16 / 9) {
+		targetH = Math.round(W * Math.min(22 / 9, aspect));
+	}
+
+	// Safe areas adapt to taller screens (notches, dynamic islands, home gesture bars)
+	const isTall = targetH > 1360;
+	const safeTop = isTall ? 64 : 48;
+	const safeBottom = isTall ? 56 : 40;
+
+	return {
+		width: W,
+		height: targetH,
+		safeTop,
+		safeBottom,
+	};
+}
+
+const initialMetrics = computeViewportMetrics();
+export let H = initialMetrics.height;
+export let SAFE_TOP = initialMetrics.safeTop;
+export let SAFE_BOTTOM = initialMetrics.safeBottom;
+export let TOP_BAR_Y = SAFE_TOP + 12;
+
+export function updateThemeMetrics(
+	newH: number,
+	safeTop?: number,
+	safeBottom?: number,
+) {
+	H = newH;
+	if (safeTop !== undefined) SAFE_TOP = safeTop;
+	if (safeBottom !== undefined) SAFE_BOTTOM = safeBottom;
+	TOP_BAR_Y = SAFE_TOP + 12;
+}
+
+export const SAFE_INSET_LEFT = 24;
+export const SAFE_INSET_RIGHT = 24;
 
 export const COLORS = {
 	night: 0x0b0a10,

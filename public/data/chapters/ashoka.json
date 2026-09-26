@@ -1,7 +1,7 @@
 [
 	{
-		"season_title": "Ashoka: The Wheel of Law",
-		"intro": "The throne of Pataliputra sits bathed in blood after four years of fratricidal war. You are the newly crowned Chakravartin of the Mauryan Empire, master of all Jambudvipa, but your true trial has only just begun.",
+		"season_title": "The Wheel of Dhamma",
+		"intro": "From the bloody conquest of Kalinga to the profound remorse that transformed a tyrant into a philosopher king, guide the Mauryan Empire across ten epoch-defining crossroads of conquest, law, and moral awakening.",
 		"turns": [
 			{
 				"year": "268 BC",
@@ -226,13 +226,7 @@
 				],
 				"reveal": "Ashoka erected dozens of monumental polished pillars and inscribed edicts on cliff faces from Kandahar to Karnataka, written in local scripts like Prakrit, Greek, and Aramaic. He established the Dhamma Mahamattas, officers responsible for public welfare, justice, and the humane treatment of prisoners, foreigners, and domestic animals.",
 				"fun_fact": "The four-lion capital atop Ashoka's pillar at Sarnath was adopted in 1950 as the official national emblem of the Republic of India."
-			}
-		]
-	},
-	{
-		"season_title": "Ashoka: The Wheel of Piety",
-		"intro": "The blood of Kalinga has soaked into the soil, leaving an emperor who trades conquest for contemplation. Yet ruling the world's grandest empire with sermons instead of spears tests even the holiest resolve.",
-		"turns": [
+			},
 			{
 				"year": "256 BC",
 				"title": "Missions to the West",

@@ -1,12 +1,13 @@
 import Phaser from "phaser";
 import { VOICES } from "../content/voices.ts";
-import { online, stt } from "../core/api.ts";
+import { online } from "../core/api.ts";
 import { audio } from "../core/audio.ts";
-import { micSupported, record } from "../core/recorder.ts";
+import { micSupported } from "../core/recorder.ts";
 import { say } from "../core/speech.ts";
 import { newGame, saveGame } from "../core/state.ts";
 import { summon } from "../core/summon.ts";
 import { body, COLORS, FONT, H, hex, title, ui, W } from "../ui/theme.ts";
+import { VoiceResonator } from "../ui/VoiceResonator.ts";
 import {
 	Button,
 	fadeIn,
@@ -138,18 +139,23 @@ export class SummonScene extends Phaser.Scene {
 	}
 
 	private async listen(el: HTMLInputElement) {
-		try {
-			const rec = await record(4);
-			toast(this, "Listening…");
-			await new Promise((r) => setTimeout(r, 3500));
-			const blob = await rec.stop();
-			const text = (await stt(blob)).replace(/[.!?]$/, "").trim();
-			if (!text) throw new Error("empty");
-			el.value = text;
-			void this.go(text);
-		} catch {
-			toast(this, "Could not hear a name. Type it instead.", COLORS.blood);
-		}
+		const resonator = new VoiceResonator(this, {
+			title: "VOX SUMMONS",
+			prompt: "Speak the name of a ruler or legend",
+			maxSeconds: 5,
+			onTranscript: async (transcript) => {
+				const text = transcript.replace(/[.!?]$/, "").trim();
+				if (!text) return false;
+				el.value = text;
+				void this.go(text);
+				return {
+					ok: true,
+					kind: "custom",
+					label: text,
+				};
+			},
+		});
+		await resonator.run();
 	}
 
 	private async go(raw: string) {

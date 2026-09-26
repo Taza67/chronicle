@@ -184,25 +184,56 @@ function patch(
 	return c.toDataURL("image/webp", 0.9);
 }
 
+function validateBox(
+	box: unknown,
+	fallback: [number, number, number, number],
+): [number, number, number, number] {
+	if (
+		Array.isArray(box) &&
+		box.length === 4 &&
+		box.every((n) => typeof n === "number" && !Number.isNaN(n))
+	) {
+		const [y0, x0, y1, x1] = box as [number, number, number, number];
+		if (y1 > y0 && x1 > x0 && y0 >= 0 && x0 >= 0 && y1 <= 1000 && x1 <= 1000) {
+			return [y0, x0, y1, x1];
+		}
+	}
+	return fallback;
+}
+
 async function bboxes(b64: string): Promise<BBox> {
-	return gemini<BBox>({
-		system: "You are a precise vision annotator.",
-		parts: [
-			{ inlineData: { mimeType: "image/png", data: b64 } },
-			{
-				text: 'Detect on this painted portrait: the mouth (lips only), both eyes together as one box (outer corner of left eye to outer corner of right eye, including eyelids and brows), and the whole head (including hair and headdress). Return JSON {"mouth":[ymin,xmin,ymax,xmax],"eyes":[...],"head":[...]} normalized to 0-1000.',
+	try {
+		const res = await gemini<BBox>({
+			system: "You are a precise vision annotator.",
+			parts: [
+				{ inlineData: { mimeType: "image/png", data: b64 } },
+				{
+					text: 'Detect on this painted portrait: the mouth (lips only), both eyes together as one box (outer corner of left eye to outer corner of right eye, including eyelids and brows), and the whole head (including hair and headdress). Return JSON {"mouth":[ymin,xmin,ymax,xmax],"eyes":[...],"head":[...]} normalized to 0-1000.',
+				},
+			],
+			schema: {
+				type: "OBJECT",
+				properties: {
+					mouth: { type: "ARRAY", items: { type: "INTEGER" } },
+					eyes: { type: "ARRAY", items: { type: "INTEGER" } },
+					head: { type: "ARRAY", items: { type: "INTEGER" } },
+				},
+				required: ["mouth", "eyes", "head"],
 			},
-		],
-		schema: {
-			type: "OBJECT",
-			properties: {
-				mouth: { type: "ARRAY", items: { type: "INTEGER" } },
-				eyes: { type: "ARRAY", items: { type: "INTEGER" } },
-				head: { type: "ARRAY", items: { type: "INTEGER" } },
-			},
-			required: ["mouth", "eyes", "head"],
-		},
-	});
+		});
+		return {
+			mouth: validateBox(res?.mouth, [580, 420, 660, 580]),
+			eyes: validateBox(res?.eyes, [340, 320, 440, 680]),
+			head: validateBox(res?.head, [100, 200, 850, 800]),
+		};
+	} catch (e) {
+		console.warn("BBoxes vision detection failed, using fallback:", e);
+		return {
+			mouth: [580, 420, 660, 580],
+			eyes: [340, 320, 440, 680],
+			head: [100, 200, 850, 800],
+		};
+	}
 }
 
 async function character(
@@ -215,32 +246,47 @@ async function character(
 		768,
 	);
 	onStep();
-	const [open, half, blink, bb] = await Promise.all([
-		image(
-			`${EDIT}the character is now mid-sentence, mouth clearly open showing teeth slightly as if pronouncing 'ah'. Same eyes, same expression otherwise.`,
-			"3:4",
-			base.b64,
-		).then((r) => normalize(toDataUrl(r), 576, 768)),
-		image(
-			`${EDIT}the lips are slightly parted, as if pronouncing 'mm' or 'oo', small rounded opening. Same eyes.`,
-			"3:4",
-			base.b64,
-		).then((r) => normalize(toDataUrl(r), 576, 768)),
-		image(
-			`${EDIT}both eyes are fully closed, eyelids down, relaxed. Same mouth.`,
-			"3:4",
-			base.b64,
-		).then((r) => normalize(toDataUrl(r), 576, 768)),
+
+	const openPromise = image(
+		`${EDIT}the character is now mid-sentence, mouth clearly open showing teeth slightly as if pronouncing 'ah'. Same eyes, same expression otherwise.`,
+		"3:4",
+		base.b64,
+	)
+		.then((r) => normalize(toDataUrl(r), 576, 768))
+		.catch((err) => {
+			console.warn("Mouth open variant generation failed, using base:", err);
+			return base;
+		});
+
+	const blinkPromise = image(
+		`${EDIT}both eyes are fully closed, eyelids down, relaxed. Same mouth.`,
+		"3:4",
+		base.b64,
+	)
+		.then((r) => normalize(toDataUrl(r), 576, 768))
+		.catch((err) => {
+			console.warn("Blink variant generation failed, using base:", err);
+			return base;
+		});
+
+	const [open, blink, bb] = await Promise.all([
+		openPromise,
+		blinkPromise,
 		bboxes(base.b64),
 	]);
 	onStep();
+
 	const mouth = pad(bb.mouth, 0.55);
 	const eyes = pad(bb.eyes, 0.35);
+
+	const mouthPatch = patch(base.img, open.img, mouth);
+	const eyesPatch = patch(base.img, blink.img, eyes);
+
 	return {
 		src: base.url,
-		mouthOpen: patch(base.img, open.img, mouth),
-		mouthHalf: patch(base.img, half.img, mouth),
-		eyesClosed: patch(base.img, blink.img, eyes),
+		mouthOpen: mouthPatch,
+		mouthHalf: mouthPatch,
+		eyesClosed: eyesPatch,
 		bbox: { mouth, eyes, head: bb.head },
 	};
 }
@@ -269,7 +315,7 @@ export type SummonResult =
 	| { ok: true; leader: Leader }
 	| { ok: false; refusal: string };
 
-/** Full leader-on-demand pipeline: profile → 4 animated portraits → scene. ~40-70 s online. */
+/** Full leader-on-demand pipeline: profile → 4 animated portraits → scene. ~30-50 s online. */
 export async function summon(
 	request: string,
 	progress: SummonProgress,
@@ -308,6 +354,8 @@ export async function summon(
 			voice: pick(a.gender === "female" ? FEMININE : MASCULINE, i + 1),
 		};
 	});
+	const assignedVoice = pick(p.gender === "female" ? FEMININE : MASCULINE, 0);
+
 	const [leaderArt, ...advArt] = await Promise.all([
 		character(p.portraitPrompt, step(`Painting ${p.name}…`)),
 		...advisors.map((a) =>
@@ -331,7 +379,7 @@ export async function summon(
 		civ: p.civ,
 		era: p.era,
 		quote: p.quote,
-		voice: pick(p.gender === "female" ? FEMININE : MASCULINE, 0),
+		voice: assignedVoice,
 		palette: p.palette,
 		advisors: advisors.map(({ role, name, title, trait, voice }) => ({
 			role,
