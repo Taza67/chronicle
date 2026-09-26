@@ -322,10 +322,13 @@ export class CourtScene extends Phaser.Scene {
 		// --- advisor enters and speaks
 		this.updateMusicSituation(turn);
 		this.backdrop.setMood(MOOD[turn.emotion], 0.3);
-		this.speaker = this.portrait(turn.advisor, W / 2 + 20, H * 0.5, 900);
-		this.speaker.enter(W + 300);
-		this.speaker.setEmotion(turn.emotion);
-		this.showNameplate(advisor, turn.emotion);
+		const mainStyle = contextualEmotion(
+			turn.emotion,
+			turn.advisor,
+			g.stats,
+			g.combo,
+		);
+		warm(speech, advisor.voice, mainStyle);
 		if (turn.rebuttal)
 			warm(
 				turn.rebuttal.line,
@@ -337,14 +340,17 @@ export class CourtScene extends Phaser.Scene {
 					g.combo,
 				),
 			);
+		if (i + 1 < n && g.chapter?.turns[i + 1]) {
+			const nextT = g.chapter.turns[i + 1];
+			if (nextT) warm(nextT.speech, this.advisorOf(nextT.advisor).voice);
+		}
+
+		this.speaker = this.portrait(turn.advisor, W / 2 + 20, H * 0.5, 900);
+		this.speaker.enter(W + 300, 240);
+		this.speaker.setEmotion(turn.emotion);
+		this.showNameplate(advisor, turn.emotion);
 		if (turn.special) this.specialBanner(turn.special);
 		g.exposedLiar = null;
-		const mainStyle = contextualEmotion(
-			turn.emotion,
-			turn.advisor,
-			g.stats,
-			g.combo,
-		);
 		await this.speak(
 			this.speaker,
 			advisor.name,
@@ -369,7 +375,7 @@ export class CourtScene extends Phaser.Scene {
 				x: W * 0.72,
 				scale: 0.78,
 				alpha: 0.75,
-				duration: 450,
+				duration: 220,
 				ease: "Cubic.out",
 			});
 			this.second = this.portrait(
@@ -378,7 +384,7 @@ export class CourtScene extends Phaser.Scene {
 				H * 0.52,
 				780,
 			);
-			this.second.enter(-300);
+			this.second.enter(-300, 220);
 			this.second.setEmotion(turn.rebuttal.emotion);
 			this.showNameplate(r, turn.rebuttal.emotion);
 			// Primary speaker visually reacts to being interrupted by rival!
@@ -402,14 +408,14 @@ export class CourtScene extends Phaser.Scene {
 				turn.rebuttal.advisor,
 			);
 			if (!this.alive) return;
-			this.second.leave(-300);
+			this.second.leave(-300, 180);
 			this.second = null;
 			this.tweens.add({
 				targets: this.speaker,
 				x: W / 2 + 20,
 				scale: 1,
 				alpha: 1,
-				duration: 400,
+				duration: 220,
 				ease: "Cubic.out",
 			});
 			this.speaker.setEmotion(turn.emotion);

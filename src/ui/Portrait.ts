@@ -189,25 +189,25 @@ export class Portrait extends Phaser.GameObjects.Container {
 	}
 
 	/** Enter from a side with a settle. */
-	enter(fromX: number, ms = 600) {
+	enter(fromX: number, ms = 260) {
 		const tx = this.x;
 		this.setX(fromX).setAlpha(0);
 		this.scene.tweens.add({
 			targets: this,
 			x: tx,
 			alpha: 1,
-			duration: settings.reducedMotion ? 200 : ms,
-			ease: "Back.out",
+			duration: settings.reducedMotion ? 150 : ms,
+			ease: "Back.out(1.1)",
 		});
 	}
 
-	leave(toX: number, ms = 450, onDone?: () => void) {
+	leave(toX: number, ms = 220, onDone?: () => void) {
 		this.speak(null);
 		this.scene.tweens.add({
 			targets: this,
 			x: toX,
 			alpha: 0,
-			duration: settings.reducedMotion ? 150 : ms,
+			duration: settings.reducedMotion ? 120 : ms,
 			ease: "Cubic.in",
 			onComplete: () => {
 				onDone?.();
