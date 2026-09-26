@@ -13,7 +13,8 @@
 		"typecheck": "tsc && tsc -p worker/tsconfig.json",
 		"deploy:worker": "wrangler deploy --config worker/wrangler.toml",
 		"package": "npm run build && cd dist && (zip -r ../chronicle-itch.zip . 2>/dev/null || python3 -m zipfile -c ../chronicle-itch.zip .)",
-		"showcase:gifs": "node tools/generate_showcase_gifs.mjs"
+		"showcase:gifs": "node tools/generate_showcase_gifs.mjs",
+		"test:responsive": "node tools/test_mobile_responsiveness.mjs"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.14",

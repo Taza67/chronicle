@@ -1,7 +1,16 @@
 import Phaser from "phaser";
 import { type ReignRecord, reigns } from "../core/state.ts";
 import { ScrollList } from "../ui/ScrollList.ts";
-import { COLORS, FONT, H, hex, ui, W } from "../ui/theme.ts";
+import {
+	COLORS,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	ui,
+	W,
+} from "../ui/theme.ts";
 import { fadeIn, go, heading, iconButton } from "../ui/widgets.ts";
 
 /**
@@ -197,9 +206,9 @@ export class ChronicleScene extends Phaser.Scene {
 		vignette.setDisplaySize(W, H).setAlpha(0.75);
 
 		// Imperial Header
-		heading(this, 68, "Imperial Chronicle", 36);
+		heading(this, SAFE_TOP + 18, "Imperial Chronicle", 36);
 		this.add
-			.text(W / 2, 98, "GENEALOGICAL ROLL OF REIGNS", {
+			.text(W / 2, SAFE_TOP + 48, "GENEALOGICAL ROLL OF REIGNS", {
 				fontFamily: FONT.title,
 				fontSize: "12px",
 				color: hex(COLORS.goldDeep),
@@ -208,7 +217,7 @@ export class ChronicleScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setLetterSpacing(4);
 
-		iconButton(this, 56, 70, "‹", () => go(this, "Title"));
+		iconButton(this, 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
 
 		// Grand Imperial Roll Summary Ribbon Pill
 		const totalDecrees = reigns.reduce((n, r) => n + r.total, 0);
@@ -237,7 +246,7 @@ export class ChronicleScene extends Phaser.Scene {
 			.setLetterSpacing(1.5);
 
 		// Scrollable genealogical timeline container
-		const list = new ScrollList(this, 168, H - 24);
+		const list = new ScrollList(this, 168, H - SAFE_BOTTOM - 20);
 		let y = 14;
 
 		if (!reigns.length) {

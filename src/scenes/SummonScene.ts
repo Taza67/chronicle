@@ -6,7 +6,18 @@ import { micSupported } from "../core/recorder.ts";
 import { say } from "../core/speech.ts";
 import { newGame, saveGame } from "../core/state.ts";
 import { summon } from "../core/summon.ts";
-import { body, COLORS, FONT, H, hex, title, ui, W } from "../ui/theme.ts";
+import {
+	body,
+	COLORS,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	title,
+	ui,
+	W,
+} from "../ui/theme.ts";
 import { VoiceResonator } from "../ui/VoiceResonator.ts";
 import {
 	Button,
@@ -48,8 +59,8 @@ export class SummonScene extends Phaser.Scene {
 		const bg = this.add.image(W / 2, H / 2, "title_bg");
 		bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1).setAlpha(0.3);
 		this.add.image(W / 2, H / 2, "vignette").setDisplaySize(W, H);
-		heading(this, 90, "Summon a leader", 34);
-		iconButton(this, 60, 90, "‹", () => go(this, "Select"));
+		heading(this, SAFE_TOP + 24, "Summon a leader", 34);
+		iconButton(this, 60, SAFE_TOP + 24, "‹", () => go(this, "Select"));
 		this.add
 			.text(
 				W / 2,
@@ -131,7 +142,7 @@ export class SummonScene extends Phaser.Scene {
 		this.add
 			.text(
 				W / 2,
-				H - 60,
+				H - SAFE_BOTTOM - 20,
 				"Portraits, court and voices are generated live — about a minute.",
 				ui(17, hex(COLORS.muted)),
 			)

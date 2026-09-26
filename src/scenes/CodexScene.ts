@@ -9,7 +9,16 @@ import {
 	unlockedRelics,
 } from "../core/state.ts";
 import { ScrollList } from "../ui/ScrollList.ts";
-import { COLORS, FONT, H, hex, ui, W } from "../ui/theme.ts";
+import {
+	COLORS,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	ui,
+	W,
+} from "../ui/theme.ts";
 import { fadeIn, go, heading, iconButton } from "../ui/widgets.ts";
 
 type Tab = "fact" | "whatif" | "relic";
@@ -165,9 +174,9 @@ export class CodexScene extends Phaser.Scene {
 		vignette.setDisplaySize(W, H).setAlpha(0.75);
 
 		// Grand Imperial Archives Header
-		heading(this, 68, "Imperial Codex", 36);
+		heading(this, SAFE_TOP + 18, "Imperial Codex", 36);
 		this.add
-			.text(W / 2, 98, "GRAND IMPERIAL ARCHIVES", {
+			.text(W / 2, SAFE_TOP + 48, "GRAND IMPERIAL ARCHIVES", {
 				fontFamily: FONT.title,
 				fontSize: "12px",
 				color: hex(COLORS.goldDeep),
@@ -176,7 +185,7 @@ export class CodexScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setLetterSpacing(4);
 
-		iconButton(this, 56, 70, "‹", () => go(this, "Title"));
+		iconButton(this, 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
 
 		// Archival summary ribbon pill
 		const total = codex.length;
@@ -388,7 +397,7 @@ export class CodexScene extends Phaser.Scene {
 			return;
 		}
 		if (!this.list) {
-			this.list = new ScrollList(this, 222, H - 24);
+			this.list = new ScrollList(this, 222, H - SAFE_BOTTOM - 20);
 		} else {
 			this.list.removeAll(true);
 			this.list.y = 222;
@@ -772,7 +781,7 @@ export class CodexScene extends Phaser.Scene {
 
 	private renderRelicsTab() {
 		if (!this.list) {
-			this.list = new ScrollList(this, 222, H - 24);
+			this.list = new ScrollList(this, 222, H - SAFE_BOTTOM - 20);
 		} else {
 			this.list.removeAll(true);
 			this.list.y = 222;

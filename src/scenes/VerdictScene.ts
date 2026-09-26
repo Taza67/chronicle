@@ -23,6 +23,8 @@ import {
 	FONT,
 	H,
 	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
 	STAT_META,
 	title,
 	ui,
@@ -177,18 +179,18 @@ export class VerdictScene extends Phaser.Scene {
 
 		// Left & right pillar lines
 		frameG.lineStyle(1.5, colCol, colAlpha);
-		frameG.lineBetween(24, 40, 24, H - 40);
-		frameG.lineBetween(W - 24, 40, W - 24, H - 40);
+		frameG.lineBetween(24, SAFE_TOP, 24, H - SAFE_BOTTOM);
+		frameG.lineBetween(W - 24, SAFE_TOP, W - 24, H - SAFE_BOTTOM);
 
 		// Capital brackets and base plinths
 		for (const x of [24, W - 24]) {
-			frameG.strokeRect(x - 8, 40, 16, 8);
-			frameG.strokeRect(x - 8, H - 48, 16, 8);
+			frameG.strokeRect(x - 8, SAFE_TOP, 16, 8);
+			frameG.strokeRect(x - 8, H - SAFE_BOTTOM - 8, 16, 8);
 		}
 
 		// Vault frieze across the top
 		frameG.lineStyle(1, colCol, colAlpha * 0.7);
-		frameG.lineBetween(24, 44, W - 24, 44);
+		frameG.lineBetween(24, SAFE_TOP + 4, W - 24, SAFE_TOP + 4);
 
 		if (collapsed) {
 			// Smoldering ruins underglow
@@ -1265,7 +1267,7 @@ export class VerdictScene extends Phaser.Scene {
 		const collapsed = Boolean(g.collapse);
 		const actionsContainer = this.add.container(0, 0).setAlpha(0).setDepth(8);
 
-		const primaryY = 810;
+		const primaryY = v.nextEra ? H - SAFE_BOTTOM - 280 : H - SAFE_BOTTOM - 160;
 
 		// Primary Action: Continue or Reclaim Throne
 		if (collapsed) {
