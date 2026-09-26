@@ -1,0 +1,465 @@
+[
+	{
+		"season_title": "Gloriana: The Virgin Queen",
+		"intro": "The crown of England rests upon your young brow, but your treasury is hollow and your realm fractured by religious fury. Surrounded by scheming courtiers and hungry foreign empires, your every word will forge a golden age or invite the axe.",
+		"turns": [
+			{
+				"year": "1559",
+				"title": "The Soul of England",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Majesty, your sister left the realm bankrupt, torn between Rome and reform. Our councillors watch three scales constantly: our empty treasury, the fragile peace of the shires, and your everlasting name before posterity. The Oracle also demands you wager whether your decree matches the path history took. Catholic bishops demand the Latin mass, while radical exiles demand a purge. Which church do you establish?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "The angels whisper of a middle path, Majesty, but compromise vexes both the Pope and the zealous Calvinists.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Restore the Latin Roman mass",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Embracing Rome would have placated King Philip of Spain, yet ignited fierce revolts among England's growing Protestant merchant class. London would have boiled into civil strife, forcing bloody inquisitions that ruined the crown's legitimacy. In truth, Elizabeth rejected Roman supremacy, steering the realm toward a moderate Protestant settlement that preserved both order and her royal sovereignty."
+					},
+					{
+						"label": "Craft a moderate Protestant settlement",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Adopt radical Genevan Calvinism",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "Abolishing bishops and adopting strict Calvinism would have won over fiery preachers, but alienated England's conservative peerage and invited immediate Catholic invasion. Peasant uprisings in the north would have paralyzed royal tax collection. In truth, Elizabeth retained the hierarchy of bishops and traditional ceremony, creating an enduring Anglican church that balanced theological reform with royal control."
+					}
+				],
+				"reveal": "Through the Acts of Supremacy and Uniformity in 1559, Elizabeth declared herself Supreme Governor of the Church of England. She deliberately maintained vestments and liturgical ceremony while enforcing Protestant doctrine, famously declaring she had no desire to make windows into men's souls. This delicate settlement became the foundation of modern Anglicanism and averted religious civil war.",
+				"fun_fact": "Elizabeth consulted John Dee to choose her coronation day via astrology; he calculated January 15th, 1559 as the most auspicious moment."
+			},
+			{
+				"year": "1560",
+				"title": "The Scottish Border",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "Majesty, French troops occupy Edinburgh to bolster young Mary Stuart, who audaciously quarters your royal arms upon her own shield. If France controls Scotland, they hold a dagger poised directly at England's throat. John Knox begs for English cannon, but action means open war with Paris. Do we strike now or watch the northern noose tighten?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Sending troops north will empty our last silver chest for the sake of rebellious Scottish heretics.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Send troops to besiege Leith",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Ignore Scotland and fortify Berwick",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Leaving Scotland undefended would have allowed French garrison commanders to crush the Scottish lords and consolidate a permanent Catholic stronghold across the Tweed. England would have lived under constant dread of invasion, draining the exchequer through permanent border armies. In reality, Elizabeth intervened decisively, forcing French withdrawal under the 1560 Treaty of Edinburgh."
+					},
+					{
+						"label": "Subsidize Scots without royal armies",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Sending only gold would have proven utterly inadequate against seasoned French fortifications. The Protestant lords would have been routed in the field, casting Elizabeth as a weak and unreliable ally across Europe. In reality, the arrival of royal English warships and siege artillery forced the French fleet to retreat and secured a friendly Scottish government."
+					}
+				],
+				"reveal": "Elizabeth reluctantly deployed an English army and fleet to besiege the French stronghold of Leith. The resulting Treaty of Edinburgh compelled French forces to evacuate Scotland, neutralizing the northern threat. It ensured that Protestant lords governed Scotland in the name of the absent Mary Stuart, fundamentally securing England's vulnerable land border for decades.",
+				"fun_fact": "English troops at Leith brought scaling ladders that proved too short for the ramparts, leading to a temporary and humiliating retreat."
+			},
+			{
+				"year": "1560",
+				"title": "The Corrupted Coinage",
+				"advisor": "gold",
+				"emotion": "proud",
+				"speech": "Majesty, your father Henry and brother Edward debased our silver until our shillings turned red with copper. Merchants in Antwerp laugh at English coin, prices soar in our markets, and the poor starve. I propose a radical recoinage: recall all base money, melt it down, and reissue pure silver at intrinsic value. Shall we restore England's credit?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Debase coins further for profit",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Extracting quick revenue by minting cheaper copper-laden coins would have triggered runaway inflation across the realm. London apprentices would have rioted, and foreign merchants would have refused English wool entirely. In reality, Cecil and Elizabeth boldly recalled the bad money, laying the bedrock for England's commercial rise and sound international credit."
+					},
+					{
+						"label": "Recall and re-mint pure coin",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Leave the coinage alone entirely",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Inaction would have choked English overseas trade and crippled royal customs revenue for years. Landlords would have continued raising rents to outpace falling coin value, driving thousands of displaced tenants into vagrancy. In reality, Elizabeth's decisive monetary reform halted inflation and permanently rebuilt trust in the English pound abroad."
+					}
+				],
+				"reveal": "Within a single year, Elizabeth's government called in debased coins and issued sterling silver testoons. The operation was managed so shrewdly by the Royal Mint that it actually netted the Crown a tidy profit of fifty thousand pounds. This monetary stabilization rescued domestic trade and restored English credit on European bourses.",
+				"fun_fact": "Old base shillings showed Henry the Eighth's face, but as the silver rubbed off, his copper nose showed through, earning him the nickname Old Coppernose."
+			},
+			{
+				"year": "1568",
+				"title": "A Queen at the Gate",
+				"advisor": "faith",
+				"emotion": "alarmed",
+				"speech": "Majesty, the stars turn tempestuous. Mary Stuart has fled a Scottish prison in an open fishing boat and landed on our shores in Cumberland. She is your blood cousin and an anointed sovereign, yet English Catholics view her as the rightful heir to your throne. She demands your army to reclaim Scotland. How do we treat this royal refugee?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "She is poison in a velvet gown, Majesty. Every treasonous papist in England will flock to her banner.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Send an army to restore her",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Reinstalling Mary on the Scottish throne would have crushed England's loyal Protestant allies in Edinburgh and returned a Catholic queen to power on the border. Mary would have allied with France at the first opportunity, undoing a decade of careful diplomacy. In reality, Elizabeth kept Mary detained, refusing to let her leave English territory."
+					},
+					{
+						"label": "Confine her under honorable arrest",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Deliver Mary back to Scottish rebels",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Handing an anointed queen over to her rebellious subjects for public execution would have shocked every monarch in Christendom. France and Spain would have forged an immediate coalition against the regicide queen of England. In reality, Elizabeth guarded royal prestige by refusing to judge Mary openly, choosing decades of custody instead."
+					}
+				],
+				"reveal": "Elizabeth chose neither to champion Mary nor to execute an anointed queen. She placed Mary into honorable confinement in northern castles under the guard of the Earl of Shrewsbury. This kept Mary neutralized for nearly twenty years, though she remained an inescapable magnet for Catholic conspiracies and foreign assassination plots.",
+				"fun_fact": "Mary arrived in England wearing borrowed dirty clothes and without a single change of linen, prompting Elizabeth to send her second-hand court gowns."
+			},
+			{
+				"year": "1569",
+				"title": "The Rising of the North",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "Treason has struck, Majesty. The Earls of Northumberland and Westmorland have raised five thousand horsemen, celebrated Catholic mass in Durham Cathedral, and torn up your English prayer books. They march south to free Mary Stuart and topple your throne. Mild measures will look like fear. How shall the crown crush this rebellion?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Too much blood will create Catholic martyrs, Majesty, and summon the wrath of Spanish legions upon our shores.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Execute rebel commoners and leaders",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Offer an unconditional royal pardon",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Pardoning the rebel lords would have projected weakness across Europe, encouraging further uprisings in Wales and the West Country. Protestant nobles would have questioned Elizabeth's will to defend the church, eroding royal authority throughout the realm. In reality, Elizabeth showed iron resolution, ordering hundreds of executions across the northern villages to deter future rebellions."
+					},
+					{
+						"label": "Concede freedom of Catholic worship",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Yielding to the rebels' demands for public mass would have dismantled the 1559 settlement and infuriated London's powerful Protestant civic leaders. Parliament would have withheld war subsidies, leaving the crown paralyzed before Spanish pressure. In truth, Elizabeth stood completely firm, using the failed revolt to permanently break feudal northern power."
+					}
+				],
+				"reveal": "The royal army easily scattered the northern earls, who fled into Scotland. Elizabeth showed ruthless severity: she ordered over seven hundred rebel commoners hanged across northern villages and seized vast northern estates for the Crown. The brutal suppression broke the feudal power of the northern Catholic aristocracy forever.",
+				"fun_fact": "So many rebel bodies were hanged along northern highways that the Queen's officers complained they could not find enough timber to construct gallows."
+			}
+		]
+	},
+	{
+		"season_title": "The Virgin Queen: Shadows and Sovereignty",
+		"intro": "Papal excommunication and foreign treachery now encircle your realm like winter frost. From secret ciphers to oceanic plunder, every choice tests the spine of your golden age.",
+		"turns": [
+			{
+				"year": "1572",
+				"title": "The Traitor Duke",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "My spies have ripped the Italian banker Ridolfi plot wide open, Majesty. Your own cousin, the Duke of Norfolk, plotted with Rome and Spain to seat Mary Stuart upon your throne. Parliament demands his head on Tower Hill. Yet three times you have recalled the warrant. Mercy here is suicide. Will you sign his death or pardon him?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "He is the realm's premier peer, yet sparing a traitor will cost far more in Spanish bribes than an axe.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Execute the Duke of Norfolk",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Banish Norfolk to his estates",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Internal exile only invited fresh Spanish intrigue around Norfolk's ancestral seat. Within two years, another rebellion erupted in East Anglia, forcing you to march an army eastward at terrible expense. Your hesitation shattered your council's faith in your resolve. In truth, you finally signed Norfolk's warrant, and his execution silenced the domestic aristocracy for a decade."
+					},
+					{
+						"label": "Pardon Norfolk for heavy ransom",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Norfolk's immense wealth refilled your empty exchequer, but London erupted in anti-Catholic fury at the scandalous deal. Zealous Protestants accused you of selling English sovereignty for silver. Norfolk used his bought freedom to sponsor Catholic assassins. In truth, Norfolk went to the block in June 1572, proving even the highest nobility answered to royal law."
+					}
+				],
+				"reveal": "Elizabeth wept before signing the warrant, but Thomas Howard, fourth Duke of Norfolk, was beheaded on Tower Hill in June 1572. He was England's only surviving duke. His death decisively crushed the Ridolfi Plot, demonstrated Elizabeth's willingness to strike her own kin, and severed the English Catholic nobility from direct leadership.",
+				"fun_fact": "Elizabeth signed Norfolk's death warrant four separate times over several months, revoking it three times in fits of guilt before Burghley finally forced her hand."
+			},
+			{
+				"year": "1577",
+				"title": "The Pirate's Commission",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "The celestial globes align toward great waters, Majesty. Captain Drake seeks royal blessing to sail beyond South America into the Spanish lake. King Philip calls him a pirate, but the angels whisper of silver galleons and an English empire across the Pacific. Do we sanction his reckless voyage in secret, or forbid him to preserve peace?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Philip's ambassadors will scream of war, but Drake can bleed their treasure fleets without flying your royal banner.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Fund Drake with secret letters",
+						"historical": true,
+						"effects": {
+							"gold": 2,
+							"stability": -1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Forbid the expedition entirely",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "By binding Drake to port, you avoided offending Spain, but English naval ambition withered in the cradle. French corsairs swept in to plunder the Pacific instead, enriching Paris while your treasury struggled under creeping inflation. Your mariners cursed your timidity. In truth, you backed Drake in secret, and he returned three years later loaded with legendary wealth."
+					},
+					{
+						"label": "Issue an open royal charter",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": 1
+						},
+						"whatif": "An open royal commission forced King Philip to declare war eight years early, while England's coastal forts were still crumbling and unready. Spanish armadas blockaded the Channel, cutting your merchant fleets to ribbons before Drake even rounded the Americas. In truth, you maintained careful plausible deniability, pretending Drake was a private adventurer until he dropped anchor with his plunder."
+					}
+				],
+				"reveal": "Elizabeth secretly invested in Drake's venture, providing ships and arms while officially denying knowledge of it. Drake circumnavigated the globe aboard the Golden Hind, returning in 1580 with half a million pounds of Spanish treasure. The Queen knighted him on his own deck, directly insulting the Spanish ambassador.",
+				"fun_fact": "Elizabeth's personal share of Drake's plunder was so vast that it paid off England's entire foreign debt and funded the Levant Company for years."
+			},
+			{
+				"year": "1579",
+				"title": "The Frog Prince",
+				"advisor": "gold",
+				"emotion": "calm",
+				"speech": "Sire, you are forty-six, and your womb remains our realm's greatest anxiety. Francis, Duke of Anjou, brother to the French King, courts you passionately. You call him your little frog, but this marriage offers a fortress against Spain. London preachers denounce a Papist consort from their pulpits. Will you wed the Frenchman or dismiss him?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "A Catholic French prince roaming Whitehall will invite Paris assassins directly into your bedchamber, Majesty.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "String Anjou along unmarried",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Marry Anjou despite public outrage",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "You married your French prince in a grand London ceremony, but the capital rose in violent protest. Rioters attacked French merchants, and the pulpit roared with apocalyptic rage. When Anjou died five years later without producing an heir, you were left isolated and politically damaged. In truth, you weaponized flirtation, dangling the courtship for years to divide France and Spain."
+					},
+					{
+						"label": "Break courtship and expel envoys",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Humiliated by your sharp rejection, Anjou and his brother joined hands with Spain in fury. France closed its ports to English cloth, driving merchant guild halls into ruinous panic. You won applause from radical Puritans, but England stood friendless against Catholic Europe. In truth, you bade Anjou a tearful, affectionate farewell, paying him off while remaining sovereign and unhitched."
+					}
+				],
+				"reveal": "Elizabeth dragged the courtship out for years, genuinely fond of Anjou yet acutely aware that an English Queen married to a Catholic could spark civil war. When lawyer John Stubbs published a pamphlet condemning the match, Elizabeth had his right hand chopped off, but she ultimately let the marriage wither away unconsummated.",
+				"fun_fact": "Elizabeth gave Anjou the affectionate pet name of her frog, and famously wore a jewel shaped like a golden frog containing his tiny portrait."
+			},
+			{
+				"year": "1585",
+				"title": "The Dutch Entanglement",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "William of Orange is murdered, shot through the heart by a Spanish zealot. The Dutch Protestant rebellion is on the brink of collapse. If Philip reconquers the Low Countries, his veteran tercios will gaze across twenty miles of sea straight at Dover. The Dutch offer you their sovereignty if you send troops. Must we intervene?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Sending thousands of pikemen across the sea will bleed our exchequer white, with zero promise of return.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Send an army as protectors",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 0,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Accept full Dutch sovereignty",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "Crowning yourself ruler of the Low Countries immediately committed English blood and coin to defending distant continental cities forever. Parliament rebelled against endless taxation to garrison Flemish towns, while the French crown turned hostile over your aggressive expansion. In truth, Elizabeth firmly rejected sovereign title, offering only military alliance to keep the fight on foreign soil."
+					},
+					{
+						"label": "Refuse aid and fortify England",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 0,
+							"legacy": -2
+						},
+						"whatif": "Left alone, Antwerp fell and the Dutch rebellion collapsed entirely under Parma's seasoned boots. Within three years, the entire North Sea coastline became a staging ground for a crushing Spanish invasion. Your saved coin could not hire enough men to fortify Kent. In truth, Elizabeth committed seven thousand troops under Leicester through the Treaty of Nonsuch."
+					}
+				],
+				"reveal": "Elizabeth signed the Treaty of Nonsuch in August 1585, refusing the Dutch crown but agreeing to send six thousand footmen and one thousand horse under the Earl of Leicester. It cost England an astronomical sum, but it kept Spanish forces pinned down in the Netherlands and effectively marked the beginning of open Anglo-Spanish war.",
+				"fun_fact": "As security for paying her troops, Elizabeth demanded the Dutch hand over the cautionary towns of Flushing, Brill, and Rammekens to direct English garrisons."
+			},
+			{
+				"year": "1587",
+				"title": "The Anointed Head",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "The net is closed, Majesty. Master Babington's beer barrels carried letters directly to Mary Stuart, and our cryptographers deciphered every wicked word. Mary endorsed your assassination in her own hand. Parliament clamors for her blood, but you tremble to execute a crowned queen. If she draws breath, another plot will strike. Will you sign the death warrant?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "A queen who cuts down another anointed sovereign invites the wrath of heaven and every monarch in Christendom.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Sign the execution warrant",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Keep Mary in solitary confinement",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "Locking Mary away in a dark dungeon only made her a living martyr for Catholic crusaders across Europe. The Pope issued renewed indulgences for your assassination, and three fresh conspiracies were uncovered in London within eighteen months. Your own Privy Council threatened mass resignation. In truth, you signed Mary's warrant, extinguishing the Catholic figurehead once and for all."
+					},
+					{
+						"label": "Exile Mary to Scotland or France",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "The moment Mary set foot in France, the Catholic League hailed her as the rightful Queen of England. Financed by French gold and Spanish pikes, Mary backed a cross-Channel invasion force that threatened your southern coast before the year ended. In truth, Mary never left England alive, meeting her end at Fotheringhay Castle in February 1587."
+					}
+				],
+				"reveal": "Elizabeth signed Mary Stuart's death warrant in February 1587, though she later claimed her secretary Davison dispatched it without her final consent. Mary was beheaded at Fotheringhay Castle wearing liturgical red, the color of Catholic martyrdom. Her execution removed the Catholic focal point, but provoked Philip of Spain to launch his great Armada.",
+				"fun_fact": "After Mary was decapitated, her executioner reached down to display her head, but only lifted away her auburn wig, leaving her natural, short grey hair behind."
+			}
+		]
+	}
+]

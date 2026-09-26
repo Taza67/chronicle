@@ -1,0 +1,470 @@
+[
+	{
+		"season_title": "The First Consul",
+		"intro": "The smoke of the Brumaire coup clears to reveal France on the brink of ruin and surrounded by hostile kings. From the Tuileries Palace, a thirty-year-old Corsican general prepares to remake Europe in his image.",
+		"turns": [
+			{
+				"year": "1800",
+				"title": "Crossing the Great Saint Bernard",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "First Consul, the Austrian army besieges Genoa at forty-four degrees north. We must strike their rear, but the Great Saint Bernard Pass is choked with ice. Our court watches three scales now: our treasury gold, the republic stability, and our eternal legacy. Even the Oracle will test if your nerve matches history. Shall we drag forty field guns through mountain blizzards, or take the cautious southern coast?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Hauling bronze cannon over glaciers will ruin our pack mules and drain the last gold in Paris, General.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Drag the artillery over ice",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "March safely along the Riviera",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "The French columns advance along the Mediterranean coast only to run directly into Austrian trenches and British naval broadsides. The campaign bogs down into a grinding siege, bleeding the French treasury dry and shattering the aura of invincibility. In reality, Napoleon dragged hollowed-out tree trunks carrying cannon over alpine glaciers, stunning the Austrians at Marengo."
+					},
+					{
+						"label": "Await Austrian attack in Provence",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "By remaining on the defensive, you save valuable francs and artillery equipment, but royalist plots immediately erupt across southern France as royalists sense hesitation. Genoa falls quickly, and Allied armies cross the Var into French territory. In truth, Napoleon seized the offensive across the Alps to dictate the peace on Italian soil."
+					}
+				],
+				"reveal": "In May 1800, Napoleon led forty thousand men through snowbound alpine passes, dismounting cannon into hollowed pine logs pulled by infantry. His sudden descent into Italy caught Austrian General Melas completely off guard, culminating in the dramatic victory at Marengo that secured his grip on France.",
+				"fun_fact": "Napoleon did not ride a fiery white stallion across the Alps as painted by David; he crossed bundled in a gray coat on a humble pack mule."
+			},
+			{
+				"year": "1801",
+				"title": "The Altar and the Republic",
+				"advisor": "faith",
+				"emotion": "calm",
+				"speech": "First Consul, society is an unstable polygon until its spiritual vectors are balanced. Ten years of revolution severed us from Rome, leaving thousands of parish churches shuttered and refractory priests stirring royalist rebellion in the Vendee. Pope Pius the Seventh offers a pact. If we recognize Catholicism as the majority faith, the clergy will swear loyalty to you. Do we reconcile with the Vatican?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "My officers did not bleed for the Republic just to bend the knee to Italian bishops, Citizen Consul.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Sign the Papal Concordat",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 2,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Enforce secular revolutionary cults",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "Attempting to impose state secularism sparks furious renewed peasant uprisings across western France and alienates European courts. The gendarmerie spends years hunting defiant priests through the bogs of Brittany instead of preparing the Grande Armee for war. Historically, Napoleon recognized that making peace with the Catholic Church was vital to pacify the French countryside."
+					},
+					{
+						"label": "Establish an independent national church",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Creating a breakaway Gallican church under state command enrages devout Catholics and triggers an official papal excommunication. Moderate citizens accuse you of acting like Henry the Eighth, destabilizing the fragile Consulate. In reality, Napoleon negotiated the Concordat of 1801, keeping church appointments firmly under state control while healing the revolutionary schism."
+					}
+				],
+				"reveal": "The Concordat of 1801 ended a decade of bitter religious civil war. Napoleon retained the power to nominate bishops and kept former church lands in peasant hands, turning Catholic clergy into salaried state servants who preached civic obedience from every pulpit in France.",
+				"fun_fact": "When Napoleon forced republican generals to attend the celebratory Easter Mass at Notre-Dame, General Delmas muttered that it was a fine capuchin masquerade."
+			},
+			{
+				"year": "1802",
+				"title": "Ribbons for the Brave",
+				"advisor": "gold",
+				"emotion": "calm",
+				"speech": "First Consul, your proposal to create the Legion of Honour meets sharp resistance in the Senate. They complain that distributing star-shaped medals and silver eagles creates a new aristocratic caste, which violates revolutionary equality. Yet men are led by toys, as you say, and empty honors cost far less than land grants. Shall we institute these civilian and military decorations, or respect strict republican modesty?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Honour is a pure moral coordinate, Gaudin, not a toy to be weighed on your brass money scales.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Institute the Legion of Honour",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Grant only cash pensions",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Rewarding courage solely with cash bonuses strains the treasury beyond repair as the army expands across Europe. Soldiers view the payments as mercenary wages rather than sacred imperial prestige, weakening their fanatical devotion on the battlefield. In truth, Napoleon understood the psychological power of ribbons, declaring that men are willingly governed by such baubles."
+					},
+					{
+						"label": "Abolish all individual distinctions",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Enforcing radical republican egalitarianism pleases Jacobin politicians but deeply discontents the veterans who bled at Lodi and Zurich. Without a visible ladder of merit, talented commanders seek recognition elsewhere or retire into civilian life. Historically, Napoleon established the Legion to forge a loyal meritocracy combining old nobles, soldiers, and brilliant scientists."
+					}
+				],
+				"reveal": "Despite fierce opposition from republican purists in the Tribunate, the Legion of Honour was instituted in May 1802. It broke with feudal tradition by rewarding both military valor and civil genius equally, creating a new merit-based nobility that survives into the modern day.",
+				"fun_fact": "Critics attacked the proposed medals as monarchical trinkets, prompting Napoleon to retort that it is by such baubles that men are led."
+			},
+			{
+				"year": "1803",
+				"title": "The Wild Western Wilderness",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "First Consul, our colonial dream in the Americas has collapsed. Yellow fever has devastated General Leclerc expedition in Saint-Domingue, and our treasury is barren. War with England looms again within weeks. The American envoys Livingston and Monroe have arrived, offering to buy New Orleans. Why settle for a port? We could sell them the entire Louisiana territory for sixty million francs in cash.",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Surrendering half a continent on map coordinates we barely explored hands our future empire to English-speaking upstarts, Gaudin.",
+					"emotion": "amused"
+				},
+				"choices": [
+					{
+						"label": "Sell all Louisiana to America",
+						"historical": true,
+						"effects": {
+							"gold": 2,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Sell only New Orleans",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 0,
+							"legacy": 0
+						},
+						"whatif": "Retaining upper Louisiana proves an expensive illusion when the Royal Navy blocks all French shipping in the Atlantic. British troops from Canada easily overrun your isolated outposts in Saint Louis without France pocketing a single franc. In truth, Napoleon saw that what he could not defend was better sold to enrich his war chest against London."
+					},
+					{
+						"label": "Dispatch a second expedition fleet",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "The second armada sails directly into British naval patrols in the Caribbean, losing twenty ships of the line and fifteen thousand veteran soldiers before sighting land. France enters the war against the Third Coalition critically weakened at sea. Historically, Napoleon cut his colonial losses entirely to focus all resources on the European mainland."
+					}
+				],
+				"reveal": "In April 1803, Napoleon sold over eight hundred thousand square miles of land to the United States for sixty million francs, doubling American territory. The sudden windfall funded French shipyards and camp preparations along the English Channel for the impending war with Britain.",
+				"fun_fact": "When Napoleon finalized the sale in his bath at the Tuileries, his brothers Joseph and Lucien argued so fiercely against it that water splashed everywhere."
+			},
+			{
+				"year": "1804",
+				"title": "Shadows of Vincennes",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "First Consul, police reports confirm a royalist conspiracy backed by British gold to assassinate you in Paris. General Moreau is implicated, and the Bourbon prince, the Duke of Enghien, waits just beyond the Rhine at Ettenheim. My scouts have his exact coordinates. If we kidnap him across neutral Baden territory and try him by military commission, we crush royalist plots forever. Do we strike?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Violating a sovereign border to execute an innocent prince is an erratic equation that will unite all Europe against us.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Abduct and shoot the prince",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": -2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Demand Baden extradite him formally",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "While French diplomats exchange slow, polite letters with the Margrave of Baden, British agents smuggle the young duke across Germany to safety in London. Royalist conspirators in Paris interpret your hesitation as weakness, launching a bomb attack that narrowly misses your carriage. Historically, Napoleon opted for ruthless preemptive force to prove the Bourbons were not untouchable."
+					},
+					{
+						"label": "Pardon him and display mercy",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "Capturing the Duke of Enghien only to release him wins you praise from European monarchs, but hardline Jacobin generals suspect you are preparing a secret royal restoration. Political factions turn against the Consulate just as the imperial question arises. In reality, Napoleon executed the duke in the moat of Vincennes, permanently ending Bourbon hopes."
+					}
+				],
+				"reveal": "French dragoons crossed the Rhine, seized the twenty-three-year-old Duke of Enghien, and hurried him to Vincennes where a drumhead court-martial sentenced him to death. The execution stunned royal courts across Europe, but it secured domestic peace and cleared the path for Napoleon to crown himself Emperor.",
+				"fun_fact": "The execution prompted the diplomat Fouche to utter the famous remark: it is worse than a crime, it is a blunder."
+			}
+		]
+	},
+	{
+		"season_title": "The Master of Europe",
+		"intro": "Having crushed conspiracies and consolidated power, Napoleon sets his sights beyond the borders of France. The revolutionary general prepares to forge an empire unmatched since the Caesars.",
+		"turns": [
+			{
+				"year": "1804",
+				"title": "The Laurel and the Cross",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "Sire, the Senate has proclaimed you Emperor, and Pope Pius the Seventh has arrived in Paris. The ceremonial geometry must be flawless. The bishops expect the Holy Father to place the crown upon your head, sanctifying the throne. Yet philosophers argue that bowing your neck to Rome fractures the sovereignty of the French people. How will you take your crown?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "We spent millions on ermine and velvet robes, Sire, so let us not grovel like medieval vassals.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Crown yourself before the altar",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Let the Pope crown you",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": 2,
+							"legacy": -1
+						},
+						"whatif": "By accepting the crown from Papal hands, you appeased traditional Catholic monarchies across Europe but outraged revolutionary veterans. Foreign pamphlets mocked you as a subservient puppet of the Vatican, diluting your image of self-made triumph. In truth, Napoleon took the crown from the altar with his own hands and placed it upon his head."
+					},
+					{
+						"label": "Forgo ancient crowns entirely",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "A simple civil oath in the legislative hall pleased austere Jacobins, but European monarchs dismissed your empire as an unstable novelty. Without the majestic trappings of imperial legitimacy, your foreign diplomats struggled to command prestige in Vienna and Saint Petersburg. In reality, Napoleon orchestrated a dazzling spectacle at Notre-Dame that stunned the civilized world."
+					}
+				],
+				"reveal": "On December second, 1804, Napoleon famously lifted the golden laurel wreath and crowned himself at Notre-Dame, before crowning Empress Josephine. Pope Pius the Seventh merely gave his blessing. By claiming the crown through his own will rather than divine grace alone, Napoleon demonstrated that supreme power belonged to him and the French nation.",
+				"fun_fact": "Napoleon practiced walking in his massive, heavy coronation robes using a set of dolls and paper figurines beforehand."
+			},
+			{
+				"year": "1805",
+				"title": "The Grand March East",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "Sire, Admiral Villeneuve has failed to secure the English Channel. Two hundred thousand men sit idle at Boulogne, while coordinates from the east spell disaster. Austrian General Mack has invaded Bavaria, and Russian columns march to join him. We cannot invade England now. Do we turn the entire army east, or hold the coast?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Seven army corps marching across five hundred miles simultaneously is a terrifying mechanical miracle.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "March the corps to the Danube",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Risk the Channel crossing anyway",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Without naval superiority, the barge fleet was intercepted by the Royal Navy mid-Channel, drowning thousands of veteran grenadiers. With your army devastated, Austrian and Russian forces swept into Alsace completely unopposed. In truth, Napoleon abandoned the invasion of Britain, swiftly wheeled his corps eastward, and surrounded the Austrians at Ulm."
+					},
+					{
+						"label": "Dig defensive lines in Alsace",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Waiting behind the Rhine allowed Mack and Kutuzov to combine their massive armies, turning Germany into a grueling war of attrition. Your aura of invincibility evaporated as the war dragged through winter on French borders. In reality, Napoleon took the offensive, striking with breathtaking speed to encircle the enemy before they could unite."
+					}
+				],
+				"reveal": "Napoleon wheeled seven army corps from the English Channel to the Danube in just five weeks of legendary speed. The maneuver trapped sixty thousand Austrians inside Ulm without a major battle. Weeks later, Napoleon shattered the Austro-Russian coalition at Austerlitz, dissolving the thousand-year-old Holy Roman Empire.",
+				"fun_fact": "French soldiers quipped that the Emperor defeated the enemy with their legs rather than their bayonets."
+			},
+			{
+				"year": "1806",
+				"title": "The Blockade of the Seas",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Sire, Prussia is crushed at Jena, but Britain remains untouchable across the water. You wish to decree a total embargo on all British trade across the continent. Closing every port from Lisbon to Saint Petersburg will ruin our customs revenues and choke French merchants. Smuggling will explode, and our allies will groan under the strain. Dare we seal Europe?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Commerce is their lifeblood, Gaudin. Cut their trade lines and London will beg for terms.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Decree the Continental Blockade",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Impose moderate tariffs instead",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "Taxing British goods filled imperial coffers with millions in gold coin, but it did nothing to undermine Britain's naval hegemony. British subsidies continued to finance coalition after coalition, leaving France in perpetual warfare across the continent. In truth, Napoleon signed the Berlin Decree, banning all British commerce and dragging Europe into an economic war."
+					},
+					{
+						"label": "Rebuild the French surface fleet",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": 0,
+							"legacy": 0
+						},
+						"whatif": "Pouring millions into French dockyards produced dozens of pristine ships of the line, but France lacked experienced sailors and timber. The Royal Navy blockaded every estuary, bottling your grand fleet in harbour to rot. In reality, Napoleon recognized his naval weakness and used commercial exclusion to wage total economic warfare."
+					}
+				],
+				"reveal": "Napoleon signed the Berlin Decree, declaring the British Isles in a state of blockade and forbidding all trade with them. While it stimulated some continental domestic industries, it fostered widespread smuggling, alienated European allies who depended on colonial commerce, and ultimately dragged Napoleon into disastrous invasions to plug smuggling gaps.",
+				"fun_fact": "Smuggling was so rampant that even Napoleon bought fifty thousand British-made overcoats to keep French troops warm in winter."
+			},
+			{
+				"year": "1807",
+				"title": "The Raft on the Neman",
+				"advisor": "faith",
+				"emotion": "bold",
+				"speech": "Sire, after the carnage of Friedland, young Tsar Alexander seeks peace. We have moored a magnificent pavilion on a wooden raft in the middle of the Neman River at Tilsit. The map of the world is malleable clay in your hands. You could erase Prussia entirely, or divide Europe between East and West with the Tsar. How do you treat Russia?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Do not trust imperial smiles, Sire. Prussian fortresses still hold forty thousand potential enemies.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Forge an alliance with Russia",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Demand full Russian dismemberment",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "Refusing compromise forced the Tsar to retreat into the Russian interior, dragging your exhausted army into endless pursuit five years too early. Without secure supply depots, your Grand Army withered from frost and typhus in Lithuania. In reality, Napoleon charmed Alexander, dividing European dominance between them on the raft."
+					},
+					{
+						"label": "Wipe Prussia off the map",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Annexing every Prussian province alarmed the Tsar, who refused to sign any treaty that brought French bayonets directly to the Russian border. The war continued across the Baltic without a decisive conclusion. In reality, Napoleon spared Prussia at Alexander's plea, though he stripped half of its territory away."
+					}
+				],
+				"reveal": "The Treaties of Tilsit made Napoleon master of Western and Central Europe, creating the Duchy of Warsaw and forcing Russia into the Continental System. Napoleon and Alexander embraced warmly, spending days dining and inspecting troops together. Prussia was reduced to a second-rate power, stripped of half its lands and forced to pay massive indemnities.",
+				"fun_fact": "French carpenters constructed the luxurious floating pavilion on the Neman River in less than forty-eight hours."
+			},
+			{
+				"year": "1808",
+				"title": "The Spanish Trap",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "Sire, Spain is paralyzed by scandal. King Charles and his son Ferdinand despise each other and have brought their squabble to you at Bayonne. A hundred thousand French troops already occupy northern Spain to watch Portugal. Your brother Joseph waits for a crown. But local whispers warn that the proud Spanish populace will not endure a French master. What do we do?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Dethrone the Bourbons for Joseph",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Rule through King Ferdinand",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 0
+						},
+						"whatif": "By confirming the popular young Ferdinand on the throne in exchange for French garrison treaties, you secured the peninsula without firing a shot. Spain remained a pliant buffer state, sparing France hundreds of thousands of casualties. In truth, Napoleon forced both father and son to abdicate, sparking a brutal guerrilla uprising."
+					},
+					{
+						"label": "Withdraw across the Pyrenees",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Pulling French troops back secured our southern frontier safely behind the mountains, but it allowed British merchants to flood Iberian ports with contraband. Critics whispered that the Emperor flinched before an incompetent royal court. In reality, Napoleon seized the throne for his brother, opening an unwinnable quagmire."
+					}
+				],
+				"reveal": "Napoleon forced both Charles the Fourth and Prince Ferdinand to abdicate, placing his brother Joseph on the Spanish throne. The result was catastrophic. On May second, Madrid erupted in violent revolt. The ensuing Peninsular War became a bleeding ulcer that consumed three hundred thousand French soldiers and gave Britain an open front in Europe.",
+				"fun_fact": "Napoleon later confessed on Saint Helena that the tragic Spanish ulcer was what truly destroyed him."
+			}
+		]
+	}
+]

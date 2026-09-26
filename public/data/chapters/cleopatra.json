@@ -1,0 +1,461 @@
+[
+	{
+		"season_title": "Cleopatra: The Last Pharaoh",
+		"intro": "Egypt sits upon a knife edge between Roman greed and civil war as the old king dies. You inherit the double crown of the Nile at eighteen, surrounded by scheming courtiers and hungry legions.",
+		"turns": [
+			{
+				"year": "51 BC",
+				"title": "A Divided Crown",
+				"advisor": "gold",
+				"emotion": "calm",
+				"speech": "Majesty, your late father left massive debts to Rome, and your young brother Ptolemy demands to rule as equal co-regent. The court weighs your every move by our treasury, the peace of our cities, and the eternal glory of your name, while the temple oracle tests your foresight against the scrolls of destiny. Will you share the throne meekly, or assert sole dominance on official coins and decrees?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Share power with a ten-year-old boy and his eunuch handlers? Break him now before they raise an army against us.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Erase brother from coins",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Rule jointly in harmony",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "By honoring the regency council, you appease the boy king and soothe the anxious mob of Alexandria. Yet palace eunuchs swiftly marginalize your authority, reducing you to a decorative priestess while Roman bankers dictate terms. History records that Cleopatra boldly minted coins bearing only her own face and royal name, defying tradition from her very first year."
+					},
+					{
+						"label": "Exile Ptolemy immediately",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 1
+						},
+						"whatif": "Banishing the royal heir triggers an immediate revolt among the palace guard and Alexandrian citizens. Without seasoned legions or foreign backing, your rash purge sparks open warfare across the Delta before your reign can even take root. In truth, Cleopatra chose to rule alone through law and coinage, provoking political friction rather than immediate bloodshed."
+					}
+				],
+				"reveal": "Cleopatra boldly challenged Ptolemaic convention from day one. She issued coins bearing solely her own likeness, dropped her brother Ptolemy XIII from official documents, and governed as sole monarch. This fierce independence infuriated the boy king's regents, particularly the eunuch Pothinus and the general Achillas, setting the stage for a bitter civil war for the Egyptian throne.",
+				"fun_fact": "Cleopatra was the very first ruler of the three-hundred-year-old Greek Ptolemaic dynasty who actually bothered to learn the Egyptian language."
+			},
+			{
+				"year": "50 BC",
+				"title": "The Starving Delta",
+				"advisor": "faith",
+				"emotion": "alarmed",
+				"speech": "Pharaoh, the heavens weep with dry eyes. For two seasons Sirius has risen over a sluggish Nile, the floodwaters fail, and the granaries of Middle Egypt run empty. Riots brew in Alexandria, yet the Italian merchant fleets dock at our harbors, demanding their contracted grain for Rome. If you feed the capital, the rural farmers starve. How shall we distribute the sacred grain?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Refuse Rome and Roman tax collectors will march on our docks with gladius blades drawn.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Prioritize Alexandria first",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Feed rural farmers",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "Conserving the harvest for the peasants preserves Egyptian agriculture, but Alexandria erupts in violent bread riots. The urban mob sacks royal warehouses and invites your brother's faction to seize control of the palaces. In reality, Cleopatra strictly ordered all grain shipped directly to Alexandria, choosing urban security over provincial peace."
+					},
+					{
+						"label": "Sell stores to Rome",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Gold flows into your depleted vaults from eager Roman buyers, but widespread starvation grips every quarter of Egypt. Rebellious peasants abandon fields, devastating the kingdom's agricultural base for a generation. Cleopatra instead placed the survival of her capital city first, mandating death penalties for anyone selling Nile grain outside Alexandria."
+					}
+				],
+				"reveal": "Faced with severe drought and failing Nile floods, Cleopatra issued an uncompromising royal decree ordering all surplus grain in Upper Egypt shipped directly to Alexandria. While this kept the volatile capital from outright revolt, it caused deep famine and resentment throughout the countryside, deepening political fractures between the royal court and native Egyptian heartlands.",
+				"fun_fact": "Ptolemaic papyri show that Cleopatra decreed the death penalty for any merchant caught shipping grain anywhere other than the royal capital during famine."
+			},
+			{
+				"year": "49 BC",
+				"title": "The Syrian Gathering",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "The palace eunuch Pothinus has turned the garrison against you, Queen! They hold Alexandria for your brother, and you had to slip away into the desert under cover of darkness. We sit in exile along the Syrian frontier with loyal gold, but words alone will not win back your throne. Shall we hire Arab and Syrian mercenaries to march on Egypt?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Hire a mercenary army",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Sue for palace peace",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": -2
+						},
+						"whatif": "Begging your brother's council for clemency allows you to return to Alexandria as a powerless captive queen. Pothinus quietly strips your titles, ensuring you languish under palace guard until an assassin's poison finds your cup. Cleopatra refused surrender, boldly recruiting an imposing mercenary host in Syria to reclaim her kingdom by force of arms."
+					},
+					{
+						"label": "Flee to Rome",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Traveling to Italy reduces you to a helpless petitioner begging the Roman Senate for foreign intervention. Rome's civil war consumes all their attention, leaving you stranded abroad as an afterthought of history. In truth, Cleopatra gathered nomadic Arab allies and Mediterranean mercenaries, pitching her camp at Pelusium ready for battle."
+					}
+				],
+				"reveal": "Driven out of Alexandria by her brother's regents, Cleopatra fled eastward to Syria. Rather than surrendering, she used her personal wealth and political acumen to recruit an army of Arab tribesmen and Mediterranean mercenaries. By 48 BC, she marched back to the fortress of Pelusium, confronting her brother's army across the sands in open civil war.",
+				"fun_fact": "Cleopatra secured military alliances with Nabataean Arab chieftains by promising them trade privileges along the vital spice routes."
+			},
+			{
+				"year": "48 BC",
+				"title": "A Roman Severed",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "Pompey the Great, defeated by Julius Caesar in Greece, anchors off our coast at Pelusium seeking refuge. He was your father's patron, but Caesar pursues him with victorious legions. Your brother's generals scheme to butcher Pompey the moment he steps ashore to win Caesar's favor. Do we condone this bloody betrayal, or try to protect Rome's fallen champion?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "To murder a guest under the law of hospitality invites the curse of the gods upon the crown.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Allow Pompey's murder",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Shelter Pompey honorably",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": 2
+						},
+						"whatif": "Welcoming Pompey proves your nobility, but Caesar lands shortly after with hardened legions to crush all defiance. Caught between Roman factions, Egypt becomes an immediate Roman battlefield with you marked as an enemy of the republic. In truth, the Egyptian council lured Pompey into a skiff and severed his head to curry favor with Caesar."
+					},
+					{
+						"label": "Capture Pompey alive",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 0,
+							"legacy": 0
+						},
+						"whatif": "Holding the great Roman general as a live bargaining chip enrages both rival Roman camps. Caesar demands his rival's custody with drawn swords, while Pompey's loyal fleet raids your coastlines in retribution. In reality, the regents executed Pompey instantly, presenting his severed head in pickle brine to a horrified Julius Caesar."
+					}
+				],
+				"reveal": "Hoping to win Caesar's alliance, Ptolemy XIII's regents lured Pompey into a small boat and stabbed him to death before his family's eyes. They severed his head and presented it to Caesar when he arrived in Alexandria. Instead of gratitude, Caesar wept with disgust at the murder of a Roman consul, deeply alienating the boy king's faction.",
+				"fun_fact": "When Caesar was presented with Pompey's pickled head and his signet ring, he wept openly and ordered the murderers executed."
+			},
+			{
+				"year": "48 BC",
+				"title": "The Smuggled Queen",
+				"advisor": "gold",
+				"emotion": "bold",
+				"speech": "Caesar occupies the royal palace in Alexandria, yet your brother's guards blockade the harbor, forbidding you an audience. If the boy king reaches Caesar alone, Egypt becomes his playground. My trusted merchant Apollodorus can smuggle you past the enemy patrol boats tonight in a hempen bed sack straight into Caesar's private quarters. Dare you gamble your life on this meeting?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Crawling into the den of a Roman conqueror in a linen bag is madness! Attack the gates with our army.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Smuggle into the palace",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Storm the palace gates",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": 0
+						},
+						"whatif": "Your mercenary assault crashes against the veteran Roman soldiers holding Alexandria's perimeter. The bloody skirmish leaves Caesar viewing you as a reckless warlord, prompting him to back your brother as the puppet ruler. Cleopatra instead chose audacious stealth, rolling herself out of a hemp sack to charm the Roman dictator personally."
+					},
+					{
+						"label": "Wait for Roman envoys",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Waiting passively outside the city allows Ptolemy's regents to shower Caesar with gifts and weave a narrative of your treason. By the time Rome sends for you, your brother has already been ratified as the unquestioned client king. History remembers Cleopatra's daring infiltration as one of the most brilliant gambits in ancient statecraft."
+					}
+				],
+				"reveal": "Wrapped inside a coarse bed sack carried by her loyal servant Apollodorus, twenty-one-year-old Cleopatra was secretly slipped past Egyptian guards and carried directly into Caesar's apartments. Captivated by her wit, courage, and political brilliance, Caesar immediately took her side, restoring her to the throne and igniting the dramatic Alexandrian War.",
+				"fun_fact": "Popular myth claims Cleopatra was wrapped in a carpet, but Greek historian Plutarch specifically used the word for a leather bed-linen sack."
+			}
+		]
+	},
+	{
+		"season_title": "Cleopatra: The Roman Entanglement",
+		"intro": "Caesar's swords have shattered your brother's rebellion, leaving you the undisputed master of Alexandria under Roman protection. Yet holding an empire requires far more than winning a civil war, as the fate of Egypt now entangles with Rome's bloody destiny.",
+		"turns": [
+			{
+				"year": "47 BC",
+				"title": "The Golden Barge",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "Your rebel brother drowned in the Nile, Majesty, and Caesar's legions hold Alexandria. Now Upper Egypt whispers that the gods have abandoned your dynasty. Caesar wants to sail south aboard the great palace barge, showing the south that Isis and Ammon reign together. We must display your divine power, or will you stay behind to clear the rebel garrison?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "A pleasure cruise while bandits roam the Delta? We should scour the provinces with iron, not silk sails and harps.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Sail the Nile with Caesar",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 2,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "March legions through Thebes",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "Brutal Roman pacification sparked immediate peasant uprisings across the Nile Valley. Instead of being revered as the living Isis, you were cursed as a Roman puppet who paid foreign mercenaries to desecrate holy temples. It took years to quell the southern garrisons. In reality, Cleopatra sailed three hundred miles with Caesar, dazzling Upper Egypt into awe and submission."
+					},
+					{
+						"label": "Remain sequestered in Alexandria",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Hiding behind Alexandria's marble walls allowed priests in Thebes to crown a pretender pharaoh from the old bloodlines. Caesar grew restless without diversion and departed Egypt months early, leaving you politically isolated and facing renewed rebellion. In truth, Cleopatra paraded Caesar upriver on a floating cedar palace, cementing both Roman military backing and divine Ptolemaic sovereignty."
+					}
+				],
+				"reveal": "In the spring of 47 BC, Cleopatra and Caesar embarked on the Thalamegos, a colossal four-hundred-foot floating palace escorted by four hundred warships. Sailing up the Nile to the borders of Nubia, Cleopatra presented herself as Isis reborn and secured the adoration of the traditional priesthoods. The journey was not mere romance; it showcased absolute Ptolemaic luxury and convinced Caesar to station three Roman legions to guarantee her throne.",
+				"fun_fact": "The Thalamegos was a two-story floating resort containing colonnades, banquet halls, and shrines of cypress and cedar, propelled entirely by hundreds of oarsmen along the river."
+			},
+			{
+				"year": "47 BC",
+				"title": "Caesar's Living Image",
+				"advisor": "gold",
+				"emotion": "bold",
+				"speech": "A son has been born, Majesty, and Alexandria rejoices! The priests already call him Ptolemy Caesar, yet Rome's senators will choke on their own bile if you name their dictator as his father. Name the boy your royal co-ruler now, and you bind Caesar's destiny to our treasury. Or shall we proclaim him purely an Egyptian king to avoid offending Roman law?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "The stars wrote his parentage in fire, Apollodorus. If we hide the father, we insult both the heavens and Rome.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Proclaim Caesarion co-ruler",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Crown him purely Egyptian",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": -2
+						},
+						"whatif": "Erasing Caesar's blood from the temple reliefs pleased Roman traditionalists, but cost Egypt its ultimate political leverage. When Caesar later wrote his Roman will, he dismissed the boy entirely, leaving your dynasty without an international protector. In reality, Cleopatra brazenly hailed him as Ptolemy Caesar, carved his image on the walls of Dendera, and established his co-regency to rule forever."
+					},
+					{
+						"label": "Conceal the birth entirely",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Keeping the royal heir secret stirred venomous palace rumors that you were barren and unfit to rule. Rival branches of the Ptolemaic house attempted another bloody coup, claiming the throne was empty. In truth, Cleopatra minted coins showing herself nursing the baby god, weaponizing Caesarion's parentage to prove that Egypt possessed the ultimate imperial heir."
+					}
+				],
+				"reveal": "Born in 47 BC, the boy was named Ptolemy XV Philopator Philometor Caesar, though the Alexandrians mockingly dubbed him Caesarion, or Little Caesar. Cleopatra had coins struck depicting herself as Aphrodite nursing the baby Eros. Caesar never legally adopted the boy under Roman law, but he openly allowed the child to bear his name, signaling Egypt's irreplaceable status in his grand geopolitical designs.",
+				"fun_fact": "Roman citizens were scandalized by Caesarion's name because Roman law strictly banned bigamy and prohibited citizens from fathering legitimate children with foreign monarchs."
+			},
+			{
+				"year": "46 BC",
+				"title": "A Queen in Rome",
+				"advisor": "war",
+				"emotion": "alarmed",
+				"speech": "Caesar summons you to Rome for his grand triumph, Majesty. The city is a vipers nest of scheming senators who detest eastern monarchs. If you enter with your court, you walk unarmed into the belly of the beast. We could send ambassadors bearing gold, or will you sail across the sea and plant our royal court directly on Roman soil?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Ambassadors get robbed and forgotten, General. Caesar built a golden statue of our Queen in his own temple. We must collect our due.",
+					"emotion": "amused"
+				},
+				"choices": [
+					{
+						"label": "Establish court across Tiber",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Send emissaries with gifts",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Sending ambassadors kept you safe in Alexandria, but out of sight meant out of mind. Roman politicians treated your envoys as mere tributary beggars, and Caesar grew distracted by new affairs and his adopted nephew Octavian. In reality, Cleopatra sailed to Rome in royal splendor, settling in Caesar's suburban villa where Roman senators lined up to pay her court."
+					},
+					{
+						"label": "Demand Caesar return here",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Demanding that the master of Rome cross the Mediterranean to wait upon you insulted the Roman Senate beyond measure. Caesar felt forced to display stern republican virtue, cutting off grain imports and withdrawing his garrison from Alexandria. In truth, Cleopatra accepted Caesar's invitation and lived in Rome for nearly two years, directly influencing Roman statecraft."
+					}
+				],
+				"reveal": "In 46 BC, Cleopatra arrived in Rome alongside her nominal husband Ptolemy XIV and infant Caesarion, taking up residence in Caesar's private villa across the Tiber. Caesar shocked conservative Roman society by dedicating a gilded statue of Cleopatra in the Temple of Venus Genetrix. Senators like Cicero bitterly complained of her aloof demeanor and the shameful spectacle of Roman patricians groveling before an Eastern queen.",
+				"fun_fact": "The Roman orator Cicero openly loathed Cleopatra, writing in private letters that her arrogance in her riverside villa was unbearable and that her court smelled of Greek elitism."
+			},
+			{
+				"year": "44 BC",
+				"title": "The Blood in Rome",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Caesar is dead! Slain in the Senate hall by twenty-three stab wounds! Rome's streets are howling for blood, and the assassins still hold the Capitoline hill. His will names his teenage nephew Octavian as heir, not your son Caesarion. If the mob turns on foreign tyrants, our guards cannot hold the villa. We must decide immediately: flee to Egypt, or contest the Roman succession?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Flee back to Alexandria",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Demand Caesarion inherit Rome",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Pressing Caesarion's claim before the Roman mob sparked immediate fury. Marcus Antonius could not protect you from hostile legionaries who viewed the Egyptian boy as an alien threat. Your royal retinue was surrounded, forcing a humiliated escape under nightfall with empty pockets. In reality, Cleopatra quietly packed her fleet and sailed back to Egypt, preserving her dynasty and biding her time."
+					},
+					{
+						"label": "Ally with Caesar's assassins",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Offering gold to Brutus and Cassius poisoned your reputation among Caesar's fiercely loyal soldiers. When Antonius and Octavian rallied the veterans to avenge Caesar, Egypt was marked as an enemy of Rome, inviting an immediate invasion. In truth, Cleopatra recognized that Rome was lost for now and hurried home to consolidate her independent power base."
+					}
+				],
+				"reveal": "Caesar was assassinated on the Ides of March, 44 BC. Realizing that Caesarion was ignored in Caesar's will and that the republican conspirators held immense sway, Cleopatra saw her position in Rome collapse overnight. Within a month, she gathered her fleet and slipped out of Italy. Returning safely to Alexandria, she retained her vast wealth and turned her attention to securing Egypt's borders.",
+				"fun_fact": "Despite fleeing Rome under grave threat, Cleopatra's departure was so organized that she managed to transport an entire menagerie of rare animals and dozens of Roman scholars back to Alexandria."
+			},
+			{
+				"year": "44 BC",
+				"title": "The Brother's Cup",
+				"advisor": "faith",
+				"emotion": "calm",
+				"speech": "We are safely back in Alexandria, Majesty, but your brother Ptolemy XIV has reached his fourteenth year. By law, he may soon demand real authority over the army and the treasury. He plots against you in the corridors, just as his elder brother did. Two pharaohs cannot share one throne. A few drops of aconite in his evening wine would solve our succession forever.",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Poison is a coward's weapon! Send the boy to govern Cyrene under a dozen reliable spears and let him play soldier.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Poison young Ptolemy XIV",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 2,
+							"legacy": -1
+						}
+					},
+					{
+						"label": "Exile him to Cyrene",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": 0
+						},
+						"whatif": "Granting Ptolemy his own provincial seat in Cyrene proved fatal. Rebellious governors and disgruntled mercenary captains rallied around the teenage prince, using Cyrenian grain to finance a fresh invasion of the Nile Delta. In reality, Cleopatra eliminated all dynastic rivalry by having her younger brother poisoned, elevating her infant son Caesarion as her sole co-ruler without any domestic opposition."
+					},
+					{
+						"label": "Share royal power equally",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Attempting to share real executive authority paralyzed Egypt's court. Alexandria split into rival factions, and Ptolemy's tutors conspired to assassinate Caesarion before he came of age. Civil war flared anew in the streets. In truth, Cleopatra chose cold ruthlessness, ensuring that no sibling would ever dispute her dominion or Caesarion's sacred claim to the double crown."
+					}
+				],
+				"reveal": "In the summer of 44 BC, shortly after returning from Rome, Ptolemy XIV suddenly died. Ancient historians like Josephus directly accused Cleopatra of poisoning him with hemlock or aconite. With her brother dead, Cleopatra immediately elevated her three-year-old son Caesarion to co-ruler as Ptolemy XV, eliminating all adult rivals and establishing unquestioned personal control over Egypt's empire.",
+				"fun_fact": "In traditional Egyptian religious art at Dendera, Cleopatra had herself carved as the goddess Hathor while infant Caesarion was depicted wearing the tall double crown of Upper and Lower Egypt."
+			}
+		]
+	}
+]

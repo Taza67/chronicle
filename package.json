@@ -1,0 +1,28 @@
+{
+	"name": "chronicle",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"dev:worker": "wrangler dev --config worker/wrangler.toml --port 8787",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"typecheck": "tsc && tsc -p worker/tsconfig.json",
+		"deploy:worker": "wrangler deploy --config worker/wrangler.toml",
+		"package": "npm run build && cd dist && zip -r ../chronicle-itch.zip ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.14",
+		"@cloudflare/workers-types": "^5.20260926.1",
+		"playwright": "^1.63.0",
+		"typescript": "~6.0.2",
+		"vite": "^8.3.0",
+		"wrangler": "^4.141.0"
+	},
+	"dependencies": {
+		"phaser": "^3.90.0"
+	}
+}

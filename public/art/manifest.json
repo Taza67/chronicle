@@ -1,0 +1,202 @@
+{
+	"napoleon": {
+		"scene": {
+			"src": "art/napoleon/scene.webp",
+			"far": "art/napoleon/scene_far.webp"
+		},
+		"leader": {
+			"src": "art/napoleon/leader.webp",
+			"bbox": {
+				"mouth": [304.0, 378.35, 346.0, 552.65],
+				"eyes": [199.15, 318.3, 285.85, 627.7],
+				"head": [41, 230, 384, 775]
+			}
+		},
+		"advisors": {
+			"war": {
+				"src": "art/napoleon/war.webp",
+				"bbox": {
+					"mouth": [307.8, 373.9, 358.2, 588.1],
+					"eyes": [166.0, 307.15, 302.0, 665.85],
+					"head": [55, 339, 395, 713]
+				}
+			},
+			"gold": {
+				"src": "art/napoleon/gold.webp",
+				"bbox": {
+					"mouth": [246.8, 397.1, 297.2, 560.9],
+					"eyes": [145.2, 342.8, 226.8, 635.2],
+					"head": [61, 387, 330, 648]
+				}
+			},
+			"faith": {
+				"src": "art/napoleon/faith.webp",
+				"bbox": {
+					"mouth": [280.55, 408.1, 320.45, 571.9],
+					"eyes": [161.4, 353.55, 256.6, 637.45],
+					"head": [71, 386, 360, 706]
+				}
+			}
+		}
+	},
+	"cleopatra": {
+		"scene": {
+			"src": "art/cleopatra/scene.webp",
+			"far": "art/cleopatra/scene_far.webp"
+		},
+		"leader": {
+			"src": "art/cleopatra/leader.webp",
+			"bbox": {
+				"mouth": [400.5, 425.7, 463.5, 648.3],
+				"eyes": [262.2, 288.5, 377.8, 747.5],
+				"head": [102, 219, 568, 735]
+			}
+		},
+		"advisors": {
+			"war": {
+				"src": "art/cleopatra/war.webp",
+				"bbox": {
+					"mouth": [267.0, 423.65, 309.0, 585.35],
+					"eyes": [182.95, 370.05, 256.05, 636.95],
+					"head": [55, 327, 345, 712]
+				}
+			},
+			"gold": {
+				"src": "art/cleopatra/gold.webp",
+				"bbox": {
+					"mouth": [253.8, 443.85, 304.2, 639.15],
+					"eyes": [134.6, 379.3, 243.4, 688.7],
+					"head": [27, 298, 347, 679]
+				}
+			},
+			"faith": {
+				"src": "art/cleopatra/faith.webp",
+				"bbox": {
+					"mouth": [277.45, 435.4, 321.55, 628.6],
+					"eyes": [168.4, 378.85, 263.6, 666.15],
+					"head": [58, 335, 387, 638]
+				}
+			}
+		}
+	},
+	"ashoka": {
+		"scene": {
+			"src": "art/ashoka/scene.webp",
+			"far": "art/ashoka/scene_far.webp"
+		},
+		"leader": {
+			"src": "art/ashoka/leader.webp",
+			"bbox": {
+				"mouth": [319.55, 465.2, 359.45, 624.8],
+				"eyes": [211.9, 382.05, 290.1, 682.95],
+				"head": [42, 329, 417, 673]
+			}
+		},
+		"advisors": {
+			"war": {
+				"src": "art/ashoka/war.webp",
+				"bbox": {
+					"mouth": [258.2, 436.85, 291.8, 590.15],
+					"eyes": [179.3, 395.0, 250.7, 633.0],
+					"head": [58, 381, 353, 642]
+				}
+			},
+			"gold": {
+				"src": "art/ashoka/gold.webp",
+				"bbox": {
+					"mouth": [294.9, 430.0, 341.1, 598.0],
+					"eyes": [201.95, 367.5, 275.05, 656.5],
+					"head": [37, 350, 390, 650]
+				}
+			},
+			"faith": {
+				"src": "art/ashoka/faith.webp",
+				"bbox": {
+					"mouth": [228.1, 418.45, 265.9, 588.55],
+					"eyes": [136.95, 362.6, 210.05, 641.4],
+					"head": [68, 385, 297, 616]
+				}
+			}
+		}
+	},
+	"mansa_musa": {
+		"scene": {
+			"src": "art/mansa_musa/scene.webp",
+			"far": "art/mansa_musa/scene_far.webp"
+		},
+		"leader": {
+			"src": "art/mansa_musa/leader.webp",
+			"bbox": {
+				"mouth": [272.15, 423.0, 328.85, 591.0],
+				"eyes": [199.65, 372.05, 269.35, 638.95],
+				"head": [45, 358, 428, 649]
+			}
+		},
+		"advisors": {
+			"war": {
+				"src": "art/mansa_musa/war.webp",
+				"bbox": {
+					"mouth": [268.7, 381.85, 323.3, 577.15],
+					"eyes": [186.75, 359.2, 280.25, 610.8],
+					"head": [15, 337, 348, 677]
+				}
+			},
+			"gold": {
+				"src": "art/mansa_musa/gold.webp",
+				"bbox": {
+					"mouth": [329.95, 428.3, 395.05, 625.7],
+					"eyes": [225.05, 347.0, 321.95, 687.0],
+					"head": [46, 301, 431, 684]
+				}
+			},
+			"faith": {
+				"src": "art/mansa_musa/faith.webp",
+				"bbox": {
+					"mouth": [342.25, 394.55, 394.75, 560.45],
+					"eyes": [215.95, 334.3, 323.05, 643.7],
+					"head": [63, 263, 458, 793]
+				}
+			}
+		}
+	},
+	"elizabeth": {
+		"scene": {
+			"src": "art/elizabeth/scene.webp",
+			"far": "art/elizabeth/scene_far.webp"
+		},
+		"leader": {
+			"src": "art/elizabeth/leader.webp",
+			"bbox": {
+				"mouth": [331.7, 382.8, 386.3, 559.2],
+				"eyes": [210.05, 318.55, 306.95, 636.45],
+				"head": [47, 301, 417, 745]
+			}
+		},
+		"advisors": {
+			"war": {
+				"src": "art/elizabeth/war.webp",
+				"bbox": {
+					"mouth": [308.9, 380.6, 355.1, 565.4],
+					"eyes": [179.9, 320.2, 292.1, 639.8],
+					"head": [58, 330, 396, 700]
+				}
+			},
+			"gold": {
+				"src": "art/elizabeth/gold.webp",
+				"bbox": {
+					"mouth": [272.65, 412.95, 308.35, 562.05],
+					"eyes": [183.3, 364.15, 254.7, 620.85],
+					"head": [51, 367, 349, 671]
+				}
+			},
+			"faith": {
+				"src": "art/elizabeth/faith.webp",
+				"bbox": {
+					"mouth": [308.55, 461.1, 348.45, 624.9],
+					"eyes": [199.5, 389.35, 284.5, 693.65],
+					"head": [47, 279, 410, 718]
+				}
+			}
+		}
+	}
+}

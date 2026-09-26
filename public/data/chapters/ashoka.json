@@ -1,0 +1,464 @@
+[
+	{
+		"season_title": "Ashoka: The Wheel of Law",
+		"intro": "The throne of Pataliputra sits bathed in blood after four years of fratricidal war. You are the newly crowned Chakravartin of the Mauryan Empire, master of all Jambudvipa, but your true trial has only just begun.",
+		"turns": [
+			{
+				"year": "268 BC",
+				"title": "Purge of the Rival Princes",
+				"advisor": "gold",
+				"emotion": "bold",
+				"speech": "My Prince, the crown is yours, but Sushima's loyalists still breathe. Our court tracks three tides: the grain in our treasury, the peace in our provinces, and the memory carved for our posterity. The court Oracle will test if your instincts match the scroll of destiny after every decree. For now, your remaining brothers plot in the zenana. Do we execute them, or offer them exile?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Can blood truly wash away blood, or does it merely steep the throne in foul karma?",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Execute all rival brothers",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 2,
+							"legacy": -2
+						}
+					},
+					{
+						"label": "Exile rivals to remote satrapies",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 1
+						},
+						"whatif": "Banished to Gandhara, your brothers regrouped with Greek mercenaries and mountain chieftains. Within three years, civil war erupted anew along the Indus, draining the royal mint and shattering northern trade. In truth, Buddhist chronicles record that Ashoka slew ninety-nine of his brothers, sparing only Tissa to cement unquestioned dominion."
+					},
+					{
+						"label": "Appoint rivals as royal ministers",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": 1
+						},
+						"whatif": "Viperous factions divided your council chamber, stalling every imperial edict. Sushima's former partisans poisoned your water supply during the monsoon, forcing a chaotic royal retreat from Pataliputra. In truth, Ashoka showed no mercy to claimants, systematically eradicating them to prevent rival claimants from fracturing the empire."
+					}
+				],
+				"reveal": "According to the Mahavamsa and Ashokavadana, Ashoka wiped out his rival half-brothers following his father Bindusara's death, securing the peacock throne through absolute terror. Radhagupta was richly rewarded for engineering the purge, becoming Chief Minister, while Ashoka spent four bloody years consolidating power before his formal coronation in Pataliputra.",
+				"fun_fact": "Ancient texts claim Radhagupta tricked Prince Sushima into falling into a hidden charcoal pit trap, clearing Ashoka's path to kingship."
+			},
+			{
+				"year": "265 BC",
+				"title": "The Torture Chamber",
+				"advisor": "war",
+				"emotion": "proud",
+				"speech": "Rebellion festers in the alleys of Pataliputra, Sire. Common thieves and rebellious nobles laugh at ordinary lashes. I have commissioned Girika, a most exquisite master of agony, to build an enclosed palace of torment. From outside, it looks like a pleasure pavilion, but inside, none leave alive. Shall we inaugurate this palace of justice?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Will you rule through the terrified trembling of men, or through their reverent hearts?",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Commission the prison palace",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 2,
+							"legacy": -2
+						}
+					},
+					{
+						"label": "Rely on standard fines and exile",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "Without fearsome displays, rebellious guilds withheld taxes and defied imperial governors across Avanti. Gangs of bandits openly ambushed imperial tax wagons outside the capital, mocking your restraint. In truth, Ashoka earned the dreadful moniker Chandashoka, or Ashoka the Fierce, specifically for his ruthless, terrifying punishments early in his reign."
+					},
+					{
+						"label": "Amnesty for all political dissenters",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": 1
+						},
+						"whatif": "Pardoned conspirators interpreted your clemency as weakness and immediately conspired with southern kings. Within months, street brawls paralyzed Pataliputra and forced the army to intervene at swordpoint. In truth, early Ashoka was notorious for unyielding brutality, creating an atmosphere of terrifying discipline that crushed all opposition."
+					}
+				],
+				"reveal": "Known in legend as Ashoka's Hell, this notorious prison compound was disguised with beautiful pools and trees, yet contained ovens, boiling cauldrons, and flesh-tearing racks. Chinese pilgrims Faxian and Xuanzang both recorded the grim ruins centuries later, describing how the emperor used horrific state terror to break the will of rebellious subjects.",
+				"fun_fact": "Legend says Girika's charter decreed that anyone who set foot inside the prison garden could never leave, even the emperor himself."
+			},
+			{
+				"year": "261 BC",
+				"title": "Invasion of Kalinga",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "Kalinga stands defiant on our eastern flank, Majesty. They control the maritime ports to Burma and Java, choking our merchant fleets, and their senate refuses Mauryan overlordship. Sixty thousand foot soldiers, a thousand cavalry, and seven hundred war elephants wait on the border. Let us march and crush them, or remain hemmed in like shopkeepers.",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "War eats coin by the mountain. A naval blockade might starve them without burning our treasury.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Invade and subjugate Kalinga",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": -1
+						}
+					},
+					{
+						"label": "Impose trade blockade by sea",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": 1
+						},
+						"whatif": "The proud Kalingas easily circumvented your naval patrols through inland waterways and formed a defensive pact with the Chola kingdoms. The stalemate dragged on for decades, sapping imperial prestige and allowing coastal raiders to plunder Bengal. In truth, Ashoka chose total war, mobilizing the grand Mauryan army for a devastating land conquest."
+					},
+					{
+						"label": "Offer tributary status with autonomy",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": 0
+						},
+						"whatif": "Kalinga rejected your ambassadors with insults, interpreting diplomacy as royal hesitation. Emboldened, their border raiders pillaged Mauryan villages along the Mahanadi River, encouraging other southern tribes to revolt. In truth, Ashoka tolerated no independent power along his eastern corridor and resolved to conquer the republic by sheer force."
+					}
+				],
+				"reveal": "In the eighth year of his reign, Ashoka launched a massive invasion of Kalinga. The ensuing carnage was unprecedented in Indian antiquity. Rock Edict XIII explicitly laments the grim tally: one hundred thousand slain in battle, one hundred and fifty thousand driven into captivity, and many more perishing from disease, famine, and dislocation.",
+				"fun_fact": "The Daya River running near the battlefield of Dhauli reportedly turned completely crimson with the blood of fallen Kalingan warriors."
+			},
+			{
+				"year": "260 BC",
+				"title": "The Great Remorse",
+				"advisor": "faith",
+				"emotion": "calm",
+				"speech": "You walk among the severed limbs and burning fields of Dhauli, Sire. The wailing of widows chokes the wind. The butcher of Kalinga has won his empire of dust, but at what price to your soul? The Blessed One taught that victory breeds hatred, for the defeated live in sorrow. Will you lay down the sword of conquest forever?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Drop your sword now, Sire, and every hill chieftain from Taxila to Mysore will rise in rebellion.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Renounce conquest for Buddhist piety",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Execute remaining prisoners of war",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": -2
+						}
+					},
+					{
+						"label": "Tax survivors to build monuments",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Heavy tributes sparked an immediate peasant uprising across the scorched ruins of Kalinga. Your commanders were trapped in besieged forts, forcing another bloody pacification campaign that drained the royal treasury. In truth, the sheer horror of Kalinga transformed Ashoka deeply, prompting his lifelong conversion to Buddhism and renunciation of armed conquest."
+					}
+				],
+				"reveal": "Overwhelmed by profound remorse after witnessing the devastation of Kalinga, Ashoka converted to Buddhism under the guidance of monk Upagupta. He abandoned Digvijaya, conquest by sword, and replaced it with Dhammavijaya, conquest by righteousness, publicly inscribing his sorrow on massive rocks so all future generations could read of his repentance.",
+				"fun_fact": "Ashoka is the only emperor in world history known to have voluntarily renounced offensive warfare at the very peak of his military power."
+			},
+			{
+				"year": "257 BC",
+				"title": "Edicts of the Dhamma",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "The faith must not remain locked in monastery walls, Beloved of the Gods. If our subjects are to live in virtue, your imperial word must be carved into the living bones of the earth. We should carve rock edicts across the realm and appoint special Dhamma inspectors to protect the vulnerable. Shall we carve your law in stone?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Quarrying two score giant sandstone pillars and transporting them across deserts will drain our southern treasuries dry.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Carve pillar edicts across realm",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Distribute birch bark manuscripts instead",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "The fragile manuscripts rotted in the southern monsoons and were destroyed during palace coups within two generations. Without unyielding stone pillars, your message vanished from memory, leaving the Maurya dynasty remembered only as transient tyrants. In truth, Ashoka used massive Chunar sandstone monoliths that survived over two millennia."
+					},
+					{
+						"label": "Proclaim Dhamma only in Pataliputra",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 0
+						},
+						"whatif": "Confined to the imperial heartland, your reformed morality was ignored by governors in Taxila and Ujjain, who continued extortionate rule. Remote satraps drifted away from imperial unity without clear royal guidance. In truth, Ashoka dispatched stonemasons and Dhamma ministers to the far edges of Afghanistan, Nepal, and southern India."
+					}
+				],
+				"reveal": "Ashoka erected dozens of monumental polished pillars and inscribed edicts on cliff faces from Kandahar to Karnataka, written in local scripts like Prakrit, Greek, and Aramaic. He established the Dhamma Mahamattas, officers responsible for public welfare, justice, and the humane treatment of prisoners, foreigners, and domestic animals.",
+				"fun_fact": "The four-lion capital atop Ashoka's pillar at Sarnath was adopted in 1950 as the official national emblem of the Republic of India."
+			}
+		]
+	},
+	{
+		"season_title": "Ashoka: The Wheel of Piety",
+		"intro": "The blood of Kalinga has soaked into the soil, leaving an emperor who trades conquest for contemplation. Yet ruling the world's grandest empire with sermons instead of spears tests even the holiest resolve.",
+		"turns": [
+			{
+				"year": "256 BC",
+				"title": "Missions to the West",
+				"advisor": "faith",
+				"emotion": "calm",
+				"speech": "Great King, your remorse bears no fruit if kept within our borders. Greek kings in Syria and Egypt know only war elephants and tribute. Let us send yellow-robed monks across the oceans to Antiochus and Ptolemy. True conquest is winning minds, not pillaging provinces. Will you dispatch our holy brothers to preach the Dhamma abroad?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Greek monarchs respect spear tips, not begging bowls. Send ambassadors with swords, or save our travel silver.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Dispatch missions across the seas",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 0,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Demand Greek tribute instead",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Demanding gold from the Seleucid king triggered frontier border skirmishes near Arachosia. Trade slowed along the northern passes, while royal treasurers scrambled to pay restless garrisons. Ashoka's message of universal peace died before it crossed the Indus River. In reality, Ashoka dispatched peaceful envoys who spread Buddhist philosophy across the Hellenistic kingdoms and Sri Lanka."
+					},
+					{
+						"label": "Keep monks within India",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": -2
+						},
+						"whatif": "Hoarding the teachings within Magadha pleased tight-fisted court accountants, but Buddhism remained merely a regional sect. The faith never reached Ceylon or the Mediterranean ports, leaving its global influence stillborn in the Ganges basin. In reality, Ashoka's international missions successfully seeded Buddhism abroad, including his own children travelling to convert Sri Lanka."
+					}
+				],
+				"reveal": "Ashoka dispatched Buddhist emissaries across the known world, sending monks to Sri Lanka, Burma, and five Hellenistic kings, including Antiochus the Second of Syria and Ptolemy the Second of Egypt. His son Mahinda and daughter Sanghamitta carried the faith to Ceylon, forever transforming Asian culture without brandishing a single blade.",
+				"fun_fact": "Ashoka's edicts proudly list five foreign Greek rulers by name, using Prakrit phonetic spellings like Amtiyoko for Antiochus and Turamaya for Ptolemy."
+			},
+			{
+				"year": "250 BC",
+				"title": "The Third Council",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Majesty, your generosity has created a pestilence of fake holy men. Thousands of fraudsters shave their heads to live rent-free in our royal monasteries. They eat state rice, argue blasphemies, and ruin the Sangha from within. Venerable Moggaliputta begs you to convene a grand council at Pataliputra to strip their robes. Will you purge these scoundrels?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Can water purify itself by boiling away the river? Tread softly, Majesty, lest you break holy unity.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Expel all heretical monks",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Tolerate all monk factions",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Refusing to intervene allowed corrupt factions to multiply until monasteries became squabbling dens of political intrigue. Pataliputra's monks openly fought in the courtyards over imperial stipends, eroding popular reverence for the Sangha. In reality, Ashoka personally sat with Moggaliputta-Tissa, defrocked sixty thousand heretics, and established orthodox Theravada doctrine at the Third Buddhist Council."
+					},
+					{
+						"label": "Shut down the monasteries",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Shutting monastic gates in frustration provoked outrage among the pious populace. Riots broke out across Magadha as commoners accused the throne of betraying the Buddha. Ashoka's moral authority collapsed beneath the weight of civil unrest. In reality, Ashoka preserved the monasteries while strictly weeding out opportunists to secure scriptural purity."
+					}
+				],
+				"reveal": "Convening roughly one thousand monks at Pataliputra, Ashoka presided over the Third Buddhist Council alongside the elder Moggaliputta-Tissa. Over sixty thousand false monks were defrocked and given white garments to wear as laymen. The council compiled the Kathavatthu, sealing orthodox Theravada doctrine for centuries to come.",
+				"fun_fact": "Ashoka took monastic purity so seriously that his pillar edicts warned schismatic monks they would be expelled from the order if they caused division."
+			},
+			{
+				"year": "249 BC",
+				"title": "Pilgrimage to Lumbini",
+				"advisor": "gold",
+				"emotion": "amused",
+				"speech": "Majesty, your devotion grows costlier by the moon. You march fifty thousand retainers toward the swampy foothills of Lumbini just to touch the dirt where the Blessed One was born. Worse, your holy scribes demand you excuse that entire district from taxes. Our treasury needs that grain, Sire. Will you empty our vaults for holy soil?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "What is grain compared to the cradle of enlightenment? Honour the birthplace, and the empire prospers in spirit.",
+					"emotion": "proud"
+				},
+				"choices": [
+					{
+						"label": "Slash taxes and raise pillar",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Tax Lumbini as usual",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 0,
+							"legacy": -1
+						},
+						"whatif": "Treating the sacred birthplace like an ordinary farming hamlet shocked pilgrims arriving from across the world. Commoners whispered that Ashoka's remorse after Kalinga was mere theatrical posturing to save face. In reality, Ashoka visited Lumbini in his twentieth regnal year, erected a pillar, and slashed their agrarian tax to one-eighth."
+					},
+					{
+						"label": "Confiscate local village land",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Seizing Lumbini's farmlands to build an extravagant state sanctuary alienated the native Shakya clan. The surrounding villages revolted against imperial bailiffs, desecrating holy shrines in protest against royal tyranny. In reality, Ashoka treated the inhabitants with exceptional kindness, giving them sweeping tax exemptions to honour the birthplace."
+					}
+				],
+				"reveal": "In the twentieth year of his coronation, Ashoka made a royal pilgrimage to Lumbini Garden in modern Nepal. He worshipped at the stone marking Buddha Shakyamuni's birth, erected a great polished pillar, and reduced the village land tax from one-sixth to one-eighth, permanently exempting the sacred settlement from religious levies.",
+				"fun_fact": "The inscription on the Lumbini pillar still stands today, reading: Here the Buddha was born, the sage of the Shakyas, so the village pays only one-eighth."
+			},
+			{
+				"year": "243 BC",
+				"title": "The Forest Tribes",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "The savage Atavika tribes in the central hills take your nonviolence for royal weakness, Majesty. They raid our caravans, slaughter merchant guards, and boast that Ashoka will only weep and pray for their souls. If you do not march the war host into their jungles, the entire south will sever our trade routes. How shall we answer them?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "Tame the tiger with meat, not a cudgel. Offer them righteousness before you spill more Mauryan blood.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Threaten ruin while urging peace",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Exterminate the forest clans",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": -2
+						},
+						"whatif": "Unleashing the Mauryan host into the dense central jungles sparked years of brutal guerrilla slaughter. Thousands died in malaria-ridden swamps, utterly destroying Ashoka's reputation as a compassionate ruler of Dhamma. In reality, Ashoka balanced firm deterrence with diplomacy, warning the forest dwellers he still wielded power to strike if provoked."
+					},
+					{
+						"label": "Surrender frontier trade routes",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Ceding mountain passes to lawless raiders emboldened rival kings along the Deccan frontier. Smuggling skyrocketed, southern tribute dried up, and imperial tax collectors were openly mocked as toothless cowards. In reality, Ashoka never abandoned imperial borders, keeping strict administrative watch over frontier tribes while demanding their peaceful compliance."
+					}
+				],
+				"reveal": "Ashoka proved his conversion to nonviolence was not helplessness. In his thirteenth rock edict, he warned the Atavika forest tribes that the emperor possessed compassion, but also power to punish. He urged them to mend their ways and accept moral order, averting a bloodbath while securing critical trade paths through central India.",
+				"fun_fact": "Ashoka's edicts to the forest tribes contain an explicit, chilling phrase: The King possesses power despite his remorse, and can punish those who do wrong."
+			},
+			{
+				"year": "235 BC",
+				"title": "The Half-Mango",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Majesty, you must be stopped. In your dotage, you are signing away the imperial treasury to feed your monks. Gold vessels, jewels, entire grain silos, gone to the Sangha. The crown prince Kunala is blinded by palace intrigue, and ministers whisper of bankruptcy. When all you hold is a half-eaten mango, will you give that away too?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Yield rule to the ministers",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Execute ministers for treason",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Ordering the execution of his senior ministers plunged Pataliputra into an immediate military coup. Royal guards revolted to protect the blinded prince Kunala, leaving Ashoka trapped as a prisoner inside his palace. In reality, Ashoka accepted his ministers' fiscal limits, poetically gifting his final half-mango to the monastery before fading from power."
+					},
+					{
+						"label": "Tax the Sangha back",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Demanding monks return their gifts triggered widespread outrage among the religious orders. Ashoka was denounced as a fickle tyrant who revoked his own sacred pledges, ruining forty years of painstaking moral legacy. In reality, Ashoka retained his unwavering spiritual commitment, peacefully yielding financial authority to his grandson Samprati and chief advisors."
+					}
+				],
+				"reveal": "In his twilight years, Ashoka gave away so much wealth that Chief Minister Radhagupta and prince Samprati cut off his access to state funds to preserve the empire. Buddhist texts record that finding himself powerless with only half an amla fruit, Ashoka humbly sent it to the Sangha as his very last gift.",
+				"fun_fact": "The Ashokavadana text records that when the monks received the half-mango, they ground it into a broth so the entire monastic community could share the emperor's final gift."
+			}
+		]
+	}
+]

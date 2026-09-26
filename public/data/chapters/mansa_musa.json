@@ -1,0 +1,465 @@
+[
+	{
+		"season_title": "The Golden Lion of Mali",
+		"intro": "The previous Mansa vanished into the Atlantic Ocean with two thousand ships, leaving the throne of Mali to you. From the red earth of Niani to the salt flats of the Sahara, the empire awaits your command.",
+		"turns": [
+			{
+				"year": "1312",
+				"title": "Shadow of the Lost Fleet",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Mansa, your predecessor sailed into the dark western ocean and never returned. Now you hold the golden staff. Watch our three balances: our gold reserves, the stability of the provinces, and your enduring legacy. Before each decree, remember the court Oracle will test if your instinct matches history itself. Royal cousins whisper that the fleet may return. Shall we fund search ships or secure your crown?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Let the ocean swallow the fool! Give me horses, not wooden rafts, and I will crush any rebel cousin who blinks.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Declare the throne vacant and rule",
+						"historical": true,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Send another fleet into the ocean",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "Emptying the treasury on wooden caravels might have found distant shores, but Mali would have torn itself apart over empty thrones. Desert raiders would have raided the salt roads while your sailors chased sea monsters. In truth, Musa ended the Atlantic expeditions immediately, focusing all imperial resources on governing the Mandinka heartland and trade roads."
+					},
+					{
+						"label": "Wait as regent for his return",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Refusing to claim the supreme title would have invited ambitious provincial governors to carve up the empire. Without a crowned Mansa, vassals from Gao to Walata would have stopped paying tribute. In truth, Musa did not hesitate, taking full power as the ninth Mansa and consolidating undisputed authority over the court."
+					}
+				],
+				"reveal": "Mansa Muhammad ibn Qu had embarked into the Atlantic with thousands of ships, never to be seen again. Mansa Musa, serving as his deputy, followed Mandinka custom and assumed absolute power in 1312. By firmly taking the throne, Musa ended succession doubts and began transforming Mali from an isolated realm into the wealthiest empire in medieval Africa.",
+				"fun_fact": "Mansa Muhammad took two thousand vessels to explore the western edge of the Atlantic Ocean, and only one scouting captain ever returned to tell the tale."
+			},
+			{
+				"year": "1318",
+				"title": "Taxing the White Gold",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "Majesty, the northern desert clans are withholding their tribute from the salt mines of Taghaza. They think our spears cannot march across the baking dunes! Farba whimpers over every grain of salt, but my cavalry can ride north and burn their oasis forts to the ground. Shall we march in force, raise their tariffs, or negotiate terms with their desert chieftains?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Blood yields no profit, General! If you scatter the salt caravans, the price of gold in Niani collapses overnight.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Negotiate trade rights and tariffs",
+						"historical": true,
+						"effects": {
+							"gold": 2,
+							"stability": 1,
+							"legacy": 1
+						}
+					},
+					{
+						"label": "Crush the Berber salt clans",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -1,
+							"legacy": 1
+						},
+						"whatif": "A brutal military march into the Sahara would have exhausted the army and provoked relentless guerrilla warfare across the trade corridors. Starved horses and parched soldiers could not hold the shifting dunes. In truth, Musa integrated the desert clans into imperial trade agreements, securing the Sahara without wasting a single warrior."
+					},
+					{
+						"label": "Abandon the desert mines entirely",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Surrendering Taghaza would have severed Mali from the essential trans-Saharan trade that brought Mediterranean weapons, textiles, and prestige to the empire. Neighbouring dynasties would have filled the vacuum instantly. In truth, Musa recognized salt was as valuable as gold, maintaining strict imperial taxation over northern mines throughout his entire reign."
+					}
+				],
+				"reveal": "Salt was literally traded ounce for ounce with gold in southern Mali. Instead of costly desert wars, Mansa Musa used diplomacy and strategic garrisons to bind the Sanhaja and Tuareg nomads to the Malian crown. This secured the trade route from Taghaza to Timbuktu, guaranteeing that immense caravan profits poured straight into imperial coffers.",
+				"fun_fact": "In the desert town of Taghaza, buildings, houses, and even mosques were constructed entirely out of thick slabs of rock salt cut from the earth."
+			},
+			{
+				"year": "1324",
+				"title": "A Caravan of Gold",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "Commander of the Faithful, the holy pilgrimage calls your name! The sacred sands of Mecca must behold the glory of Mali. But an emperor cannot ride like a merchant. We must march with sixty thousand men, heralds clad in Persian silk, and camels weighed down with unrefined bullion. Sagaman-dir fears we leave the borders bare. Will you grant this magnificent expedition, Sire?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Sixty thousand men on a holy stroll! Leave our borders undefended and our neighbours will carve up your empire for supper.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Mount the lavish imperial pilgrimage",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Send a modest pious delegation",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "A quiet, penny-pinching caravan would have conserved the treasury, but Europe and the Arab world would have remained utterly oblivious to Mali. You would be forgotten by world cartographers entirely. In truth, Musa chose overwhelming magnificence, cementing Mali on world maps for centuries through the sheer spectacle of his pilgrimage."
+					},
+					{
+						"label": "Postpone the pilgrimage for war",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Cancelling the pilgrimage to chase border skirmishes would have alienated devout Islamic scholars and denied Musa his historic international recognition. The empire would remain a local powerhouse with zero Mediterranean alliances. In truth, Musa left capable regents behind and carried out the journey, securing enduring prestige across two continents."
+					}
+				],
+				"reveal": "In 1324, Mansa Musa departed for Mecca on a four-thousand-mile expedition that stunned the medieval world. His entourage included sixty thousand attendants, twelve thousand enslaved heralds draped in silk, and eighty camels carrying three hundred pounds of gold dust each. The journey placed Mali firmly at the center of the Islamic world's attention.",
+				"fun_fact": "Mansa Musa gave away so much gold as casual gifts along the route that local shopkeepers in Cairo were dazzled for decades to come."
+			},
+			{
+				"year": "1324",
+				"title": "The Sultan's Protocol",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Majesty, we have arrived in Cairo, but a crisis looms at the Mamluk palace! Sultan al-Nasir Muhammad demands you prostrate yourself and kiss the earth before his footstool. Al-Sahili claims it is a holy insult, while Sagaman-dir clutches his hilt. Meanwhile, the gold we spent here is ruining their coin markets! How will you greet the Sultan, Mansa?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "You are the shadow of God on earth! Bowing to an earthly prince when you are bound for Mecca defiles your devotion.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Prostrate only to God alone",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Kiss the Sultan's feet humbly",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -2
+						},
+						"whatif": "Submitting subserviently to the Mamluk Sultan would have degraded Mali to a petty tribute state in the eyes of eastern chroniclers. Word would have reached home that the Mansa debased his ancestors before foreigners. In truth, Musa refused to bow to any man, adroitly declaring his prostration was directed solely toward Allah."
+					},
+					{
+						"label": "Storm out and threaten war",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Drawing steel against the Mamluks in their imperial capital would have led to the massacre of your unarmored caravan thousands of miles from home. The pilgrimage would have ended in catastrophe. In truth, Musa used dignified diplomacy, honoring Egyptian custom without conceding his supreme sovereignty as ruler of Mali."
+					}
+				],
+				"reveal": "Protocol in Cairo required touching the ground before Sultan al-Nasir Muhammad. Musa masterfully defused the standoff by proclaiming he prostrated only to God who created him, then bowed towards the ground in prayer. Impressed by his poise, the Sultan showered Musa with gifts, palace lodging, and imperial escorts across the Red Sea.",
+				"fun_fact": "Musa flooded Cairo with so much gold that the metal suffered severe inflation, tanking local gold markets for more than twelve years."
+			},
+			{
+				"year": "1327",
+				"title": "The Crown of Timbuktu",
+				"advisor": "war",
+				"emotion": "proud",
+				"speech": "Majesty, we return home victorious! While you prayed in Mecca, my warriors stormed Gao and brought the Songhai kingdom under our iron boot. Now al-Sahili begs for thousands of gold mithqals to build giant mud mosques in Timbuktu, while Farba counts the cost of our empty saddlebags. Shall we build his monuments, reward the army, or hoard what remains?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Our saddlebags are light as desert dust! Pay the builders in mud and promises, not with our remaining gold bars.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Commission the great mosques",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": 2
+						}
+					},
+					{
+						"label": "Funnel all wealth into soldiers",
+						"historical": false,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": -1
+						},
+						"whatif": "Pouring all spoils solely into garrison barracks would have turned Mali into a brittle military dictatorship without spiritual or intellectual authority. The great scholars of the Islamic world would never have traveled south of the Sahara. In truth, Musa balanced military might with magnificent architecture, establishing world-renowned institutions that outlived his soldiers."
+					},
+					{
+						"label": "Hoard the gold in Niani",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Stashing the remaining treasure in vaults would have left conquered Gao and Timbuktu neglected, ripe for rebellion from disgruntled local merchants. Idle gold creates neither loyalty nor legendary renown. In truth, Musa spent extravagantly on scholars and grand projects, ensuring the newly acquired northern cities became the undisputed intellectual jewels of his empire."
+					}
+				],
+				"reveal": "Musa hired the Andalusian poet-architect Abu Ishaq al-Sahili, awarding him two hundred kilograms of gold to construct the legendary Djinguereber Mosque in Timbuktu. Musa also built an imperial palace in Gao. These grand projects transformed Timbuktu into the intellectual beacon of Africa, attracting scholars, books, and merchants from across the Mediterranean basin.",
+				"fun_fact": "The Djinguereber Mosque in Timbuktu was built with an earthy mortar of mud, papyrus, and straw, and still stands after seven centuries."
+			}
+		]
+	},
+	{
+		"season_title": "The Golden Hegemony",
+		"intro": "Having dazzled the Mediterranean with your boundless wealth and crowned your cities with majestic mudbrick mosques, you return to rule an empire at its zenith. Yet vast borders bring greedy neighbors, unpaid foreign debts, and the delicate challenge of transforming raw conquest into an enduring civilization.",
+		"turns": [
+			{
+				"year": "1328",
+				"title": "Princes of the River",
+				"advisor": "war",
+				"emotion": "proud",
+				"speech": "My victory at Gao brought the rebellious Songhai back under your yoke, Lion of Mali! Their Za king has surrendered his two young sons, Ali Kolon and Sulayman Nar. Some elders say we should put them to the sword to kill their royal line forever. I say bring them to Niani as honored court hostages. What is your will, Mansa?",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Hostages eat imperial grain for decades. Let them buy their freedom with river barges laden with dried fish and gold dust.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Foster them as imperial pages",
+						"historical": true,
+						"effects": {
+							"gold": 0,
+							"stability": 2,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Execute the royal heirs immediately",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "The butchery of the young princes ignited an immediate, ferocious uprising across the eastern bend of the Niger. Gao slipped from Malian control decades prematurely, draining the imperial treasury in endless river wars. In reality, Musa fostered the boys at court, where they served loyally for years before escaping to found the Sonni dynasty."
+					},
+					{
+						"label": "Ransom them for river tribute",
+						"historical": false,
+						"effects": {
+							"gold": 2,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Taking river tribute brought a swift mountain of cowries, but the Za king used his freed heirs to unite the river clans against Mali within three seasons. Border skirmishes choked trade along the middle Niger. In truth, Musa kept the princes close in Niani as guarantees of peace and gave them high administrative posts."
+					}
+				],
+				"reveal": "Musa treated Ali Kolon and Sulayman Nar as royal wards rather than captives, educating them alongside Malian nobles in Niani. They learned imperial statecraft and military tactics. While Ali Kolon eventually escaped years later to establish the powerful Sonni dynasty, this merciful hostage strategy guaranteed absolute Songhai submission throughout the remainder of Musa's glorious reign.",
+				"fun_fact": "Ali Kolon earned his military spurs leading Malian troops before hiding weapons along the Niger to stage his legendary horseback escape."
+			},
+			{
+				"year": "1330",
+				"title": "The Mossi Incursion",
+				"advisor": "faith",
+				"emotion": "alarmed",
+				"speech": "Calamity strikes the north, Mansa! The pagan King of Yatenga has led his fierce Mossi horsemen across the plains, storming into Timbuktu. They have looted the market stalls, put the garrison to flight, and threatened the holy foundations of the Sankore quarter. We must act before the jewel of the Niger burns to ashes. How shall Mali respond?",
+				"rebuttal": {
+					"advisor": "war",
+					"line": "Do not weep over sun-dried clay, poet! Give me five thousand cavalry and I will feed those pagan horsemen to the vultures.",
+					"emotion": "bold"
+				},
+				"choices": [
+					{
+						"label": "Fortify Walata and retake Timbuktu",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 1
+						},
+						"whatif": null
+					},
+					{
+						"label": "Invade the southern Mossi homelands",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -1,
+							"legacy": 0
+						},
+						"whatif": "Imperial forces marched south into the tangled scrubland of the Upper Volta, only to be decimated by poisoned arrows and blistering fever. The punitive expedition achieved nothing while desert nomads plundered the undefended northern towns. Historically, Musa avoided invading the difficult southern interior, focusing instead on expelling the raiders and securing northern trading nodes."
+					},
+					{
+						"label": "Bribe the Mossi with gold",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Paying off the Yatenga king merely proved that imperial borders were soft and wealthy. Emboldened by easy gold, southern warbands returned each dry season to pillage the riverbanks, fracturing provincial trust in the Mansa. In reality, Malian arms swiftly drove the Mossi out, restoring imperial rule over Timbuktu and safeguarding the Saharan trade routes."
+					}
+				],
+				"reveal": "Musa quickly coordinated imperial forces to repel the Mossi raiders and established Walata as an unassailable fallback commercial hub. Timbuktu was liberated and permanently garrisoned. The raid demonstrated to Musa that his sprawling commercial towns needed regular military stations and stone watchtowers to permanently deter attacks from the southern pagan kingdoms.",
+				"fun_fact": "Mossi cavalry used small, agile ponies bred for savannah warfare, allowing them to outrun heavy imperial camels across scrub terrain."
+			},
+			{
+				"year": "1332",
+				"title": "The Cairo Reckoning",
+				"advisor": "gold",
+				"emotion": "alarmed",
+				"speech": "Sire, a caravan has arrived from Egypt bearing a most inconvenient guest! Siraj al-Din, the great merchant of Cairo, has crossed the burning sands himself to collect the vast loans you took during our return pilgrimage. He demands thousands of mithqals of gold, plus ruinous interest. Do we pay him, or send him packing into the dunes?",
+				"rebuttal": {
+					"advisor": "faith",
+					"line": "A Mansa never breaks his sworn word. Paying a righteous creditor brings greater honor than all the lances in your army.",
+					"emotion": "calm"
+				},
+				"choices": [
+					{
+						"label": "Settle the debt with interest",
+						"historical": true,
+						"effects": {
+							"gold": -2,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Seize the merchant and his books",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Imprisoning the Egyptian financier kept the treasury full, but news traveled across the trans-Saharan trade tracks like wildfire. Cairene merchant guilds placed an embargo on Malian caravans, refusing to sell Syrian silks or Arab horses for years. In truth, Musa treated the merchant with immense dignity and repaid every borrowed dinar."
+					},
+					{
+						"label": "Offer royal land grants instead",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": 0
+						},
+						"whatif": "The foreign merchant had no desire to farm the Niger floodplain and bitterly rejected the title deeds. He returned to Cairo spreading rumors of Malian insolvency, causing Cairo moneylenders to shut their doors to west African pilgrims. Historically, Musa honored the agreement in solid gold, preserving his legend as the world's most trustworthy monarch."
+					}
+				],
+				"reveal": "Musa had spent so lavishly in Cairo that he had to borrow money from Egyptian merchants at steep rates to finance his journey home. When the merchant Siraj al-Din died en route, his agent al-Mismari was received with imperial hospitality in Mali. Musa fully paid off the staggering loan, astonishing Mediterranean bankers and cementing his sterling international credit.",
+				"fun_fact": "Musa gave the Cairo debt collector extra gifts of gold dust and royal hospitality, ensuring glowing reports reached the Mamluk sultan."
+			},
+			{
+				"year": "1335",
+				"title": "Scholars of the West",
+				"advisor": "faith",
+				"emotion": "proud",
+				"speech": "Our great mosques stand tall, Mansa, but mud and cedar are nothing without the light of knowledge! Our native students yearn for the highest mastery of Maliki law and Arabic rhetoric. Shall we finance young Malian scholars to study in the revered madrasas of Fez, or must our judges forever depend on costly foreign jurists? The future of African scholarship awaits your decree.",
+				"rebuttal": {
+					"advisor": "gold",
+					"line": "Sending youths to Fez costs a fortune in pack animals and stipends. Let them study the Quran under our own baobab trees.",
+					"emotion": "alarmed"
+				},
+				"choices": [
+					{
+						"label": "Fund study missions to Fez",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Hire only foreign jurists",
+						"historical": false,
+						"effects": {
+							"gold": -2,
+							"stability": 0,
+							"legacy": 0
+						},
+						"whatif": "Relying strictly on imported scholars bred profound resentment among local Mandinka clans, who felt excluded from imperial governance. When foreign judges clashed with native customs, local magistrates ignored their rulings. Historically, Musa deliberately sponsored homegrown scholars to study abroad, laying the foundation for Timbuktu's renowned indigenous university."
+					},
+					{
+						"label": "Restrict study to local traditions",
+						"historical": false,
+						"effects": {
+							"gold": 1,
+							"stability": -1,
+							"legacy": -2
+						},
+						"whatif": "Closing Mali's intellectual borders severed connections with the wider Islamic intellectual revival. Timbuktu stagnated as a regional market rather than becoming an internationally renowned seat of learning. In reality, Musa's sponsored students returned from Morocco as brilliant legal scholars, transforming Sankore into an academic beacon that drew students from across the continent."
+					}
+				],
+				"reveal": "Musa sent promising young Sudanese scholars to study jurisprudence at the University of al-Qarawiyyin in Fez, funding their journey with royal stipends. Upon their return, these home-grown scholars taught at the Sankore madrasa in Timbuktu. This policy birthed a literate, highly educated civil service that administered the vast empire without requiring perpetual foreign assistance.",
+				"fun_fact": "Malian students in Fez were noted for their photographic memory, with several memorizing multi-volume legal compendiums during their studies."
+			},
+			{
+				"year": "1337",
+				"title": "The Marinid Embassy",
+				"advisor": "war",
+				"emotion": "bold",
+				"speech": "Mansa, Sultan Abu al-Hasan of Morocco has sent a grand embassy across the Sahara to greet you as an equal! His envoys bring thoroughbred horses, northern armour, and fine Damascus blades. Our court must demonstrate that Mali does not bow before any potentate on earth. How shall we welcome the Moroccan emperor's men?",
+				"rebuttal": null,
+				"choices": [
+					{
+						"label": "Exchange gifts and formal alliance",
+						"historical": true,
+						"effects": {
+							"gold": -1,
+							"stability": 1,
+							"legacy": 2
+						},
+						"whatif": null
+					},
+					{
+						"label": "Demand northern tribute from Fez",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -2,
+							"legacy": -1
+						},
+						"whatif": "Demanding subservience insulted the proud Marinid Sultan, sparking a diplomatic freeze that closed northern ports to Malian merchants. The trans-Saharan camel routes fell prey to hostile Berber tribes without joint patrols. In truth, Musa greeted the Moroccan sultan as a valued brother, establishing an alliance that ensured decades of safe, flourishing desert trade."
+					},
+					{
+						"label": "Refuse audience to the embassy",
+						"historical": false,
+						"effects": {
+							"gold": 0,
+							"stability": -1,
+							"legacy": -1
+						},
+						"whatif": "Turning away the Moroccan envoys cast Mali as an arrogant, isolated kingdom in the eyes of the wider Mediterranean world. Trade caravans rerouted to eastern rivals along the Nile. Historically, Musa embraced the embassy with breathtaking generosity, exchanging lavish royal presents and sealing an enduring friendship between Niani and Fez."
+					}
+				],
+				"reveal": "Musa welcomed the Marinid embassy with immense pomp, sending back a counter-embassy laden with precious gold, ivory, and exotic animals. This historic exchange cemented an alliance between the two greatest empires of western Islam. It established secure trans-Saharan diplomacy that outlived Musa, securing Mali's legendary stature across both Africa and Europe.",
+				"fun_fact": "The exchange between Musa and Sultan Abu al-Hasan was so famous that historian Ibn Khaldun wrote extensively about its lavish royal gifts."
+			}
+		]
+	}
+]
