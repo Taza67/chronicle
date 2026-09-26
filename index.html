@@ -82,17 +82,43 @@
           display: flex;
         }
       }
+
+      /* Re-enter fullscreen (shown only when fullscreen is available and not active) */
+      .fs-btn {
+        display: none;
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 10px);
+        right: calc(env(safe-area-inset-right, 0px) + 10px);
+        z-index: 99999;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1.5px solid rgba(224, 182, 74, 0.65);
+        background: rgba(20, 17, 28, 0.85);
+        color: #e0b64a;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .fs-btn svg { width: 18px; height: 18px; display: block; }
+      .fs-btn.visible { display: flex; }
+      .fs-btn.fs-btn--left { right: auto; left: calc(env(safe-area-inset-left, 0px) + 10px); }
+      .fs-btn.fs-btn--left-inner { right: auto; left: calc(env(safe-area-inset-left, 0px) + 58px); }
+      .fs-btn:active { background: rgba(224, 182, 74, 0.25); }
     </style>
   </head>
   <body>
     <div id="app"></div>
+    <button id="fs-btn" class="fs-btn" type="button" aria-label="Enter fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     <div id="orientation-guard" class="orientation-guard" aria-hidden="true">
       <div class="guard-card">
         <div class="guard-emblem">❖</div>
-        <div class="guard-icon">📱</div>
+        <div class="guard-icon">↻</div>
         <div class="guard-title">CHRONICLE</div>
-        <div class="guard-msg">Veuillez tourner votre appareil en mode portrait pour régner.</div>
-        <div class="guard-sub">Please rotate your device to portrait to rule.</div>
+        <div class="guard-msg">Please rotate your device to portrait to rule.</div>
       </div>
     </div>
     <div class="fontload"><span style="font-family:Cinzel,serif;font-weight:700">C</span><span style="font-family:Cinzel,serif;font-weight:900">C</span><span style="font-family:'Cormorant Garamond',serif">C</span><span style="font-family:'Cormorant Garamond',serif;font-style:italic">C</span><span style="font-family:Inter,sans-serif">C</span><span style="font-family:Inter,sans-serif;font-weight:600">C</span></div>

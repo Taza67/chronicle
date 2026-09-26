@@ -206,7 +206,7 @@ export class ChronicleScene extends Phaser.Scene {
 		vignette.setDisplaySize(W, H).setAlpha(0.75);
 
 		// Imperial Header
-		heading(this, SAFE_TOP + 18, "Imperial Chronicle", 36);
+		heading(this, SAFE_TOP + 18, "Imperial Chronicle", 32);
 		this.add
 			.text(W / 2, SAFE_TOP + 48, "GENEALOGICAL ROLL OF REIGNS", {
 				fontFamily: FONT.title,
@@ -227,16 +227,17 @@ export class ChronicleScene extends Phaser.Scene {
 
 		const summaryBg = this.add.graphics();
 		summaryBg.fillStyle(0x130f1d, 0.85);
-		summaryBg.fillRoundedRect(W / 2 - 260, 114, 520, 26, 13);
+		const pillY = SAFE_TOP + 66;
+		summaryBg.fillRoundedRect(W / 2 - 260, pillY, 520, 26, 13);
 		summaryBg.lineStyle(1, COLORS.goldDeep, 0.65);
-		summaryBg.strokeRoundedRect(W / 2 - 260, 114, 520, 26, 13);
+		summaryBg.strokeRoundedRect(W / 2 - 260, pillY, 520, 26, 13);
 
 		const summaryText = reigns.length
 			? `✦  ${reigns.length} ${reigns.length === 1 ? "REIGN" : "REIGNS"} RECORDED  ·  ${matchedDecrees}/${totalDecrees} HISTORICAL DECREES (${fidelityPct}%)  ✦`
 			: "✦  NO REIGNS RECORDED IN THE IMPERIAL ARCHIVES YET  ✦";
 
 		this.add
-			.text(W / 2, 127, summaryText, {
+			.text(W / 2, pillY + 13, summaryText, {
 				fontFamily: FONT.ui,
 				fontSize: "11px",
 				color: hex(COLORS.gold),
@@ -246,20 +247,14 @@ export class ChronicleScene extends Phaser.Scene {
 			.setLetterSpacing(1.5);
 
 		// Scrollable genealogical timeline container
-		const list = new ScrollList(this, 168, H - SAFE_BOTTOM - 20);
+		const list = new ScrollList(this, SAFE_TOP + 120, H - SAFE_BOTTOM - 20);
 		let y = 14;
 
 		if (!reigns.length) {
 			// Illuminated empty archival scroll
 			const emptyW = W - 96;
-			const emptyH = 170;
 			const emptyX = 48;
 			const eg = this.add.graphics();
-			eg.fillStyle(0x130f1c, 0.85);
-			eg.fillRoundedRect(emptyX, 40, emptyW, emptyH, 14);
-			eg.lineStyle(1.5, COLORS.goldDeep, 0.65);
-			eg.strokeRoundedRect(emptyX, 40, emptyW, emptyH, 14);
-			drawCornerFlourishes(eg, emptyX, 40, emptyW, emptyH, COLORS.goldDeep);
 
 			const emptyTitle = this.add
 				.text(W / 2, 76, "THE IMPERIAL ROLL LIES UNWRITTEN", {
@@ -274,7 +269,7 @@ export class ChronicleScene extends Phaser.Scene {
 			const emptyBody = this.add
 				.text(
 					W / 2,
-					124,
+					104,
 					"Ascend the throne, decree your royal will before the court,\nand the imperial chroniclers shall inscribe your lineage in wax and gold.",
 					{
 						fontFamily: FONT.body,
@@ -285,10 +280,17 @@ export class ChronicleScene extends Phaser.Scene {
 						lineSpacing: 4,
 					},
 				)
-				.setOrigin(0.5);
+				.setOrigin(0.5, 0);
+
+			const emptyH = emptyBody.y + emptyBody.height + 32 - 40;
+			eg.fillStyle(0x130f1c, 0.85);
+			eg.fillRoundedRect(emptyX, 40, emptyW, emptyH, 14);
+			eg.lineStyle(1.5, COLORS.goldDeep, 0.65);
+			eg.strokeRoundedRect(emptyX, 40, emptyW, emptyH, 14);
+			drawCornerFlourishes(eg, emptyX, 40, emptyW, emptyH, COLORS.goldDeep);
 
 			list.add([eg, emptyTitle, emptyBody]);
-			list.setContentHeight(240);
+			list.setContentHeight(40 + emptyH + 30);
 			return;
 		}
 

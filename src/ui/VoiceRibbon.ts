@@ -34,7 +34,7 @@ export class VoiceRibbon extends Phaser.GameObjects.Container {
 		this.waveGfx = scene.add.graphics();
 
 		this.icon = scene.add
-			.text(-190, 0, "🎙", {
+			.text(-190, 0, "◎", {
 				fontFamily: FONT.ui,
 				fontSize: "18px",
 				color: hex(COLORS.gold),
@@ -133,7 +133,7 @@ export class VoiceRibbon extends Phaser.GameObjects.Container {
 		const roman = ["I", "II", "III", "IV"][index] ?? `${index + 1}`;
 		this.icon.setText("✦").setColor(hex(COLORS.gold));
 		this.label
-			.setText(`Option ${roman} : “${choiceLabel}”`)
+			.setText(`Option ${roman}: “${choiceLabel}”`)
 			.setColor(hex(COLORS.gold))
 			.setFontSize(16);
 
@@ -151,9 +151,9 @@ export class VoiceRibbon extends Phaser.GameObjects.Container {
 		this.ribbonState = "custom";
 		this.ellipsisTimer?.remove();
 		this.waveGfx.clear();
-		this.icon.setText("👑").setColor(hex(COLORS.gold));
+		this.icon.setText("♛").setColor(hex(COLORS.gold));
 		this.label
-			.setText(`Decree : “${label}”`)
+			.setText(`Decree: “${label}”`)
 			.setColor(hex(COLORS.text))
 			.setFontSize(16);
 
@@ -171,7 +171,7 @@ export class VoiceRibbon extends Phaser.GameObjects.Container {
 		this.ribbonState = "retry";
 		this.ellipsisTimer?.remove();
 		this.waveGfx.clear();
-		this.icon.setText("🎙").setColor(hex(COLORS.muted));
+		this.icon.setText("◎").setColor(hex(COLORS.muted));
 		this.label.setText(hint).setColor(hex(COLORS.muted)).setFontSize(14);
 
 		this.scene.time.delayedCall(2200, () => {
@@ -185,7 +185,7 @@ export class VoiceRibbon extends Phaser.GameObjects.Container {
 		this.ribbonState = "standby";
 		this.ellipsisTimer?.remove();
 		this.waveGfx.clear();
-		this.icon.setText("🎙").setColor(hex(COLORS.gold));
+		this.icon.setText("◎").setColor(hex(COLORS.gold));
 		this.label
 			.setText("Speak your decree, or choose below")
 			.setColor(hex(COLORS.muted))

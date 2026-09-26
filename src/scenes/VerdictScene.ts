@@ -727,7 +727,7 @@ export class VerdictScene extends Phaser.Scene {
 		s1G.strokeCircle(s1X, s1Y - 10, 28);
 		container.add(s1G);
 
-		const icon1 = this.add.text(s1X, s1Y - 26, "📜", ui(14)).setOrigin(0.5);
+		const icon1 = this.add.text(s1X, s1Y - 26, "❖", ui(14)).setOrigin(0.5);
 		const numMatched = this.add
 			.text(s1X, s1Y - 6, `0/${total}`, {
 				fontFamily: FONT.title,
@@ -839,7 +839,7 @@ export class VerdictScene extends Phaser.Scene {
 		s3G.strokeCircle(s3X, s3Y - 10, 28);
 		container.add(s3G);
 
-		const icon3 = this.add.text(s3X, s3Y - 26, "👁", ui(14)).setOrigin(0.5);
+		const icon3 = this.add.text(s3X, s3Y - 26, "◉", ui(14)).setOrigin(0.5);
 		const numWagers = this.add
 			.text(s3X, s3Y - 6, "0", {
 				fontFamily: FONT.title,
@@ -918,8 +918,8 @@ export class VerdictScene extends Phaser.Scene {
 		decree.setLetterSpacing(6);
 		decree.setShadow(0, 2, "rgba(0,0,0,0.85)", 6, false, true);
 
-		// Imperial Crest & Laurels
-		const crest = this.drawImperialCrest(W / 2, 108, collapsed);
+		// Imperial Crest & Laurels (placed below the decree banner, clear of it)
+		const crest = this.drawImperialCrest(W / 2, 128, collapsed);
 		crest.setDepth(5).setAlpha(0);
 
 		// Monumental Title
@@ -927,7 +927,7 @@ export class VerdictScene extends Phaser.Scene {
 		const titleSize =
 			rawTitle.length > 22 ? 36 : rawTitle.length > 15 ? 42 : 48;
 		const titleText = this.add
-			.text(W / 2, 164, rawTitle, {
+			.text(W / 2, 196, rawTitle, {
 				...title(titleSize, "#fffaf0"),
 				wordWrap: { width: W - 72 },
 				align: "center",
@@ -942,7 +942,7 @@ export class VerdictScene extends Phaser.Scene {
 		// Epithet & Filigree dividing rules
 		const epithetColor = collapsed ? 0xff7777 : COLORS.gold;
 		const epithet = this.add
-			.text(W / 2, 226, `« ${v.epithet} »`, {
+			.text(W / 2, 262, `« ${v.epithet} »`, {
 				...body(29, hex(epithetColor)),
 				fontStyle: "italic",
 				wordWrap: { width: W - 110 },
@@ -958,7 +958,7 @@ export class VerdictScene extends Phaser.Scene {
 		filigreeG.setDepth(5).setAlpha(0);
 
 		const epHalfW = Math.min(220, epithet.width / 2 + 16);
-		const epY = 226;
+		const epY = 262;
 		const divCol = collapsed ? 0x6e1b1b : COLORS.goldDeep;
 		filigreeG.lineStyle(1.5, divCol, 0.85);
 
@@ -1251,7 +1251,7 @@ export class VerdictScene extends Phaser.Scene {
 				audio.sfx("relic");
 				toast(
 					this,
-					"Relique Antique : La Stèle des Lois a été forgée !",
+					"Ancient Relic: The Stele of Laws has been forged!",
 					COLORS.gold,
 				);
 			}
@@ -1267,7 +1267,7 @@ export class VerdictScene extends Phaser.Scene {
 		const collapsed = Boolean(g.collapse);
 		const actionsContainer = this.add.container(0, 0).setAlpha(0).setDepth(8);
 
-		const primaryY = v.nextEra ? H - SAFE_BOTTOM - 280 : H - SAFE_BOTTOM - 160;
+		const primaryY = v.nextEra ? H - SAFE_BOTTOM - 300 : H - SAFE_BOTTOM - 176;
 
 		// Primary Action: Continue or Reclaim Throne
 		if (collapsed) {
@@ -1285,7 +1285,7 @@ export class VerdictScene extends Phaser.Scene {
 				this,
 				W / 2,
 				primaryY,
-				"👑 Continue the Reign",
+				"♛ Continue the Reign",
 				() => this.continueReign(),
 				{ w: 480, h: 74 },
 			);
@@ -1309,13 +1309,17 @@ export class VerdictScene extends Phaser.Scene {
 					? v.nextEra.leaderId
 					: null;
 
+			const eraName =
+				v.nextEra.name.length > 22
+					? `${v.nextEra.name.slice(0, 21).trimEnd()}…`
+					: v.nextEra.name;
 			const eraBtn = new Button(
 				this,
 				W / 2,
-				primaryY + 158,
-				`✦ Change era: ${v.nextEra.name}`,
+				primaryY + 160,
+				`✦ Change era: ${eraName}`,
 				() => this.changeEra(target, v.nextEra?.name ?? ""),
-				{ w: 480, h: 64, primary: false, size: 21 },
+				{ w: 560, h: 64, primary: false, size: 21 },
 			);
 			actionsContainer.add(eraBtn);
 
@@ -1324,7 +1328,7 @@ export class VerdictScene extends Phaser.Scene {
 				this,
 				W / 2,
 				primaryY + 242,
-				"📜 Proclaim Imperial Verdict",
+				"❖ Proclaim Imperial Verdict",
 				() => void this.share(v, matched),
 				{ w: 380, h: 56, primary: false, size: 20 },
 			);
@@ -1335,7 +1339,7 @@ export class VerdictScene extends Phaser.Scene {
 				this,
 				W / 2,
 				primaryY + 98,
-				"📜 Proclaim Imperial Verdict",
+				"❖ Proclaim Imperial Verdict",
 				() => void this.share(v, matched),
 				{ w: 380, h: 58, primary: false, size: 21 },
 			);
@@ -1391,7 +1395,7 @@ export class VerdictScene extends Phaser.Scene {
 			? `Dynasty Collapsed (${g.collapse === "bankruptcy" ? "Treasury Depleted" : "Popular Revolt"})`
 			: "Imperial Reign Verdict";
 
-		const text = `👑 ${v.epithet} — "${v.title}"\n${statusText} after ${g.history.length} decisions (${matched}/${g.history.length} aligned with history).\nTreasury: ${g.stats.gold} ◆ | Stability: ${g.stats.stability} ⚖ | Legacy: ${g.stats.legacy} ✦\nChronicle: rule as they did. Or don't.`;
+		const text = `♛ ${v.epithet} — "${v.title}"\n${statusText} after ${g.history.length} decisions (${matched}/${g.history.length} aligned with history).\nTreasury: ${g.stats.gold} ◆ | Stability: ${g.stats.stability} ⚖ | Legacy: ${g.stats.legacy} ✦\nChronicle: rule as they did. Or don't.`;
 
 		try {
 			const canvas = this.game.canvas;

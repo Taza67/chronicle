@@ -24,7 +24,7 @@ const SEAL_DEFS: SealDef[] = [
 	{
 		key: "prescience",
 		name: "Prescience",
-		icon: "👁️",
+		icon: "◉",
 		color: 0x4a2a6b,
 		borderColor: 0xb589d6,
 		desc: "Reveals choice consequences and highlights historical paths",
@@ -32,7 +32,7 @@ const SEAL_DEFS: SealDef[] = [
 	{
 		key: "treasury",
 		name: "Treasury",
-		icon: "🪙",
+		icon: "◆",
 		color: 0x6e4e10,
 		borderColor: 0xe0b64a,
 		desc: "+2 Gold immediately at the cost of -1 Stability",
@@ -40,7 +40,7 @@ const SEAL_DEFS: SealDef[] = [
 	{
 		key: "decree",
 		name: "Decree",
-		icon: "⚔️",
+		icon: "⚔",
 		color: 0x661818,
 		borderColor: 0xd9534f,
 		desc: "+2 Stability and +1 Trust from all council advisors",
@@ -173,7 +173,7 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 				});
 				toast(
 					scene,
-					`Sceau de ${def.name} épuisé. Réussissez un pari Oracle pour le restaurer !`,
+					`${def.name} Seal spent. Win an Oracle wager to restore it!`,
 					COLORS.blood,
 				);
 				return;

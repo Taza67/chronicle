@@ -117,27 +117,42 @@ export class SummonScene extends Phaser.Scene {
 				this,
 				W / 2,
 				530,
-				"🎙  Say the name",
+				"◎  Say the name",
 				() => void this.listen(el),
 				{ w: 320, h: 64, primary: false, size: 22 },
 			);
 
 		// suggestion chips
 		const chips = Phaser.Utils.Array.Shuffle([...EXAMPLES]).slice(0, 6);
+		const chipW = 296;
+		const chipH = 48;
+		const chipGap = 16;
 		chips.forEach((name, i) => {
-			const x = W / 2 + ((i % 2) - 0.5) * 300;
-			const y = 640 + Math.floor(i / 2) * 64;
+			const x = W / 2 + ((i % 2) - 0.5) * (chipW + chipGap);
+			const y = 640 + Math.floor(i / 2) * (chipH + chipGap);
 			const t = this.add
 				.text(x, y, name, ui(20, hex(COLORS.gold)))
-				.setOrigin(0.5)
-				.setInteractive({ useHandCursor: true });
+				.setOrigin(0.5);
+			if (t.width > chipW - 36) t.setScale((chipW - 36) / t.width);
 			const g = this.add.graphics();
+			g.fillStyle(0x130f1d, 0.6);
+			g.fillRoundedRect(x - chipW / 2, y - chipH / 2, chipW, chipH, chipH / 2);
 			g.lineStyle(1.5, COLORS.gold, 0.5);
-			g.strokeRoundedRect(x - t.width / 2 - 18, y - 22, t.width + 36, 44, 22);
-			t.on("pointerup", () => {
-				el.value = name;
-				void this.go(name);
-			});
+			g.strokeRoundedRect(
+				x - chipW / 2,
+				y - chipH / 2,
+				chipW,
+				chipH,
+				chipH / 2,
+			);
+			t.setDepth(1);
+			this.add
+				.zone(x, y, chipW, chipH)
+				.setInteractive({ useHandCursor: true })
+				.on("pointerup", () => {
+					el.value = name;
+					void this.go(name);
+				});
 		});
 		this.add
 			.text(

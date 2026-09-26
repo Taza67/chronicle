@@ -18,6 +18,9 @@ import {
 } from "../ui/theme.ts";
 import { Button, fadeIn, go } from "../ui/widgets.ts";
 
+/** Cabinet faceplate height: wraps the controls down to the hallmark plaque. */
+const CABINET_H = 810;
+
 /**
  * SettingsScene: Antique Imperial Chronometer & Royal Horological Cabinet.
  * Features antique brass toggle switches with velvet tracks, graduated brass volume
@@ -61,6 +64,19 @@ export class SettingsScene extends Phaser.Scene {
 		this.createHeader();
 
 		// 3. Chronometer Cabinet Casing & Clockwork Backdrop
+		// Content below is laid out against a 1280-tall reference (cabinet top at
+		// y=126); on taller/safer screens the whole cabinet is shifted down so it
+		// clears the header and sits centred between header and action buttons.
+		const cabinetTop = 126;
+		const cabinetBottom = 126 + CABINET_H;
+		const buttonsTop = this.overlay
+			? H - SAFE_BOTTOM - 130 - 34
+			: H - SAFE_BOTTOM - 90 - 36;
+		const minTop = SAFE_TOP + 72;
+		const slack = buttonsTop - 24 - cabinetBottom;
+		const shiftY = Math.round(Math.max(minTop - cabinetTop, slack / 3));
+		const firstShifted = this.children.length;
+
 		const cabinetContainer = this.add.container(0, 0);
 		this.createCabinet(cabinetContainer);
 
@@ -129,6 +145,12 @@ export class SettingsScene extends Phaser.Scene {
 		// 6. Horological Hallmark & Inspection Cartouche
 		this.createFiligreeDivider(842);
 		this.createHallmarkPlaque(876);
+
+		if (shiftY !== 0) {
+			for (const obj of this.children.list.slice(firstShifted)) {
+				if ("y" in obj && typeof obj.y === "number") obj.y += shiftY;
+			}
+		}
 
 		// 7. Navigation Actions
 		if (this.overlay) {
@@ -251,7 +273,7 @@ export class SettingsScene extends Phaser.Scene {
 			.text(
 				W / 2,
 				headerY - 8,
-				"CHRONOMÈTRE IMPÉRIAL",
+				"IMPERIAL CHRONOMETER",
 				ui(28, hex(COLORS.gold)),
 			)
 			.setOrigin(0.5);
@@ -264,7 +286,7 @@ export class SettingsScene extends Phaser.Scene {
 			.text(
 				W / 2,
 				headerY + 24,
-				"RÉGULATION DE LA COUR · ATELIER DES ARCHIVES",
+				"COURT REGULATION · ARCHIVE WORKSHOP",
 				ui(12, hex(COLORS.parchmentDark)),
 			)
 			.setOrigin(0.5)
@@ -278,7 +300,7 @@ export class SettingsScene extends Phaser.Scene {
 		const x0 = 36;
 		const y0 = 126;
 		const w = 648;
-		const h = 948;
+		const h = CABINET_H;
 
 		const g = this.add.graphics();
 		container.add(g);
@@ -483,16 +505,28 @@ export class SettingsScene extends Phaser.Scene {
 		c.add(g);
 
 		const halfW = 270;
-		const textGap = text ? 124 : 32;
+		const label = text
+			? this.add
+					.text(0, 0, text.toUpperCase(), {
+						fontFamily: FONT.title,
+						fontSize: "13px",
+						color: hex(COLORS.gold),
+						fontStyle: "700",
+					})
+					.setOrigin(0.5)
+					.setLetterSpacing(3.5)
+			: null;
+		const textGap = label ? Math.ceil(label.width / 2) + 26 : 32;
 
 		// Tapered hairline gold rules
+		const ruleStart = label ? textGap + 46 : textGap;
 		g.lineStyle(1.5, COLORS.goldDeep, 0.65);
-		g.lineBetween(-halfW, 0, -textGap, 0);
-		g.lineBetween(textGap, 0, halfW, 0);
+		g.lineBetween(-halfW, 0, -ruleStart, 0);
+		g.lineBetween(ruleStart, 0, halfW, 0);
 
 		g.lineStyle(1, COLORS.gold, 0.85);
-		g.lineBetween(-halfW + 35, -2, -textGap, -2);
-		g.lineBetween(textGap, -2, halfW - 35, -2);
+		g.lineBetween(-halfW + 35, -2, -ruleStart, -2);
+		g.lineBetween(ruleStart, -2, halfW - 35, -2);
 
 		// Terminal diamond finials
 		const drawDiamond = (dx: number, dy: number, s: number, color: number) => {
@@ -552,37 +586,30 @@ export class SettingsScene extends Phaser.Scene {
 		};
 
 		const drawFlourish = (flip: number) => {
+			// Anchored at the outer edge of the label gap, curling outward toward the rule
+			const base = label ? textGap : textGap - 44;
 			g.lineStyle(1.2, COLORS.gold, 0.75);
 			drawCurve(
-				{ x: flip * (textGap - 4), y: 0 },
-				{ x: flip * (textGap - 18), y: -9 },
-				{ x: flip * (textGap - 34), y: -7 },
-				{ x: flip * (textGap - 42), y: 0 },
+				{ x: flip * (base + 2), y: 0 },
+				{ x: flip * (base + 12), y: -9 },
+				{ x: flip * (base + 28), y: -7 },
+				{ x: flip * (base + 42), y: 0 },
 			);
 
 			g.lineStyle(0.9, COLORS.goldDeep, 0.55);
 			drawCurve(
-				{ x: flip * (textGap - 6), y: 0 },
-				{ x: flip * (textGap - 20), y: 8 },
-				{ x: flip * (textGap - 36), y: 6 },
-				{ x: flip * (textGap - 44), y: 0 },
+				{ x: flip * (base + 4), y: 0 },
+				{ x: flip * (base + 14), y: 8 },
+				{ x: flip * (base + 30), y: 6 },
+				{ x: flip * (base + 44), y: 0 },
 			);
 
-			drawDiamond(flip * (textGap - 24), -7, 2, COLORS.gold);
+			drawDiamond(flip * (base + 22), -7, 2, COLORS.gold);
 		};
 		drawFlourish(1);
 		drawFlourish(-1);
 
-		if (text) {
-			const label = this.add
-				.text(0, 0, text.toUpperCase(), {
-					fontFamily: FONT.title,
-					fontSize: "13px",
-					color: hex(COLORS.gold),
-					fontStyle: "700",
-				})
-				.setOrigin(0.5);
-			label.setLetterSpacing(3.5);
+		if (label) {
 			label.setShadow(0, 1, "#000000", 6, false, true);
 			c.add(label);
 
@@ -1135,7 +1162,7 @@ export class SettingsScene extends Phaser.Scene {
 			.text(
 				0,
 				0,
-				"✦  CALIBRE ROYALE · NO. 1804 · ATELIER DE PRÉCISION  ✦",
+				"✦  ROYAL CALIBRE · NO. 1804 · PRECISION WORKSHOP  ✦",
 				ui(11, hex(COLORS.goldDeep)),
 			)
 			.setOrigin(0.5);

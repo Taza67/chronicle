@@ -227,7 +227,7 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 		aGfx.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 14);
 
 		const aText = scene.add
-			.text(0, -8, `👑 ${p.acceptLabel.toUpperCase()}`, {
+			.text(0, -8, `♛ ${p.acceptLabel.toUpperCase()}`, {
 				fontFamily: FONT.title,
 				fontSize: "13px",
 				color: hex(COLORS.gold),

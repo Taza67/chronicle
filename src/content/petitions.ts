@@ -14,7 +14,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "grain_tax",
 		petitioner: "Guild of Millers & Bakers",
-		icon: "🌾",
+		icon: "❦",
 		title: "Mill Grain Levy",
 		request:
 			"Bread prices are surging and the commons rumble with discontent. The guild implores a temporary relief from the crown's grain levy.",
@@ -26,7 +26,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "foreign_merchants",
 		petitioner: "Caravaneers of the Spice Route",
-		icon: "🪙",
+		icon: "◆",
 		title: "Imperial Warehouse Charter",
 		request:
 			"Wealthy merchants from the East offer a heavy purse of gold in exchange for an exclusive royal charter at the grand bazaar.",
@@ -38,7 +38,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "guard_bonus",
 		petitioner: "Captain of the Watch",
-		icon: "⚔️",
+		icon: "⚔",
 		title: "Garrison Winter Stipend",
 		request:
 			"Sentinels freeze upon the city battlements and petition for a winter bonus to maintain unwavering vigilance against infiltrators.",
@@ -50,7 +50,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "temple_repair",
 		petitioner: "Priesthood of the High Altar",
-		icon: "🏛️",
+		icon: "⌂",
 		title: "Colonnade Restoration",
 		request:
 			"Lightning has split the sacred marble pillars. The faithful beseech a royal tithe to restore the sanctum and ward off divine wrath.",
@@ -74,7 +74,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "scholars_grant",
 		petitioner: "Scribes & Astronomers",
-		icon: "📜",
+		icon: "❖",
 		title: "Celestial Chart Translation",
 		request:
 			"Nomadic cartographers have brought unknown oceanic maps. The scribes seek royal patron funds to copy and catalog them.",
@@ -86,7 +86,7 @@ export const PETITIONS: Petition[] = [
 	{
 		id: "noble_banquet",
 		petitioner: "Grand Peers of the Realm",
-		icon: "👑",
+		icon: "♛",
 		title: "Imperial State Banquet",
 		request:
 			"Court lords demand a lavish imperial banquet to flaunt the dynasty's splendour and intimidate visiting foreign ambassadors.",

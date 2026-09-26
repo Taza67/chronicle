@@ -78,3 +78,45 @@ const unlock = () => {
 };
 window.addEventListener("pointerdown", unlock);
 window.addEventListener("touchend", unlock);
+
+// Fullscreen re-entry button: browsers drop fullscreen when the mic permission
+// prompt appears, so offer a way back whenever fullscreen is available but inactive.
+const fsBtn = document.getElementById("fs-btn");
+const fullscreenSupported =
+	typeof document.documentElement.requestFullscreen === "function" &&
+	document.fullscreenEnabled;
+const isStandalone =
+	window.matchMedia("(display-mode: fullscreen)").matches ||
+	window.matchMedia("(display-mode: standalone)").matches;
+const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+if (fsBtn && fullscreenSupported && isTouchDevice && !isStandalone) {
+	const syncFsBtn = () => {
+		fsBtn.classList.toggle("visible", !document.fullscreenElement);
+	};
+	fsBtn.addEventListener("click", () => {
+		document.documentElement
+			.requestFullscreen({ navigationUI: "hide" })
+			.then(() => handleResize())
+			.catch(() => {});
+	});
+	document.addEventListener("fullscreenchange", () => {
+		syncFsBtn();
+		handleResize();
+	});
+	syncFsBtn();
+
+	// Top-right is the gear on Title/Court, so park the button top-left there.
+	const placeFsBtn = (sceneKey: string) => {
+		fsBtn.classList.toggle("fs-btn--left", sceneKey === "Title");
+		fsBtn.classList.toggle("fs-btn--left-inner", sceneKey === "Court");
+	};
+	game.events.once(Phaser.Core.Events.READY, () => {
+		for (const scene of game.scene.scenes) {
+			const key = scene.scene.key;
+			if (key === "Boot") continue;
+			scene.events.on(Phaser.Scenes.Events.START, () => placeFsBtn(key));
+			scene.events.on(Phaser.Scenes.Events.WAKE, () => placeFsBtn(key));
+			scene.events.on(Phaser.Scenes.Events.RESUME, () => placeFsBtn(key));
+		}
+	});
+}

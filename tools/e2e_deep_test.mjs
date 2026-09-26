@@ -182,12 +182,12 @@ console.log("Turn 1 complete!");
 console.log("\n--- TEST 2: Verdict Scene & Scorecard Count-up ---");
 await p.evaluate(() => {
 	const raw =
-		localStorage.getItem("chronicle-save") ||
+		localStorage.getItem("chronicle.save") ||
 		localStorage.getItem("chronicle.save");
 	const g = JSON.parse(raw);
 	g.turnIndex = (g.chapter?.turns.length ?? 5) - 1; // Last turn
 	g.stats = { gold: 7, stability: 6, legacy: 8 };
-	localStorage.setItem("chronicle-save", JSON.stringify(g));
+	localStorage.setItem("chronicle.save", JSON.stringify(g));
 });
 
 // Launch Verdict scene directly to inspect scorecard and particles
@@ -209,12 +209,12 @@ console.log("Verdict Scene verified!");
 console.log("\n--- TEST 3: Collapse / Game Over on Zero Gold ---");
 await p.evaluate(() => {
 	const raw =
-		localStorage.getItem("chronicle-save") ||
+		localStorage.getItem("chronicle.save") ||
 		localStorage.getItem("chronicle.save");
 	const g = JSON.parse(raw);
 	g.collapse = "bankruptcy";
 	g.stats = { gold: 0, stability: 5, legacy: 4 };
-	localStorage.setItem("chronicle-save", JSON.stringify(g));
+	localStorage.setItem("chronicle.save", JSON.stringify(g));
 	const game = globalThis.__game;
 	for (const s of game.scene.getScenes(true)) s.scene.stop();
 	game.scene.start("Verdict");

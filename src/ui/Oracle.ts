@@ -578,7 +578,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 			const tagLabel = s.add
 				.text(textX, -26, tag.toUpperCase(), {
 					fontFamily: FONT.ui,
-					fontSize: "11px",
+					fontSize: "13px",
 					color: hex(deepAccent),
 					fontStyle: "700",
 				})
@@ -588,7 +588,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 			const titleLabel = s.add
 				.text(textX, -5, titleText, {
 					fontFamily: FONT.title,
-					fontSize: "14px",
+					fontSize: "17px",
 					color: hex(COLORS.text),
 					fontStyle: "700",
 				})
@@ -598,7 +598,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 			const subLabel = s.add
 				.text(textX, 20, subText, {
 					fontFamily: FONT.body,
-					fontSize: "13px",
+					fontSize: "15px",
 					color: hex(COLORS.muted),
 				})
 				.setOrigin(0, 0.5);

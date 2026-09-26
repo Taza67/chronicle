@@ -44,7 +44,7 @@ export class Button extends Phaser.GameObjects.Container {
 		let iconStr = opts.icon;
 		let labelStr = text;
 		if (!iconStr) {
-			const m = text.match(/^([✦🎙‹›◆⚖⚔★])\s+(.+)$/u);
+			const m = text.match(/^([✦🎙‹›◆⚖⚔★◎●])\s+(.+)$/u);
 			if (m) {
 				iconStr = m[1];
 				labelStr = m[2];
@@ -322,7 +322,7 @@ export class Button extends Phaser.GameObjects.Container {
 	setText(t: string) {
 		let iconStr = this.currentIcon;
 		let labelStr = t;
-		const m = t.match(/^([✦🎙‹›◆⚖⚔★])\s+(.+)$/u);
+		const m = t.match(/^([✦🎙‹›◆⚖⚔★◎●])\s+(.+)$/u);
 		if (m) {
 			iconStr = m[1];
 			labelStr = m[2];
@@ -518,7 +518,7 @@ export function heading(
 	const g = scene.add.graphics();
 	const tw = t.width;
 	const pad = 24;
-	const availW = Math.max(0, W / 2 - tw / 2 - pad - 24);
+	const availW = Math.max(0, W / 2 - tw / 2 - pad - 100);
 	const ruleLen = Math.min(84, availW);
 
 	if (ruleLen >= 20) {

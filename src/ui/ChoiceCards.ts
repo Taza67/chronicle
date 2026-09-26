@@ -482,7 +482,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 
 		// Icon inside seal
 		const micIcon = scene.add
-			.text(scx, scy, "🎙", {
+			.text(scx, scy, "◎", {
 				fontSize: "19px",
 			})
 			.setOrigin(0.5);
@@ -772,7 +772,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 		bg.strokeRoundedRect(-110, -12, 220, 24, 6);
 
 		const txt = this.scene.add
-			.text(0, 0, "⚠️ CONSEIL PERFIDE DÉVOILÉ", {
+			.text(0, 0, "⚠ TREACHEROUS COUNSEL EXPOSED", {
 				fontFamily: FONT.ui,
 				fontSize: "12px",
 				color: "#ffffff",
