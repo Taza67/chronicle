@@ -1,10 +1,15 @@
 import { online, tts } from "./api.ts";
 import { audio, type VoiceHandle } from "./audio.ts";
 
+/** Rough speech-duration estimate in ms from word count (same pacing as the offline mime). */
+export function estimateMs(text: string): number {
+	const words = text.trim().split(/\s+/).length;
+	return Math.max(1200, words * 360 + 400);
+}
+
 /** Silent "voice" for offline mode: fake amplitude so portraits still talk, timed by word count. */
 function mimed(text: string): VoiceHandle {
-	const words = text.trim().split(/\s+/).length;
-	const duration = Math.max(1.2, words * 0.36 + 0.4);
+	const duration = estimateMs(text) / 1000;
 	const t0 = performance.now();
 	let stopped = false;
 	let resolveDone: () => void = () => {};

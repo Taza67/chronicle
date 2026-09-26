@@ -13,7 +13,7 @@ import {
 } from "../core/generator.ts";
 import { playLeaderMusic } from "../core/music.ts";
 import { micSupported } from "../core/recorder.ts";
-import { say, warm } from "../core/speech.ts";
+import { estimateMs, say, warm } from "../core/speech.ts";
 import {
 	ADVISOR_ROLES,
 	addCodex,
@@ -224,6 +224,16 @@ export class CourtScene extends Phaser.Scene {
 		}
 		const ch = g.chapter!;
 		if (g.turnIndex === 0) {
+			warm(
+				ch.turns[g.turnIndex].speech,
+				this.advisorOf(ch.turns[g.turnIndex].advisor).voice,
+				contextualEmotion(
+					ch.turns[g.turnIndex].emotion,
+					ch.turns[g.turnIndex].advisor,
+					g.stats,
+					g.combo,
+				),
+			);
 			g.petitionsDone = false;
 			if (hasRelic(g, "relic_elizabeth")) {
 				const restored = restoreRandomSeal(g);
@@ -238,6 +248,14 @@ export class CourtScene extends Phaser.Scene {
 			await this.chapterCard(ch.season_title, ch.intro);
 		}
 		const totalTurns = Math.min(ch.turns.length, settings.campaignLength ?? 10);
+		if (g.turnIndex > 0 && ch.turns[g.turnIndex]) {
+			const t = ch.turns[g.turnIndex];
+			warm(
+				t.speech,
+				this.advisorOf(t.advisor).voice,
+				contextualEmotion(t.emotion, t.advisor, g.stats, g.combo),
+			);
+		}
 		for (let i = g.turnIndex; i < totalTurns; i++) {
 			if (!this.alive) return;
 
@@ -272,6 +290,8 @@ export class CourtScene extends Phaser.Scene {
 			`CHAPTER ${g.season}  ·  ${i + 1} / ${n}  ·  ${turn.year}`,
 		);
 		const advisor = this.advisorOf(turn.advisor);
+		warm(turn.reveal, VOICES.narrator);
+		warm(turn.fun_fact, VOICES.narrator);
 		// --- lies: an ignored advisor (trust ≤ −2) steers you wrong, never twice in a row
 		let speech = turn.speech;
 		let pushIndex = -1;
@@ -514,6 +534,26 @@ export class CourtScene extends Phaser.Scene {
 			-3,
 			3,
 		);
+		// Prefetch the next turn's lines while the reveal narrates.
+		const nt = this.g.chapter!.turns[i + 1];
+		if (nt && i + 1 < n) {
+			warm(
+				nt.speech,
+				this.advisorOf(nt.advisor).voice,
+				contextualEmotion(nt.emotion, nt.advisor, g.stats, g.combo),
+			);
+			if (nt.rebuttal)
+				warm(
+					nt.rebuttal.line,
+					this.advisorOf(nt.rebuttal.advisor).voice,
+					contextualEmotion(
+						nt.rebuttal.emotion,
+						nt.rebuttal.advisor,
+						g.stats,
+						g.combo,
+					),
+				);
+		}
 		g.history.push({
 			year: turn.year,
 			title: turn.title,
@@ -575,14 +615,28 @@ export class CourtScene extends Phaser.Scene {
 				return;
 			}
 		}
+		this.time.delayedCall(700, () => {
+			if (this.alive) reveal.showFact(turn.fun_fact, () => audio.sfx("chime"));
+		});
 		const h = await narr;
 		this.speaker?.speak(null);
-		reveal.showFact(turn.fun_fact, () => audio.sfx("chime"));
-		const factPromise = say(turn.fun_fact, VOICES.narrator);
+		const factRef: { h: VoiceHandle | null; cancelled: boolean } = {
+			h: null,
+			cancelled: false,
+		};
+		void h.done.then(async () => {
+			if (factRef.cancelled || !this.alive) return;
+			const f = await say(turn.fun_fact, VOICES.narrator);
+			if (factRef.cancelled || !this.alive) {
+				f.stop();
+				return;
+			}
+			factRef.h = f;
+		});
 		await reveal.waitContinue(i + 1 < n ? "Next council" : "Hear the verdict");
+		factRef.cancelled = true;
 		h.stop();
-		const fact = await factPromise;
-		fact.stop();
+		factRef.h?.stop();
 		if (!this.alive) return;
 		this.speaker?.leave(W + 300);
 		this.speaker = null;
@@ -864,10 +918,23 @@ export class CourtScene extends Phaser.Scene {
 		pan = 0,
 		role?: AdvisorRole,
 	) {
+		// Show the scroll immediately with an estimated pace; retime once TTS lands.
+		this.subtitle.show(name, text, color, estimateMs(text));
+		let skipped = false;
+		const prefetchSkip = (ptr: Phaser.Input.Pointer) => {
+			if (ptr.y > 140 && Math.abs(ptr.y - ptr.downY) < 40) skipped = true;
+		};
+		this.input.on(Phaser.Input.Events.POINTER_UP, prefetchSkip);
 		const h = await say(text, voice, emotion, pan);
+		this.input.off(Phaser.Input.Events.POINTER_UP, prefetchSkip);
 		if (!this.alive) return;
 		p.speak(h);
-		this.subtitle.show(name, text, color, h.duration * 1000);
+		if (skipped) {
+			h.stop();
+			this.subtitle.finish();
+		} else {
+			this.subtitle.retime(h.duration * 1000);
+		}
 
 		let stamp: AccusationStamp | null = null;
 		if (role) {
@@ -1046,11 +1113,12 @@ export class CourtScene extends Phaser.Scene {
 		});
 		this.tweens.add({ targets: rule, width: 260, duration: 600, delay: 900 });
 		const voicePromise = say(intro, VOICES.narrator);
+		this.subtitle.setDepth(92);
+		this.subtitle.show("Narrator", intro, COLORS.gold, estimateMs(intro));
 		const h = await voicePromise;
 		activeVoice = h;
 		if (!skipped) {
-			this.subtitle.setDepth(92);
-			this.subtitle.show("Narrator", intro, COLORS.gold, h.duration * 1000);
+			this.subtitle.retime(h.duration * 1000);
 			await Promise.race([
 				h.done,
 				new Promise<void>((resolve) => {
