@@ -122,8 +122,11 @@ export class Reveal extends Phaser.GameObjects.Container {
 		const topRodG = scene.add.graphics();
 		this.drawBrassRod(topRodG, W / 2, this.top, this.pw, false);
 
-		// 10. Ornamental Wax Seal Stamped at Top (stamped onto the top edge)
-		const waxSealContainer = scene.add.container(W / 2, this.top + 26);
+		// 10. Ornamental Wax Seal Stamped at Top (stamped onto the top-right corner, clear of the decree heading)
+		const waxSealContainer = scene.add.container(
+			W / 2 + this.pw / 2 - 58,
+			this.top + 30,
+		);
 		const waxSealG = scene.add.graphics();
 		this.drawWaxSeal(waxSealG, 0, 0, kind);
 		waxSealContainer.add(waxSealG);
@@ -197,13 +200,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 	/** Slide in the fun-fact card with ancient archival stamp and celestial sky-blue glow. */
 	showFact(text: string, onCodex?: () => void) {
 		const s = this.scene;
-		const y = Math.min(
-			this.top + this.ph - 120,
-			this.top + 160 + this.textObj.height + 65,
-		);
 		const w = this.pw - 52;
-
-		const c = s.add.container(W / 2, y);
 
 		// Archival header tag
 		const headerText = s.add
@@ -233,6 +230,26 @@ export class Reveal extends Phaser.GameObjects.Container {
 			headerText.height + bodyText.height + 34,
 		);
 		const h = totalContentH;
+
+		// Position below the actual bottom of the decree text, never overlapping it,
+		// and keep the card above the continue button's safe area.
+		const textBottom = this.textObj.y + this.textObj.height;
+		const maxCenterY = H - SAFE_BOTTOM - 114 - h / 2;
+		const y = Math.min(textBottom + 24 + h / 2, maxCenterY);
+		if (y - h / 2 < textBottom + 12) {
+			// Body text is too tall for the card to fit below it: shrink the decree text.
+			const avail = maxCenterY - h / 2 - 12 - this.textObj.y;
+			if (avail > 0 && this.textObj.height > avail) {
+				const cur = parseInt(this.textObj.style.fontSize as string, 10) || 28;
+				const next = Math.max(
+					20,
+					Math.floor((cur * avail) / this.textObj.height),
+				);
+				this.textObj.setFontSize(Math.min(cur, next));
+			}
+		}
+
+		const c = s.add.container(W / 2, y);
 
 		// Re-center text vertically within card
 		headerText.setY(-h / 2 + 20);

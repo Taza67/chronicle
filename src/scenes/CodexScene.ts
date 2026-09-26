@@ -194,14 +194,15 @@ export class CodexScene extends Phaser.Scene {
 
 		const summaryBg = this.add.graphics();
 		summaryBg.fillStyle(0x130f1d, 0.85);
-		summaryBg.fillRoundedRect(W / 2 - 250, 114, 500, 26, 13);
+		const pillY = SAFE_TOP + 66;
+		summaryBg.fillRoundedRect(W / 2 - 250, pillY, 500, 26, 13);
 		summaryBg.lineStyle(1, COLORS.goldDeep, 0.65);
-		summaryBg.strokeRoundedRect(W / 2 - 250, 114, 500, 26, 13);
+		summaryBg.strokeRoundedRect(W / 2 - 250, pillY, 500, 26, 13);
 
 		this.add
 			.text(
 				W / 2,
-				127,
+				pillY + 13,
 				`✦  ${total} ${total === 1 ? "RECORD" : "RECORDS"}  ·  ${factsCount} HISTORICAL  ·  ${whatifsCount} COUNTERFACTUAL  ✦`,
 				{
 					fontFamily: FONT.ui,
@@ -226,7 +227,7 @@ export class CodexScene extends Phaser.Scene {
 	private createBookmarkTabs() {
 		const tabW = 206;
 		const tabH = 50;
-		const tabY = 152;
+		const tabY = SAFE_TOP + 104;
 		const tab1X = 41;
 		const tab2X = 257;
 		const tab3X = 473;
@@ -345,18 +346,9 @@ export class CodexScene extends Phaser.Scene {
 				.setOrigin(0.5);
 
 			const titles: Record<Tab, { title: string; sub: string }> = {
-				fact: {
-					title: "HISTOIRE",
-					sub: active ? "ANNALES VRAIES" : "FAITS RÉELS",
-				},
-				whatif: {
-					title: "ET SI ?",
-					sub: active ? "DESTINS SECRETS" : "ALTERNATIVES",
-				},
-				relic: {
-					title: "RELIQUES",
-					sub: active ? "TRÉSORS D'ÉTAT" : "MERVEILLES",
-				},
+				fact: { title: "HISTORY", sub: "TRUE ANNALS" },
+				whatif: { title: "WHAT IF?", sub: "ALTERNATE FATES" },
+				relic: { title: "RELICS", sub: "STATE TREASURES" },
 			};
 
 			const meta = titles[kind];
@@ -397,10 +389,10 @@ export class CodexScene extends Phaser.Scene {
 			return;
 		}
 		if (!this.list) {
-			this.list = new ScrollList(this, 222, H - SAFE_BOTTOM - 20);
+			this.list = new ScrollList(this, SAFE_TOP + 174, H - SAFE_BOTTOM - 20);
 		} else {
 			this.list.removeAll(true);
-			this.list.y = 222;
+			this.list.y = SAFE_TOP + 174;
 			this.list.setContentHeight(0);
 		}
 
@@ -413,14 +405,8 @@ export class CodexScene extends Phaser.Scene {
 		if (!entries.length) {
 			// Illuminated empty archival scroll
 			const emptyW = W - 96;
-			const emptyH = 170;
 			const emptyX = 48;
 			const eg = this.add.graphics();
-			eg.fillStyle(0x130f1c, 0.85);
-			eg.fillRoundedRect(emptyX, 40, emptyW, emptyH, 14);
-			eg.lineStyle(1.5, COLORS.goldDeep, 0.65);
-			eg.strokeRoundedRect(emptyX, 40, emptyW, emptyH, 14);
-			drawCornerFlourishes(eg, emptyX, 40, emptyW, emptyH, COLORS.goldDeep);
 
 			const emptyTitle = this.add
 				.text(
@@ -440,7 +426,7 @@ export class CodexScene extends Phaser.Scene {
 			const emptyBody = this.add
 				.text(
 					W / 2,
-					124,
+					104,
 					t === "fact"
 						? "Ascend the imperial throne and decree your will.\nThe royal chroniclers will inscribe these pages with the truth of history."
 						: "Defy the recorded annals of antiquity and venture down untrodden paths\nto discover what might have been.",
@@ -453,10 +439,17 @@ export class CodexScene extends Phaser.Scene {
 						lineSpacing: 4,
 					},
 				)
-				.setOrigin(0.5);
+				.setOrigin(0.5, 0);
+
+			const emptyH = emptyBody.y + emptyBody.height + 32 - 40;
+			eg.fillStyle(0x130f1c, 0.85);
+			eg.fillRoundedRect(emptyX, 40, emptyW, emptyH, 14);
+			eg.lineStyle(1.5, COLORS.goldDeep, 0.65);
+			eg.strokeRoundedRect(emptyX, 40, emptyW, emptyH, 14);
+			drawCornerFlourishes(eg, emptyX, 40, emptyW, emptyH, COLORS.goldDeep);
 
 			this.list.add([eg, emptyTitle, emptyBody]);
-			this.list.setContentHeight(240);
+			this.list.setContentHeight(40 + emptyH + 30);
 			return;
 		}
 
@@ -781,10 +774,10 @@ export class CodexScene extends Phaser.Scene {
 
 	private renderRelicsTab() {
 		if (!this.list) {
-			this.list = new ScrollList(this, 222, H - SAFE_BOTTOM - 20);
+			this.list = new ScrollList(this, SAFE_TOP + 174, H - SAFE_BOTTOM - 20);
 		} else {
 			this.list.removeAll(true);
-			this.list.y = 222;
+			this.list.y = SAFE_TOP + 174;
 			this.list.setContentHeight(0);
 		}
 		const list = this.list;
@@ -809,7 +802,7 @@ export class CodexScene extends Phaser.Scene {
 			.text(
 				0,
 				0,
-				`✦  ${unlockedCount} / ${RELICS.length} RELIQUES SACRÉES FORGÉES  ✦`,
+				`✦  ${unlockedCount} / ${RELICS.length} SACRED RELICS FORGED  ✦`,
 				{
 					fontFamily: FONT.title,
 					fontSize: "14px",
@@ -860,7 +853,7 @@ export class CodexScene extends Phaser.Scene {
 
 			// Relic Icon
 			const icon = this.add
-				.text(54, cardH / 2, isUnlocked ? relic.icon : "🔒", {
+				.text(54, cardH / 2, isUnlocked ? relic.icon : "◈", {
 					fontSize: isUnlocked ? "34px" : "24px",
 				})
 				.setOrigin(0.5);
@@ -869,7 +862,7 @@ export class CodexScene extends Phaser.Scene {
 			const title = this.add.text(
 				104,
 				16,
-				isUnlocked ? relic.name.toUpperCase() : "RELIQUE SCELLÉE",
+				isUnlocked ? relic.name.toUpperCase() : "SEALED RELIC",
 				{
 					fontFamily: FONT.title,
 					fontSize: "17px",
@@ -881,7 +874,7 @@ export class CodexScene extends Phaser.Scene {
 
 			// Status Chip at top-right
 			const chip = this.add
-				.text(cardW - 20, 22, isUnlocked ? "✦ DÉBLOQUÉE" : "🔒 INCONNUE", {
+				.text(cardW - 20, 22, isUnlocked ? "✦ UNLOCKED" : "◈ UNKNOWN", {
 					fontFamily: FONT.ui,
 					fontSize: "11px",
 					color: hex(isUnlocked ? COLORS.gold : COLORS.blood),
@@ -895,7 +888,7 @@ export class CodexScene extends Phaser.Scene {
 				44,
 				isUnlocked
 					? relic.desc
-					: "Accomplissez des hauts faits d'armes ou de règne pour révéler ce trésor.",
+					: "Accomplish great feats of war or rule to reveal this treasure.",
 				{
 					fontFamily: FONT.ui,
 					fontSize: "13px",
@@ -906,12 +899,18 @@ export class CodexScene extends Phaser.Scene {
 			);
 
 			// Lore or clue
+			const originLeader = relic.leaderId
+				? LEADERS.find((l) => l.id === relic.leaderId)
+				: undefined;
+			const originName = originLeader
+				? `${originLeader.name} · ${originLeader.civ}`
+				: relic.leaderId
+					? relic.leaderId.replace(/_/g, " ").toUpperCase()
+					: "IMPERIAL DYNASTY";
 			const clue = this.add.text(
 				104,
 				82,
-				isUnlocked
-					? `« ${relic.lore} »`
-					: `Origine : ${relic.leaderId ? relic.leaderId.toUpperCase() : "DYNASTIE IMPÉRIALE"}`,
+				isUnlocked ? `« ${relic.lore} »` : `Origin: ${originName}`,
 				{
 					fontFamily: FONT.body,
 					fontSize: "15px",

@@ -466,7 +466,7 @@ export class VoiceResonator extends Phaser.GameObjects.Container {
 					`Option ${["I", "II", "III", "IV"][result.index] ?? result.index + 1} confirmed`,
 				);
 			} else if (result.kind === "custom") {
-				this.statusText.setText(`👑 ${result.label}`);
+				this.statusText.setText(`♛ ${result.label}`);
 				this.hintText.setText("A sovereign decree is sealed");
 			}
 			this.scene.time.delayedCall(700, () => {

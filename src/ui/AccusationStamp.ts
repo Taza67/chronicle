@@ -55,7 +55,7 @@ export class AccusationStamp extends Phaser.GameObjects.Container {
 
 		// 3. Seal icon & text
 		const label = scene.add
-			.text(0, -5, "⚖️ DÉMASQUER LE CONSEILLER", {
+			.text(0, -5, "⚖ UNMASK THE ADVISOR", {
 				fontFamily: FONT.title,
 				fontSize: "15px",
 				color: hex(COLORS.gold),
@@ -65,7 +65,7 @@ export class AccusationStamp extends Phaser.GameObjects.Container {
 		label.setLetterSpacing(1.5);
 
 		const sub = scene.add
-			.text(0, 14, "Double-tranchant · Confondez un traître", {
+			.text(0, 14, "Double-edged · Expose a traitor", {
 				fontFamily: FONT.ui,
 				fontSize: "11px",
 				color: hex(COLORS.muted),

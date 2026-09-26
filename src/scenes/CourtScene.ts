@@ -230,7 +230,7 @@ export class CourtScene extends Phaser.Scene {
 				if (restored) {
 					toast(
 						this,
-						"Sceptre des Tudors : Un Sceau Royal a été restauré !",
+						"Tudor Sceptre: A Royal Seal has been restored!",
 						COLORS.gold,
 					);
 				}
@@ -618,7 +618,7 @@ export class CourtScene extends Phaser.Scene {
 				onPick: (i) => finish(turn.choices[i], i),
 			});
 
-			const sealsY = Math.max(SAFE_TOP + 120, cards.top - 82);
+			const sealsY = Math.max(SAFE_TOP + 120, cards.top - 94);
 			seals = new RoyalSeals(this, sealsY, this.g, {
 				onPrescience: () => {
 					cards.activatePrescience();
@@ -669,7 +669,7 @@ export class CourtScene extends Phaser.Scene {
 
 			// If microphone is supported and online, start hands-free Royal Voice Ribbon & VAD
 			if (micSupported() && online()) {
-				const ribbonY = cards.top - 24;
+				const ribbonY = cards.top - 30;
 				ribbon = new VoiceRibbon(this, W / 2, ribbonY);
 
 				vad = new VoiceActivityDetector({
@@ -813,7 +813,7 @@ export class CourtScene extends Phaser.Scene {
 				onComplete: () => {
 					toast(
 						this,
-						"L'Audience est close. Le Conseil Royal reprend séance.",
+						"The Audience is adjourned. The Royal Council is back in session.",
 						COLORS.gold,
 					);
 					this.time.delayedCall(400, () => resolve());

@@ -59,7 +59,7 @@ await p.waitForTimeout(3000);
 // fake a finished chapter in the save
 await p.evaluate(() => {
 	let g = null;
-	const saveStr = localStorage.getItem("chronicle-save");
+	const saveStr = localStorage.getItem("chronicle.save");
 	if (saveStr) {
 		try {
 			g = JSON.parse(saveStr);
@@ -127,7 +127,7 @@ await p.evaluate(() => {
 		g.turnIndex = g.chapter?.turns?.length ?? 5;
 		g.stats = { gold: 6, stability: 4, legacy: 8 };
 	}
-	localStorage.setItem("chronicle-save", JSON.stringify(g));
+	localStorage.setItem("chronicle.save", JSON.stringify(g));
 	console.log("save initialized for testing");
 });
 const start = async (k, data) => {
