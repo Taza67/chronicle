@@ -17,24 +17,23 @@
 
 ## Short description (tagline, ≤ 140 chars)
 
-> Rule as they did. Or don't. Voiced advisors, real dilemmas, and the Oracle's bet — history you play, not read.
+> Rule as history's leaders. Face real crises, balance your empire, and bet on what history actually did.
 
 ## Description
 
-**Chronicle** puts you on the throne. Cleopatra, Napoleon, Ashoka, Mansa Musa, Elizabeth I — or any ruler who truly lived, summoned on demand and painted live.
+**Chronicle** is a historical decision visual novel designed for mobile and desktop browsers.
 
-Each turn, a voiced advisor brings you a real historical dilemma. Choose — by tap or by voice — then face the **Oracle**: did history make the same call? Guess right to chain a Legacy combo. Guess wrong and the Chronicle reveals what really happened… or spins the alternate history your decision would have written.
+Take the throne of iconic rulers (Napoleon, Cleopatra, Elizabeth I, Ashoka, Mansa Musa) or summon any historical figure to face authentic dilemmas from their reign.
 
-- **Five turns per chapter**, endless reigns, change of era whenever you wish
-- **Three advisors** with trust, tempers and, when neglected, lies
-- **Oracle's bet**, court hourglass, cascading crises (bankruptcy, revolt, prophecy)
-- **Codex** of true facts and what-ifs, **Chronicle** of your past reigns
-- **AI-generated verdicts**, and the real leader's judgement of your rule
-- Civilization-style painted portraits that breathe, blink and speak in sync
+### How it works:
+* **Face real crises:** Court advisors present historical dilemmas. Decide your policy by tapping or speaking out loud.
+* **Manage your empire:** Balance Gold, Stability, and Legacy across a 5-turn reign to avoid bankruptcy or rebellion.
+* **Bet with the Oracle:** Guess whether your decision matches what the historical ruler actually did to earn bonus score multipliers.
+* **Learn history & "What If":** Discover verified historical facts when you follow history, or explore plausible alternate timelines when you choose differently.
+* **The Codex & Chronicle:** Collect historical records across civilisations and review past reign scorecards.
 
-Built in 24 h for the Voodoo × Gradium × Cognition × Google DeepMind hackathon.
-Powered by **Gemini** (dilemmas, alternate histories, verdicts, on-demand leaders), **Gradium** (voices, speech input), **Nano Banana / Imagen** (portraits), **Lyria** (music), engineered with **Devin**. Phaser 3 · TypeScript · Cloudflare Workers.
-
+Built for the **Voodoo × Gradium × Cognition × Google DeepMind** hackathon.  
+Powered by Gemini 3.8, Gradium (voice synthesis & speech recognition), and engineered with Devin.  
 Works in any modern mobile or desktop browser. Headphones recommended.
 
 ## Visual Assets (Cover & Gameplay GIFs)
