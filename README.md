@@ -20,13 +20,13 @@ Chronicle turns history into an interactive story:
 
 ## 🎮 How to Play
 
-Survive a **5-turn reign** while keeping your kingdom's 3 resources (**Gold, Stability, Legacy**) balanced:
+A reign is played in **chapters of 5 historical dilemmas**. Balance your kingdom's 3 resources (**Gold, Stability, Legacy**) to avoid bankruptcy or rebellion:
 
 1. **Choose a decree:** An advisor presents a historical crisis. Pick your action by tapping a card or speaking out loud.
 2. **Bet with the Oracle:** Guess whether the real historical leader made that exact choice to earn bonus combo points.
 3. **Discover the outcome:** The game reveals the true historical event, or generates an alternate "What If" timeline if you chose differently.
 
-Survive all 5 turns to unlock verified facts in your **Codex** and earn your final royal title!
+Complete each 5-turn chapter to receive your reign verdict and royal title, then **continue your reign into the next season** or switch to a new era!
 
 ---
 
