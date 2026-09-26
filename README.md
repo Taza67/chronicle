@@ -1,102 +1,102 @@
 # Chronicle ❖
 
-> **Step into the shoes of history's greatest leaders. Learn history through play.**
+> **Rule as history's greatest leaders. Learn history through play.**
 
-🎮 **Play now:** [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle)
+🎮 **Play directly in your browser:** [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle)
 
-**Chronicle** is a voice-powered historical visual novel designed for mobile and web. It turns history into an interactive story: you sit on the throne, listen to your court advisors speak to you, make tough royal decisions, and discover what really happened — all while having fun!
-
----
-
-## 👑 What is Chronicle?
-
-Think of Chronicle as an **interactive visual novel where you rule an empire**:
-
-* **Play legendary rulers:** Lead as **Napoleon**, **Cleopatra**, **Elizabeth I**, **Ashoka**, **Mansa Musa**, or summon any real historical figure you want by name.
-* **Living, voiced characters:** Your advisors don't just display silent text. They actually **talk to you with full voice and mouth movement (lip-sync)**.
-* **Learn real history through play:** Every turn brings a real dilemma that the leader actually faced. You decide how to solve it, and learn the real historical outcome.
-* **Explore "What If" alternate history:** If you make a different choice than the real ruler did, the story doesn't stop — the game creates and narrates a brand-new alternate history timeline for you!
+**Chronicle** is a mobile-first historical decision visual novel. You take the throne of real world leaders, listen to your court advisors present real crises from history, choose how to act, and discover what actually happened versus what an alternate timeline would have produced.
 
 ---
 
-## 🎮 How to Play (In 4 Simple Steps)
+## 📖 What is Chronicle?
 
-You can pick up and play the game in less than 30 seconds:
+Chronicle turns history into an interactive story:
 
-```
-[ 1. Pick a Leader ] ──► [ 2. Listen & Choose ] ──► [ 3. Bet with the Oracle ] ──► [ 4. Discover History ]
-```
-
-1. **Pick your leader:** Choose from the portrait gallery or type in any ruler from history.
-2. **Listen to your advisors:** Your ministers (Gold, Stability, Legacy) voice their opinions. Choose your royal decree with a **single tap** or by **speaking your answer out loud**.
-3. **Bet with the Oracle:** Before the result is revealed, place a bet: *"Did the real historical leader make this choice, or did they do something else?"* Guess correctly to score bonus combo points!
-4. **Discover what happened:**
-   * **If you matched history:** You unlock authentic, verified historical facts in your royal Codex.
-   * **If you chose differently:** You hear a fun, AI-narrated alternate history ("What If") showing how your choice would have changed the world.
-5. **Get your reign verdict:** After 5 dilemmas, receive a fun report card evaluating your reign with a unique royal title (like *"Cleopatra the Visionary"* or *"Napoleon the Reckless"*).
+* **Real historical leaders:** Rule as **Napoleon Bonaparte**, **Cleopatra VII**, **Elizabeth I**, **Ashoka the Great**, **Mansa Musa**, or summon any real ruler from history by name.
+* **Authentic dilemmas:** Every scenario is a real dilemma that the leader actually faced during their reign.
+* **Learn while playing:** Compare your choices against real history, uncover true historical facts, and explore plausible "What If" alternate timelines.
 
 ---
 
-## ✨ Why You'll Love It
+## 🎮 Game Guide: How to Play
 
-* **Super fun & casual:** Designed to be played easily with one thumb on any phone.
-* **Hear your court come alive:** Characters breathe, blink, and sync their lips to real speech audio.
-* **Play your way (Tap or Voice):** Relax and tap decree cards, or speak directly to your phone like a true monarch.
-* **Collect real knowledge:** Fill your historical **Codex** with fascinating true facts and unexpected stories.
-* **Endless replay:** If you run out of built-in eras, you can summon any figure in world history (e.g. *Marcus Aurelius*, *Joan of Arc*, *Saladin*) for an instant new game!
+### 1. Goal of the Game
+Guide your empire through a **5-turn reign**. You must manage your kingdom's 3 core resources, make critical choices, bet on historical truth, and finish with a strong legacy without triggering a crisis.
+
+### 2. The 3 Kingdom Pillars
+Every decision you make affects three gauges:
+* 🪙 **Gold:** Your treasury. Letting it drop too low triggers a **Bankruptcy** crisis.
+* ⚖️ **Stability:** Peace and civil order. Letting it collapse sparks a **Revolt**.
+* 👑 **Legacy:** Your historical fame and score. Reaching high legacy unlocks special **Prophecy** events.
+
+### 3. Step-by-Step Turn Walkthrough
+Each turn follows 4 clear steps:
+
+1. **The Council Dilemma:**
+   A court advisor brings a crisis to your throne. Review the situation and examine the 3 proposed decrees. Each decree shows which pillars it will likely impact.
+2. **Make Your Decree (Tap or Voice):**
+   Choose your decision by tapping a decree card, or use the microphone button to decree hands-free by speaking your own words.
+3. **The Oracle's Wager:**
+   Before the result is revealed, place a bet: *Did the real historical leader make this choice, or did they do something else?* Guessing correctly chains a combo multiplier for your score.
+4. **Historical Reveal & "What If":**
+   * **If your choice matched history:** You learn what really took place and collect verified facts in your Codex.
+   * **If your choice differed:** The game generates an alternate history timeline explaining how your decision would have changed world events.
+
+### 4. End of Reign: The Verdict
+After surviving 5 turns, you reach the **Verdict screen**:
+* View your final Pillar scores (Gold, Stability, Legacy).
+* Check your Oracle prediction accuracy.
+* Receive an assessment of your rule and a historical epithet (e.g., *"Napoleon the Visionary"*, *"Cleopatra the Stern"*).
+
+---
+
+## 🏛️ Game Modes & Features
+
+* **Campaign Carousel:** Jump between different civilisations and eras (Imperial France, Ancient Egypt, Tudor England, Maurya India, Mali Empire).
+* **Summon Any Leader:** Type any historical figure (e.g. *Marcus Aurelius*, *Joan of Arc*, *Saladin*) to dynamically generate a custom ruler profile and new dilemmas.
+* **The Royal Codex:** An in-game encyclopedia tracking all the historical facts and alternate timelines you have unlocked across your reigns.
+* **The Chronicle:** A hall of records summarizing past reigns, final scores, and titles earned.
 
 ---
 
 ## 📱 How to Play on Mobile
 
-1. Open [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle) on your smartphone browser (Safari or Chrome).
-2. Tap **"Run Game"** (or fullscreen).
-3. Tap the screen once to enable the sound and voice acting.
-4. Hold your phone in **portrait mode** and start ruling!
+1. Open [https://taza67.itch.io/chronicle](https://taza67.itch.io/chronicle) on your mobile browser (Safari, Chrome).
+2. Tap **"Run Game"** to launch in fullscreen portrait mode.
+3. Tap the screen once to enable audio.
+4. Play by tapping cards, or toggle voice input in Settings to decree with your voice.
 
 ---
 
-## 🏆 Hackathon & Technology (For Judges & Developers)
+## 🛠️ Tech Stack & Sponsors
 
-Chronicle was created for the **Voodoo × Gradium × Cognition × Google DeepMind** Hackathon (*Track: Build a Game*).
+Built for the **Voodoo × Gradium × Cognition × Google DeepMind** Hackathon (*Track: Build a Game*).
 
-### Sponsor Integrations
+### Sponsor Roles
+* **Google DeepMind:** Gemini 3.8 Flash powers dynamic dilemmas, alternate history generation, end-of-reign verdicts, and voice intent parsing. Imagen/Nano Banana generated character portraits and court scenes. Lyria provided period court music.
+* **Gradium:** Text-to-speech generates spoken dialogue for court advisors, and speech-to-text enables voice decree input.
+* **Cognition:** End-to-end development, architecture, and debugging with Devin.
+* **Voodoo:** Mobile-first design principles (vertical portrait layout, one-thumb navigation, quick onboarding).
 
-| Sponsor | Role in Chronicle |
-| :--- | :--- |
-| **Google DeepMind** | **Gemini 3.8 Flash** generates dynamic chapters, alternate history timelines, end-of-reign verdicts, and parses voice intents. **Nano Banana / Imagen** created the painted portraits, scene backgrounds, and facial lip-sync frames. **Lyria** composed authentic period court music. |
-| **Gradium** | **Ultra-fast TTS** powers the character voices for every advisor and narrator (driving real-time audio lip-sync). **Streaming ASR** provides speech-to-text so players can speak their decrees hands-free. |
-| **Cognition** | The game was engineered, iterated, and tested end-to-end with **Devin**. |
-| **Voodoo** | Guided the mobile-first UX: vertical portrait view, one-thumb ergonomics, and instant player feedback. |
-
----
-
-### Tech Stack & Architecture
-
-* **Frontend Engine:** [Phaser 3](https://phaser.io) (HTML5 2D game framework), TypeScript, Vite.
-* **Audio & Animation:** Web Audio API (`AnalyserNode`) for real-time lip-sync driving canvas sprite mouth and eye variants.
-* **API Gateway:** Cloudflare Worker (`worker/`) handles Gemini and Gradium requests, caching results in KV for instant load times and protecting API keys.
-* **Offline-Ready:** Bundled fallback chapters, pre-recorded audio, and local assets ensure the game works seamlessly even offline.
+### Technology
+* **Game Engine:** Phaser 3.90 + TypeScript + Vite (mobile portrait 720×1280).
+* **Backend:** Cloudflare Workers with KV caching for API calls.
 
 ---
 
-### Local Development
+## 💻 Local Setup
 
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Run local development server
+# 2. Run local dev server
 npm run dev
-# Open http://localhost:5173
 
-# 3. Check types & linter
+# 3. Build & package for distribution
 npm run typecheck
 npm run lint
-
-# 4. Package for itch.io / Web
 npm run package
-# Creates chronicle-itch.zip
 ```
 
 ---
