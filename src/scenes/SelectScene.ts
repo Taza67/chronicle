@@ -159,7 +159,7 @@ export class SelectScene extends Phaser.Scene {
 		this.input.on(
 			Phaser.Input.Events.POINTER_DOWN,
 			(p: Phaser.Input.Pointer) => {
-				if (p.y > H * 0.12 && p.y < H * 0.86 && p.x > 100 && p.x < W - 100) {
+				if (p.y > H * 0.12 && p.y < H * 0.86 && p.x > 90 && p.x < W - 90) {
 					this.dragging = true;
 					this.dragX = p.x;
 				}
@@ -180,7 +180,8 @@ export class SelectScene extends Phaser.Scene {
 			else if (dx > 60) this.step(-1);
 			else {
 				// tap on a side card brings it to the front
-				const rel = Math.round((p.x - W / 2) / GAP);
+				const rel =
+					p.x < W / 2 - CARD_W / 2 ? -1 : p.x > W / 2 + CARD_W / 2 ? 1 : 0;
 				if (rel !== 0 && Math.abs(p.y - this.track.y) < CARD_W * 0.66)
 					this.step(rel);
 				else this.snap();

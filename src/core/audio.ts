@@ -148,7 +148,12 @@ class AudioEngine {
 		if (!buf) {
 			const raw = await load();
 			if (!raw) return;
-			buf = await this.decode(raw);
+			try {
+				buf = await this.decode(raw);
+			} catch (e) {
+				console.warn("music decode failed", id, e);
+				return;
+			}
 			this.musicBuffers.set(id, buf);
 		}
 		if (this.music?.id === id) return;

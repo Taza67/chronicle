@@ -5,7 +5,9 @@ import { audio } from "./audio.ts";
 async function local(id: string): Promise<ArrayBuffer | null> {
 	try {
 		const r = await fetch(`music/${id}.mp3`);
-		return r.ok ? await r.arrayBuffer() : null;
+		const type = r.headers.get("content-type") ?? "";
+		if (!r.ok || !type.startsWith("audio/")) return null;
+		return await r.arrayBuffer();
 	} catch {
 		return null;
 	}
