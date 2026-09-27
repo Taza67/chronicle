@@ -1,7 +1,7 @@
-import { getLeaderDefaultRelic } from "../content/relics.ts";
+import { getLeaderDefaultRelic, RELICS } from "../content/relics.ts";
 import type {
 	AdvisorRole,
-	Chapter,
+	DeferredFlag,
 	Effects,
 	GameState,
 	Leader,
@@ -77,11 +77,18 @@ function readArr<T>(key: string): T[] {
 		return [];
 	}
 }
+let storageWarned = false;
 function write(key: string, v: unknown) {
 	try {
 		localStorage.setItem(key, JSON.stringify(v));
-	} catch {
-		/* quota */
+	} catch (e) {
+		console.warn("[chronicle] localStorage write failed:", key, e);
+		if (!storageWarned) {
+			storageWarned = true;
+			// main.ts turns this into a toast — a save failing silently would
+			// lose progress with no explanation.
+			window.dispatchEvent(new CustomEvent("chronicle:storage-full"));
+		}
 	}
 }
 
@@ -105,7 +112,10 @@ export function unlockRelic(id: string): boolean {
 }
 
 export function hasRelic(g: GameState, id: string): boolean {
-	return (g.relics ?? []).includes(id);
+	if ((g.relics ?? []).includes(id)) return true;
+	// Meta relics (not bound to a leader) apply to every reign once unlocked.
+	const def = RELICS.find((r) => r.id === id);
+	return !!def && !def.leaderId && unlockedRelics.includes(id);
 }
 
 export function restoreRandomSeal(
@@ -140,6 +150,8 @@ export function newGame(leader: Leader): GameState {
 		collapse: null,
 		seals: { prescience: 1, treasury: 1, decree: 1 },
 		relics: defaultRelic ? [defaultRelic] : [],
+		flags: [],
+		favor: { war: 0, gold: 0, faith: 0 },
 	};
 }
 
@@ -153,6 +165,17 @@ export const saveGame = (g: GameState | null) =>
 	g
 		? write(K.save, { ...g, leader: stripArt(g.leader) })
 		: localStorage.removeItem(K.save);
+
+/** Set when a save is dropped because its summoned leader's art vanished
+ * from IndexedDB — TitleScene surfaces it once instead of silently
+ * hiding the Continue button. */
+export let saveLost: string | null = null;
+export function takeSaveLost(): string | null {
+	const v = saveLost;
+	saveLost = null;
+	return v;
+}
+
 export const loadGame = (): GameState | null => {
 	try {
 		const v = localStorage.getItem(K.save);
@@ -160,7 +183,11 @@ export const loadGame = (): GameState | null => {
 		const g = JSON.parse(v) as GameState;
 		if (g.leader.generated) {
 			const full = customLeaders.find((l) => l.id === g.leader.id);
-			if (!full?.art) return null;
+			if (!full?.art) {
+				saveLost = g.leader.name;
+				saveGame(null);
+				return null;
+			}
 			g.leader = full;
 		}
 		if (!g.seals) {
@@ -170,12 +197,45 @@ export const loadGame = (): GameState | null => {
 			const def = getLeaderDefaultRelic(g.leader.id);
 			g.relics = def ? [def] : [];
 		}
+		// Sanitize numeric/record fields so saves from older builds can't NaN the run.
+		const num = (v: unknown, d = 0) =>
+			typeof v === "number" && !Number.isNaN(v) ? v : d;
+		g.stats = {
+			gold: num(g.stats?.gold, 5),
+			stability: num(g.stats?.stability, 5),
+			legacy: num(g.stats?.legacy, 5),
+		};
+		g.trust = {
+			war: num(g.trust?.war),
+			gold: num(g.trust?.gold),
+			faith: num(g.trust?.faith),
+		};
+		g.favor = {
+			war: num(g.favor?.war),
+			gold: num(g.favor?.gold),
+			faith: num(g.favor?.faith),
+		};
+		g.flags = (Array.isArray(g.flags) ? g.flags : []).filter(
+			(f): f is DeferredFlag =>
+				typeof f?.text === "string" &&
+				typeof f?.turnsLeft === "number" &&
+				f.turnsLeft > 0 &&
+				typeof f?.effects === "object" &&
+				f.effects !== null,
+		);
+		g.combo = num(g.combo);
+		if (!Array.isArray(g.history)) g.history = [];
+		if (typeof g.season !== "number" || g.season < 1) g.season = 1;
+		if (typeof g.seasonsPlayed !== "number" || g.seasonsPlayed < 0)
+			g.seasonsPlayed = 0;
+		if (typeof g.turnIndex !== "number" || g.turnIndex < 0) g.turnIndex = 0;
 		return g;
 	} catch {
 		return null;
 	}
 };
 
+const CODEX_MAX = 300;
 export const codex = readArr<CodexEntry>(K.codex);
 export function addCodex(e: Omit<CodexEntry, "at">) {
 	if (
@@ -189,13 +249,18 @@ export function addCodex(e: Omit<CodexEntry, "at">) {
 	)
 		return;
 	codex.unshift({ ...e, at: Date.now() });
+	// Bound the museum — entries persist in localStorage forever otherwise.
+	if (codex.length > CODEX_MAX) codex.length = CODEX_MAX;
 	write(K.codex, codex);
 }
 
+const REIGNS_MAX = 50;
 export const reigns = readArr<ReignRecord>(K.reigns);
 export function addReign(r: Omit<ReignRecord, "at">) {
 	reigns.unshift({ ...r, at: Date.now() });
-	write(K.reigns, reigns.slice(0, 50));
+	// Bound the in-memory array too — the old slice only capped the write.
+	if (reigns.length > REIGNS_MAX) reigns.length = REIGNS_MAX;
+	write(K.reigns, reigns);
 }
 
 /** Player-summoned leaders. Metadata in localStorage, art in IndexedDB (hydrated at boot). */
@@ -212,10 +277,17 @@ export async function addCustomLeader(l: Leader) {
 /** Attach stored art to summoned leaders; drops any whose art is missing. */
 export async function hydrateCustomLeaders() {
 	const arts = await Promise.all(customLeaders.map((l) => getArt(l.id)));
+	let dropped = false;
 	for (let i = customLeaders.length - 1; i >= 0; i--) {
 		if (arts[i]) customLeaders[i].art = arts[i];
-		else customLeaders.splice(i, 1);
+		else {
+			customLeaders.splice(i, 1);
+			dropped = true;
+		}
 	}
+	// Persist the drops — otherwise ghost metadata is re-read and its missing
+	// art re-probed on every boot.
+	if (dropped) write(K.leaders, customLeaders.map(stripArt));
 }
 
 export const clamp10 = (n: number) => Math.max(0, Math.min(10, n));
@@ -241,9 +313,4 @@ export function checkCollapse(stats: Effects): "bankruptcy" | "revolt" | null {
 	if (stats.gold <= 0) return "bankruptcy";
 	if (stats.stability <= 0) return "revolt";
 	return null;
-}
-
-export function chapterSummary(g: GameState, ch: Chapter | null) {
-	const matched = g.history.filter((h) => h.matched).length;
-	return { matched, total: g.history.length, title: ch?.season_title ?? "" };
 }

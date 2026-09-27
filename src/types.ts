@@ -23,12 +23,31 @@ export interface Relic {
 	lore: string;
 }
 
+export interface DeferredConsequence {
+	/** Short echo line narrated when it resurfaces. */
+	text: string;
+	effects: Effects;
+	/** Turns until it resurfaces (1–3). */
+	delay: number;
+}
+
 export interface Choice {
 	label: string;
 	historical: boolean;
 	effects: Effects;
 	/** Pre-generated counterfactual for non-historical choices (fallback content). */
 	whatif?: string;
+	/** Player-invented decree via voice input — the Oracle cannot wager on it. */
+	custom?: boolean;
+	/** A repercussion that echoes back a few turns later. */
+	consequence?: DeferredConsequence;
+}
+
+/** A scheduled deferred consequence, ticking down each turn. */
+export interface DeferredFlag {
+	text: string;
+	effects: Effects;
+	turnsLeft: number;
 }
 
 export interface Turn {
@@ -142,4 +161,12 @@ export interface GameState {
 	avertedRevolt?: boolean;
 	/** Whether the popular petitions audience has been completed this chapter. */
 	petitionsDone?: boolean;
+	/** Cascade warning injected into the current chapter (bankruptcy/revolt/prophecy). */
+	chapterSpecial?: "revolt" | "bankruptcy" | "prophecy" | null;
+	/** Whether this reign's verdict was already recorded in the chronicle. */
+	reignRecorded?: boolean;
+	/** Deferred consequences ticking toward resurfacing. */
+	flags?: DeferredFlag[];
+	/** Times each advisor's counsel was heeded — feeds the court-whisper favors. */
+	favor?: Record<AdvisorRole, number>;
 }
