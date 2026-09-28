@@ -1,4 +1,4 @@
-import { encodeWav, micSupported } from "./recorder.ts";
+import { encodeWav, micSupported, tapPcm } from "./recorder.ts";
 
 export interface VADOptions {
 	/** Volume threshold (0..1) to detect speech onset. Defaults to 0.12. */
@@ -28,11 +28,14 @@ export class VoiceActivityDetector {
 	private stream: MediaStream | null = null;
 	private ctx: AudioContext | null = null;
 	private src: MediaStreamAudioSourceNode | null = null;
-	private proc: ScriptProcessorNode | null = null;
+	private tap: { disconnect(): void } | null = null;
 
 	private state: "idle" | "speaking" | "paused" | "stopped" = "stopped";
 	private preRoll: Float32Array[] = [];
 	private speechChunks: Float32Array[] = [];
+	// Bumped by stop() so a pending start() can tell its getUserMedia
+	// resolution arrived after shutdown and must be discarded.
+	private startGen = 0;
 
 	private silenceTimeMs = 0;
 	private speechTimeMs = 0;
@@ -77,24 +80,33 @@ export class VoiceActivityDetector {
 	async start(): Promise<boolean> {
 		if (this.isActive || !micSupported()) return false;
 
+		const gen = ++this.startGen;
 		try {
-			this.stream = await navigator.mediaDevices.getUserMedia({
+			const stream = await navigator.mediaDevices.getUserMedia({
 				audio: {
 					echoCancellation: true,
 					noiseSuppression: true,
 					autoGainControl: true,
 				},
 			});
+			// stop() ran while the permission prompt was pending — release the
+			// hardware instead of leaking a live mic with no scene attached.
+			if (gen !== this.startGen) {
+				for (const t of stream.getTracks()) t.stop();
+				return false;
+			}
+			this.stream = stream;
 
 			this.ctx = new AudioContext();
 			this.src = this.ctx.createMediaStreamSource(this.stream);
-			// 4096 samples ≈ 85ms buffer at 48kHz
-			this.proc = this.ctx.createScriptProcessor(4096, 1, 1);
-
-			this.proc.onaudioprocess = (e) => this.handleAudioProcess(e);
-
-			this.src.connect(this.proc);
-			this.proc.connect(this.ctx.destination);
+			// 4096-sample frames ≈ 85ms at 48kHz (AudioWorklet, ScriptProcessor fallback)
+			this.tap = await tapPcm(this.ctx, this.src, (d) => this.handleChunk(d));
+			// Same generation race as getUserMedia above — stop() ran while
+			// the worklet module loaded; tear down what we just built.
+			if (gen !== this.startGen) {
+				this.stop();
+				return false;
+			}
 
 			this.state = "idle";
 			this.preRoll = [];
@@ -132,14 +144,15 @@ export class VoiceActivityDetector {
 
 	/** Completely stop the VAD listener and release microphone hardware. */
 	stop() {
+		this.startGen++;
 		this.state = "stopped";
-		if (this.proc) {
+		if (this.tap) {
 			try {
-				this.proc.disconnect();
+				this.tap.disconnect();
 			} catch {
 				/* noop */
 			}
-			this.proc = null;
+			this.tap = null;
 		}
 		if (this.src) {
 			try {
@@ -162,10 +175,9 @@ export class VoiceActivityDetector {
 		this.currentLevel = 0;
 	}
 
-	private handleAudioProcess(e: AudioProcessingEvent) {
+	private handleChunk(d: Float32Array) {
 		if (this.state === "stopped" || this.state === "paused") return;
 
-		const d = e.inputBuffer.getChannelData(0);
 		const copy = new Float32Array(d);
 
 		// Compute RMS level
@@ -175,7 +187,7 @@ export class VoiceActivityDetector {
 		this.currentLevel = rawLevel;
 		this.onLevel?.(rawLevel);
 
-		const frameDurationMs = (d.length / e.inputBuffer.sampleRate) * 1000;
+		const frameDurationMs = (d.length / (this.ctx?.sampleRate ?? 48000)) * 1000;
 
 		if (this.state === "idle") {
 			// Maintain rolling pre-roll buffer (~340ms)
