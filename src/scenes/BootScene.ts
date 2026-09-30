@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import { LEADERS } from "../content/leaders.ts";
+import { trimTtsCache } from "../core/api.ts";
 import { setManifest } from "../core/art.ts";
 import { hydrateCustomLeaders } from "../core/state.ts";
 import type { ArtManifest } from "../types.ts";
-import { COLORS, H, W } from "../ui/theme.ts";
+import { COLORS, CX, H } from "../ui/theme.ts";
 
 /** Generates procedural textures (vignette, grain, spark, coin) and loads the manifest + leader thumbnails. */
 export class BootScene extends Phaser.Scene {
@@ -16,9 +17,7 @@ export class BootScene extends Phaser.Scene {
 		for (const l of LEADERS)
 			this.load.image(`${l.id}/leader`, `art/${l.id}/leader.webp`);
 		this.load.image("title_bg", "art/cleopatra/scene_far.webp");
-		const bar = this.add
-			.rectangle(W / 2, H / 2, 0, 4, COLORS.gold)
-			.setOrigin(0.5);
+		const bar = this.add.rectangle(CX, H / 2, 0, 4, COLORS.gold).setOrigin(0.5);
 		this.load.on(Phaser.Loader.Events.PROGRESS, (p: number) =>
 			bar.setSize(Math.round(300 * p), 4),
 		);
@@ -30,6 +29,7 @@ export class BootScene extends Phaser.Scene {
 		this.makeGrain();
 		this.makeSpark();
 		this.makeCoin();
+		void trimTtsCache();
 		void hydrateCustomLeaders().finally(() => this.scene.start("Title"));
 	}
 
