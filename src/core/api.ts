@@ -6,6 +6,8 @@ const WORKER =
 		"",
 	) ?? "";
 
+const APP_KEY = (import.meta.env?.VITE_APP_KEY as string | undefined) ?? "";
+
 export const online = () => WORKER !== "" && navigator.onLine;
 
 export interface GeminiPart {
@@ -26,7 +28,7 @@ async function post(
 		const r = await fetch(WORKER + path, {
 			method: "POST",
 			body,
-			headers,
+			headers: APP_KEY ? { "x-app-key": APP_KEY, ...headers } : headers,
 			signal: ctl.signal,
 		});
 		if (!r.ok)
@@ -68,6 +70,26 @@ async function hash(s: string) {
 }
 
 const ttsMem = new Map<string, Promise<ArrayBuffer>>();
+// Bound the map: Cache API provides persistence; this is in-flight dedup
+// plus hot replay. Without a cap, every spoken line holds a WAV buffer
+// in RAM for the whole session (mobile devices OOM).
+const TTS_MEM_MAX = 24;
+
+// Bound the persistent cache too: one WAV per spoken line otherwise grows
+// forever (hundreds of MB over weeks of play). keys() is insertion-ordered
+// so the head of the list is the oldest entry.
+const TTS_CACHE_MAX = 200;
+export async function trimTtsCache() {
+	if (typeof caches === "undefined") return;
+	try {
+		const cache = await caches.open("chronicle-tts-v1");
+		const keys = await cache.keys();
+		for (const req of keys.slice(0, keys.length - TTS_CACHE_MAX))
+			void cache.delete(req);
+	} catch {
+		/* Cache API unavailable */
+	}
+}
 
 // Concurrency gate for TTS requests
 const TTS_SLOTS = 6;
@@ -85,6 +107,16 @@ const release = () => {
 	if (next) next();
 	else ttsActive--;
 };
+
+/** The worker rejects with 401 when APP_KEY is set server-side but the client
+ * was built without VITE_APP_KEY — every line would silently fall back to
+ * mimed speech. Surface it once so the misconfiguration is visible. */
+let ttsDeniedWarned = false;
+function reportTtsDenied() {
+	if (ttsDeniedWarned) return;
+	ttsDeniedWarned = true;
+	window.dispatchEvent(new CustomEvent("chronicle:tts-denied"));
+}
 
 /** TTS → WAV bytes, cached in memory + Cache API. */
 export function tts(
@@ -116,6 +148,10 @@ export function tts(
 					45000,
 				);
 				buf = await r.arrayBuffer();
+			} catch (e) {
+				if (e instanceof Error && /^\/tts 40[13]/.test(e.message))
+					reportTtsDenied();
+				throw e;
 			} finally {
 				release();
 			}
@@ -129,6 +165,10 @@ export function tts(
 			return buf;
 		})();
 		ttsMem.set(key, p);
+		if (ttsMem.size > TTS_MEM_MAX) {
+			const oldest = ttsMem.keys().next().value;
+			if (oldest !== undefined) ttsMem.delete(oldest);
+		}
 		p.catch(() => ttsMem.delete(key));
 	}
 	return p;
