@@ -7,6 +7,8 @@ export interface Env {
 	GRADIUM_API_KEY: string;
 	CACHE: KVNamespace;
 	ALLOWED_ORIGINS?: string;
+	/** Shared app key — when set, every POST must carry it as x-app-key. */
+	APP_KEY?: string;
 }
 
 const GOOGLE_BASE = "https://generativelanguage.googleapis.com/v1beta";
@@ -14,18 +16,29 @@ const GOOGLE = `${GOOGLE_BASE}/models`;
 const GRADIUM = "https://api.gradium.ai/api/post";
 
 function cors(req: Request, env: Env) {
-	const origin = req.headers.get("origin") ?? "*";
-	const allowed = env.ALLOWED_ORIGINS?.split(",").map((s) => s.trim());
+	const origin = req.headers.get("origin");
+	let host = "";
+	try {
+		host = origin ? new URL(origin).hostname : "";
+	} catch {
+		host = "";
+	}
+	const allowed = env.ALLOWED_ORIGINS?.split(",")
+		.map((s) => s.trim())
+		.filter(Boolean);
+	const itcHost =
+		host === "itch.io" ||
+		host.endsWith(".itch.io") ||
+		host.endsWith(".itch.zone");
 	const ok =
 		!allowed ||
 		allowed.length === 0 ||
-		allowed.includes(origin) ||
-		origin.endsWith(".itch.zone") ||
-		origin.endsWith("itch.io");
+		(origin !== null && allowed.includes(origin)) ||
+		itcHost;
 	return {
-		"access-control-allow-origin": ok ? origin : "null",
+		"access-control-allow-origin": ok && origin ? origin : "null",
 		"access-control-allow-methods": "POST, GET, OPTIONS",
-		"access-control-allow-headers": "content-type",
+		"access-control-allow-headers": "content-type, x-app-key",
 		"access-control-max-age": "86400",
 		vary: "origin",
 	};
@@ -235,16 +248,16 @@ async function handleTts(req: Request, env: Env, h: Record<string, string>) {
 					prebuiltVoiceConfig: { voiceName: isGoogleVoice ? voice_id : "Puck" },
 				};
 
+		// Gemini TTS is steered by a stage direction in the text itself
+		// ("speech_metadata" is not an API field and was silently ignored).
+		const promptText = style
+			? `Speak in a voice that is ${style}: ${text}`
+			: text;
 		const body = {
 			contents: [
 				{
 					role: "user",
-					parts: [
-						{
-							text,
-							...(style ? { speech_metadata: { style } } : {}),
-						},
-					],
+					parts: [{ text: promptText }],
 				},
 			],
 			generationConfig: {
@@ -408,6 +421,14 @@ export default {
 		const url = new URL(req.url);
 		if (url.pathname === "/health") return json({ ok: true }, h);
 		if (req.method !== "POST") return json({ error: "method" }, h, 405);
+		if (env.APP_KEY && req.headers.get("x-app-key") !== env.APP_KEY)
+			return json({ error: "unauthorized" }, h, 401);
+		// Body cap: without it a client (or an abuser with the app key) could
+		// stream arbitrarily large payloads through to the paid APIs —
+		// /stt audio, /image base64 refs, /gemini parts.
+		const len = Number(req.headers.get("content-length") ?? "0");
+		if (len > 8 * 1024 * 1024)
+			return json({ error: "payload too large" }, h, 413);
 		try {
 			switch (url.pathname) {
 				case "/gemini":
