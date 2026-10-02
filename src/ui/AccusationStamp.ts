@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, hex, W } from "./theme.ts";
+import { COLORS, FONT, hex, VIS_CX } from "./theme.ts";
 
 export interface AccusationStampOpts {
 	advisorName: string;
@@ -17,7 +17,8 @@ export class AccusationStamp extends Phaser.GameObjects.Container {
 	private locked = false;
 
 	constructor(scene: Phaser.Scene, y: number, opts: AccusationStampOpts) {
-		super(scene, W / 2, y);
+		// Sits under the proclamation scroll — which lives in the visual column.
+		super(scene, VIS_CX, y);
 
 		const w = 360;
 		const h = 54;

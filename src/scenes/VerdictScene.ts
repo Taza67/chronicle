@@ -19,7 +19,10 @@ import type { GameState, Leader } from "../types.ts";
 import { Portrait } from "../ui/Portrait.ts";
 import {
 	body,
+	CANVAS_W,
+	COL_X,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
@@ -31,6 +34,10 @@ import {
 	W,
 } from "../ui/theme.ts";
 import { Button, fadeIn, go, Subtitle, toast } from "../ui/widgets.ts";
+
+// Y positions were authored for H=1280; scale them with the canvas height
+// (capped) so tall phones don't leave a huge void under the proclamation.
+const fy = (y: number) => Math.round(y * Math.min(1.35, H / 1280));
 
 const LOCAL_TITLES: [number, string, string][] = [
 	[0.9, "The Faithful Heir", "the Faithful"],
@@ -147,7 +154,7 @@ export class VerdictScene extends Phaser.Scene {
 
 	/** Set up the grand imperial hall atmosphere, pillars, lighting, and ambient motes. */
 	private setupHallAtmosphere(leader: Leader, collapsed: boolean) {
-		const bg = this.add.image(W / 2, H / 2, `${leader.id}/scene`);
+		const bg = this.add.image(CX, H / 2, `${leader.id}/scene`);
 		const scale = Math.max(W / bg.width, H / bg.height) * 1.05;
 		bg.setScale(scale)
 			.setAlpha(collapsed ? 0.44 : 0.38)
@@ -166,7 +173,9 @@ export class VerdictScene extends Phaser.Scene {
 		}
 
 		// Vignette overlay
-		const vig = this.add.image(W / 2, H / 2, "vignette").setDisplaySize(W, H);
+		const vig = this.add
+			.image(CX, H / 2, "vignette")
+			.setDisplaySize(CANVAS_W, H);
 		if (collapsed) {
 			vig.setTint(0x701212);
 		}
@@ -180,17 +189,22 @@ export class VerdictScene extends Phaser.Scene {
 		// Left & right pillar lines
 		frameG.lineStyle(1.5, colCol, colAlpha);
 		frameG.lineBetween(24, SAFE_TOP, 24, H - SAFE_BOTTOM);
-		frameG.lineBetween(W - 24, SAFE_TOP, W - 24, H - SAFE_BOTTOM);
+		frameG.lineBetween(
+			COL_X + W - 24,
+			SAFE_TOP,
+			COL_X + W - 24,
+			H - SAFE_BOTTOM,
+		);
 
 		// Capital brackets and base plinths
-		for (const x of [24, W - 24]) {
+		for (const x of [COL_X + 24, COL_X + W - 24]) {
 			frameG.strokeRect(x - 8, SAFE_TOP, 16, 8);
 			frameG.strokeRect(x - 8, H - SAFE_BOTTOM - 8, 16, 8);
 		}
 
 		// Vault frieze across the top
 		frameG.lineStyle(1, colCol, colAlpha * 0.7);
-		frameG.lineBetween(24, SAFE_TOP + 4, W - 24, SAFE_TOP + 4);
+		frameG.lineBetween(COL_X + 24, SAFE_TOP + 4, COL_X + W - 24, SAFE_TOP + 4);
 
 		if (collapsed) {
 			// Smoldering ruins underglow
@@ -213,7 +227,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Rising deep crimson embers
 			this.add
 				.particles(0, 0, "spark", {
-					x: { min: 20, max: W - 20 },
+					x: { min: COL_X + 20, max: COL_X + W - 20 },
 					y: { min: H * 0.55, max: H * 1.02 },
 					lifespan: { min: 2600, max: 4600 },
 					speedY: { min: -45, max: -160 },
@@ -231,56 +245,11 @@ export class VerdictScene extends Phaser.Scene {
 			raysG.setDepth(1);
 			raysG.fillStyle(COLORS.gold, 0.04);
 			const rayPolys = [
-				[
-					W / 2 - 180,
-					0,
-					W / 2 - 120,
-					0,
-					W / 2 - 290,
-					H * 0.6,
-					W / 2 - 380,
-					H * 0.6,
-				],
-				[
-					W / 2 - 70,
-					0,
-					W / 2 - 20,
-					0,
-					W / 2 - 140,
-					H * 0.7,
-					W / 2 - 210,
-					H * 0.7,
-				],
-				[
-					W / 2 - 20,
-					0,
-					W / 2 + 20,
-					0,
-					W / 2 - 60,
-					H * 0.8,
-					W / 2 + 60,
-					H * 0.8,
-				],
-				[
-					W / 2 + 20,
-					0,
-					W / 2 + 70,
-					0,
-					W / 2 + 210,
-					H * 0.7,
-					W / 2 + 140,
-					H * 0.7,
-				],
-				[
-					W / 2 + 120,
-					0,
-					W / 2 + 180,
-					0,
-					W / 2 + 380,
-					H * 0.6,
-					W / 2 + 290,
-					H * 0.6,
-				],
+				[CX - 180, 0, CX - 120, 0, CX - 290, H * 0.6, CX - 380, H * 0.6],
+				[CX - 70, 0, CX - 20, 0, CX - 140, H * 0.7, CX - 210, H * 0.7],
+				[CX - 20, 0, CX + 20, 0, CX - 60, H * 0.8, CX + 60, H * 0.8],
+				[CX + 20, 0, CX + 70, 0, CX + 210, H * 0.7, CX + 140, H * 0.7],
+				[CX + 120, 0, CX + 180, 0, CX + 380, H * 0.6, CX + 290, H * 0.6],
 			];
 			for (const p of rayPolys) {
 				raysG.beginPath();
@@ -307,7 +276,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Floating golden sanctuary motes
 			this.add
 				.particles(0, 0, "spark", {
-					x: { min: 20, max: W - 20 },
+					x: { min: COL_X + 20, max: COL_X + W - 20 },
 					y: { min: 40, max: H - 40 },
 					lifespan: { min: 4500, max: 8000 },
 					speedY: { min: -10, max: -30 },
@@ -617,7 +586,7 @@ export class VerdictScene extends Phaser.Scene {
 		startCounter: () => void;
 	} {
 		const collapsed = Boolean(gState.collapse);
-		const container = this.add.container(W / 2, 360).setAlpha(0);
+		const container = this.add.container(CX, fy(360)).setAlpha(0);
 		container.setDepth(6);
 
 		const pw = 656;
@@ -911,7 +880,7 @@ export class VerdictScene extends Phaser.Scene {
 			: "❖  IMPERIAL PROCLAMATION  ❖";
 		const headerColor = collapsed ? COLORS.blood : COLORS.gold;
 		const decree = this.add
-			.text(W / 2, 66, decreeText, ui(15, hex(headerColor)))
+			.text(CX, fy(66), decreeText, ui(15, hex(headerColor)))
 			.setOrigin(0.5)
 			.setAlpha(0)
 			.setDepth(5);
@@ -919,7 +888,7 @@ export class VerdictScene extends Phaser.Scene {
 		decree.setShadow(0, 2, "rgba(0,0,0,0.85)", 6, false, true);
 
 		// Imperial Crest & Laurels (placed below the decree banner, clear of it)
-		const crest = this.drawImperialCrest(W / 2, 128, collapsed);
+		const crest = this.drawImperialCrest(CX, fy(128), collapsed);
 		crest.setDepth(5).setAlpha(0);
 
 		// Monumental Title
@@ -927,7 +896,7 @@ export class VerdictScene extends Phaser.Scene {
 		const titleSize =
 			rawTitle.length > 22 ? 36 : rawTitle.length > 15 ? 42 : 48;
 		const titleText = this.add
-			.text(W / 2, 196, rawTitle, {
+			.text(CX, fy(196), rawTitle, {
 				...title(titleSize, "#fffaf0"),
 				wordWrap: { width: W - 72 },
 				align: "center",
@@ -942,7 +911,7 @@ export class VerdictScene extends Phaser.Scene {
 		// Epithet & Filigree dividing rules
 		const epithetColor = collapsed ? 0xff7777 : COLORS.gold;
 		const epithet = this.add
-			.text(W / 2, 262, `« ${v.epithet} »`, {
+			.text(CX, fy(262), `« ${v.epithet} »`, {
 				...body(29, hex(epithetColor)),
 				fontStyle: "italic",
 				wordWrap: { width: W - 110 },
@@ -958,24 +927,24 @@ export class VerdictScene extends Phaser.Scene {
 		filigreeG.setDepth(5).setAlpha(0);
 
 		const epHalfW = Math.min(220, epithet.width / 2 + 16);
-		const epY = 262;
+		const epY = fy(262);
 		const divCol = collapsed ? 0x6e1b1b : COLORS.goldDeep;
 		filigreeG.lineStyle(1.5, divCol, 0.85);
 
 		// Left hairline & diamond pip
-		filigreeG.lineBetween(W / 2 - epHalfW - 74, epY, W / 2 - epHalfW, epY);
+		filigreeG.lineBetween(CX - epHalfW - 74, epY, CX - epHalfW, epY);
 		filigreeG.fillStyle(divCol, 0.95);
-		filigreeG.fillCircle(W / 2 - epHalfW, epY, 2.5);
+		filigreeG.fillCircle(CX - epHalfW, epY, 2.5);
 
 		// Right hairline & diamond pip
-		filigreeG.lineBetween(W / 2 + epHalfW, epY, W / 2 + epHalfW + 74, epY);
-		filigreeG.fillCircle(W / 2 + epHalfW, epY, 2.5);
+		filigreeG.lineBetween(CX + epHalfW, epY, CX + epHalfW + 74, epY);
+		filigreeG.fillCircle(CX + epHalfW, epY, 2.5);
 
 		// Orchestrated monumental entrance tweens
 		this.tweens.add({
 			targets: decree,
 			alpha: 1,
-			y: 72,
+			y: fy(72),
 			duration: 450,
 			delay: 80,
 		});
@@ -1013,7 +982,7 @@ export class VerdictScene extends Phaser.Scene {
 		const collapsed = Boolean(g.collapse);
 
 		const wait = this.add
-			.text(W / 2, H / 2, "The chroniclers deliberate…", {
+			.text(CX, H / 2, "The chroniclers deliberate…", {
 				...title(28, hex(COLORS.gold)),
 				fontStyle: "500",
 			})
@@ -1065,7 +1034,7 @@ export class VerdictScene extends Phaser.Scene {
 		// Celebration or collapse particles
 		if (collapsed) {
 			const collapseBurst = this.add
-				.particles(W / 2, 165, "spark", {
+				.particles(CX, 165, "spark", {
 					speed: { min: 60, max: 260 },
 					scale: { start: 0.85, end: 0 },
 					lifespan: 1300,
@@ -1107,7 +1076,7 @@ export class VerdictScene extends Phaser.Scene {
 				.setDepth(4);
 
 			const centerBurst = this.add
-				.particles(W / 2, 165, "spark", {
+				.particles(CX, 165, "spark", {
 					speed: { min: 80, max: 320 },
 					scale: { start: 0.85, end: 0 },
 					lifespan: 1200,
@@ -1133,7 +1102,7 @@ export class VerdictScene extends Phaser.Scene {
 		} else {
 			// Survived reign
 			const p = this.add
-				.particles(W / 2, 165, "spark", {
+				.particles(CX, 165, "spark", {
 					speed: { min: 80, max: 300 },
 					scale: { start: 0.8, end: 0 },
 					lifespan: 1200,
@@ -1158,7 +1127,7 @@ export class VerdictScene extends Phaser.Scene {
 		this.tweens.add({
 			targets: plaque,
 			alpha: 1,
-			y: 364,
+			y: fy(364),
 			duration: 550,
 			delay: 950,
 			ease: "Back.out(1.2)",
@@ -1166,7 +1135,7 @@ export class VerdictScene extends Phaser.Scene {
 		});
 
 		// Narrator voice comment
-		const sub = new Subtitle(this, 545);
+		const sub = new Subtitle(this, fy(545));
 		sub.setDepth(7);
 		const narr = await say(
 			v.comment,
@@ -1185,13 +1154,13 @@ export class VerdictScene extends Phaser.Scene {
 		// The sovereign appears to deliver their final proclamation
 		const portrait = new Portrait(
 			this,
-			W / 2,
-			620,
+			CX,
+			fy(620),
 			portraitKeys(g.leader, "leader"),
 			400,
 		);
 		portrait.setDepth(5);
-		portrait.enter(W / 2, 700);
+		portrait.enter(CX, fy(700));
 		portrait.setAlpha(0);
 		this.tweens.add({ targets: portrait, alpha: 1, duration: 700 });
 
@@ -1212,7 +1181,7 @@ export class VerdictScene extends Phaser.Scene {
 		const lv = await say(v.leaderLine, g.leader.voice, leaderStyle);
 		portrait.speak(lv);
 
-		sub.setY(880);
+		sub.setY(fy(880));
 		sub.show(
 			g.leader.name,
 			v.leaderLine,
@@ -1225,24 +1194,29 @@ export class VerdictScene extends Phaser.Scene {
 		// Sovereign repositions to make room for prestigious action suite
 		this.tweens.add({
 			targets: portrait,
-			y: 535,
+			y: fy(535),
 			scale: 0.65,
 			duration: 600,
 			ease: "Sine.inOut",
 		});
 
-		// Record the reign in chronicle history
-		addReign({
-			leaderId: g.leader.id,
-			leaderName: g.leader.name,
-			civ: g.leader.civ,
-			seasons: g.seasonsPlayed,
-			matched,
-			total: g.history.length,
-			stats: g.stats,
-			verdict: { title: v.title, epithet: v.epithet, comment: v.comment },
-			collapse: g.collapse ?? null,
-		});
+		// Record the reign in chronicle history (once — re-entering the
+		// verdict scene after a reload must not duplicate the entry).
+		if (!g.reignRecorded) {
+			g.reignRecorded = true;
+			saveGame(g);
+			addReign({
+				leaderId: g.leader.id,
+				leaderName: g.leader.name,
+				civ: g.leader.civ,
+				seasons: g.seasonsPlayed,
+				matched,
+				total: g.history.length,
+				stats: g.stats,
+				verdict: { title: v.title, epithet: v.epithet, comment: v.comment },
+				collapse: g.collapse ?? null,
+			});
+		}
 
 		const histCount = g.history.filter((h) => h.historical).length;
 		if (histCount >= 5) {
@@ -1273,7 +1247,7 @@ export class VerdictScene extends Phaser.Scene {
 		if (collapsed) {
 			const btn = new Button(
 				this,
-				W / 2,
+				CX,
 				primaryY,
 				"⚔ Reclaim the Throne",
 				() => this.tryAgain(),
@@ -1283,7 +1257,7 @@ export class VerdictScene extends Phaser.Scene {
 		} else {
 			const btn = new Button(
 				this,
-				W / 2,
+				CX,
 				primaryY,
 				"♛ Continue the Reign",
 				() => this.continueReign(),
@@ -1295,7 +1269,7 @@ export class VerdictScene extends Phaser.Scene {
 		if (v.nextEra) {
 			// Next Era Cartouche / Decree Strip
 			const hookText = this.add
-				.text(W / 2, primaryY + 86, `✦  ${v.nextEra.hook}`, {
+				.text(CX, primaryY + 86, `✦  ${v.nextEra.hook}`, {
 					...body(20, hex(COLORS.parchmentDark)),
 					fontStyle: "italic",
 					wordWrap: { width: W - 120 },
@@ -1315,7 +1289,7 @@ export class VerdictScene extends Phaser.Scene {
 					: v.nextEra.name;
 			const eraBtn = new Button(
 				this,
-				W / 2,
+				CX,
 				primaryY + 160,
 				`✦ Change era: ${eraName}`,
 				() => this.changeEra(target, v.nextEra?.name ?? ""),
@@ -1326,7 +1300,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Share Verdict Decree button
 			const shareBtn = new Button(
 				this,
-				W / 2,
+				CX,
 				primaryY + 242,
 				"❖ Proclaim Imperial Verdict",
 				() => void this.share(v, matched),
@@ -1337,7 +1311,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Share Verdict Decree button directly below primary action
 			const shareBtn = new Button(
 				this,
-				W / 2,
+				CX,
 				primaryY + 98,
 				"❖ Proclaim Imperial Verdict",
 				() => void this.share(v, matched),
@@ -1359,6 +1333,8 @@ export class VerdictScene extends Phaser.Scene {
 		const g = this.g;
 		g.season += 1;
 		g.chapter = null;
+		g.chapterSpecial = null;
+		g.reignRecorded = false;
 		g.turnIndex = 0;
 		saveGame(g);
 		go(this, "Court");
@@ -1371,8 +1347,11 @@ export class VerdictScene extends Phaser.Scene {
 			}
 		};
 		this.input.on(Phaser.Input.Events.POINTER_UP, skip);
-		await h.done;
-		this.input.off(Phaser.Input.Events.POINTER_UP, skip);
+		try {
+			await h.done;
+		} finally {
+			this.input.off(Phaser.Input.Events.POINTER_UP, skip);
+		}
 	}
 
 	private tryAgain() {

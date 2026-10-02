@@ -8,7 +8,10 @@ import { newGame, saveGame } from "../core/state.ts";
 import { summon } from "../core/summon.ts";
 import {
 	body,
+	CANVAS_W,
+	COL_X,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
@@ -56,15 +59,21 @@ export class SummonScene extends Phaser.Scene {
 
 	create() {
 		fadeIn(this);
-		const bg = this.add.image(W / 2, H / 2, "title_bg");
-		bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1).setAlpha(0.3);
-		this.add.image(W / 2, H / 2, "vignette").setDisplaySize(W, H);
+		const bg = this.add.image(CX, H / 2, "title_bg");
+		bg.setScale(Math.max(CANVAS_W / bg.width, H / bg.height) * 1.1).setAlpha(
+			0.3,
+		);
+		this.add.image(CX, H / 2, "vignette").setDisplaySize(CANVAS_W, H);
 		heading(this, SAFE_TOP + 24, "Summon a leader", 34);
-		iconButton(this, 60, SAFE_TOP + 24, "‹", () => go(this, "Select"));
+		iconButton(this, COL_X + 60, SAFE_TOP + 24, "‹", () => go(this, "Select"));
+		// Y positions were authored for H=1280; scale them with the canvas
+		// height (capped) so tall phones don't leave a huge void below the chips.
+		const fy = (y: number) => Math.round(y * Math.min(1.35, H / 1280));
+
 		this.add
 			.text(
-				W / 2,
-				200,
+				CX,
+				fy(200),
 				"Name any ruler who truly lived.\nThe Royal Archivist will decide.",
 				{ ...body(30, hex(COLORS.text)), align: "center" },
 			)
@@ -73,13 +82,13 @@ export class SummonScene extends Phaser.Scene {
 		if (!online()) {
 			this.add
 				.text(
-					W / 2,
+					CX,
 					H * 0.45,
 					"The archives need a connection.\nThe five default leaders await you meanwhile.",
 					{ ...body(26, hex(COLORS.muted)), align: "center" },
 				)
 				.setOrigin(0.5);
-			new Button(this, W / 2, H * 0.6, "Back", () => go(this, "Select"), {
+			new Button(this, CX, H * 0.6, "Back", () => go(this, "Select"), {
 				primary: false,
 			});
 			return;
@@ -97,11 +106,15 @@ export class SummonScene extends Phaser.Scene {
 		// Follow the scaled canvas (Phaser's DOM container drifts under FIT + autoCenter on mobile).
 		const place = () => {
 			const r = this.game.canvas.getBoundingClientRect();
-			const s = r.width / W;
-			el.style.left = `${r.left + 60 * s}px`;
-			el.style.top = `${r.top + (320 - 42) * s}px`;
+			const s = r.width / CANVAS_W;
+			const key = `${r.left}|${r.top}|${r.width}`;
+			if (key === lastRect) return; // skip style writes at 60fps when nothing moved
+			lastRect = key;
+			el.style.left = `${r.left + (COL_X + 60) * s}px`;
+			el.style.top = `${r.top + (fy(320) - 42) * s}px`;
 			el.style.transform = `scale(${s})`;
 		};
+		let lastRect = "";
 		place();
 		this.events.on(Phaser.Scenes.Events.UPDATE, place);
 		this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => el.remove());
@@ -109,14 +122,14 @@ export class SummonScene extends Phaser.Scene {
 			if (e.key === "Enter") void this.go(el.value);
 		});
 
-		new Button(this, W / 2, 440, "Summon", () => void this.go(el.value), {
+		new Button(this, CX, fy(440), "Summon", () => void this.go(el.value), {
 			w: 320,
 		});
 		if (micSupported())
 			new Button(
 				this,
-				W / 2,
-				530,
+				CX,
+				fy(530),
 				"◎  Say the name",
 				() => void this.listen(el),
 				{ w: 320, h: 64, primary: false, size: 22 },
@@ -128,8 +141,8 @@ export class SummonScene extends Phaser.Scene {
 		const chipH = 48;
 		const chipGap = 16;
 		chips.forEach((name, i) => {
-			const x = W / 2 + ((i % 2) - 0.5) * (chipW + chipGap);
-			const y = 640 + Math.floor(i / 2) * (chipH + chipGap);
+			const x = CX + ((i % 2) - 0.5) * (chipW + chipGap);
+			const y = fy(640) + Math.floor(i / 2) * (chipH + chipGap);
 			const t = this.add
 				.text(x, y, name, ui(20, hex(COLORS.gold)))
 				.setOrigin(0.5);
@@ -156,7 +169,7 @@ export class SummonScene extends Phaser.Scene {
 		});
 		this.add
 			.text(
-				W / 2,
+				CX,
 				H - SAFE_BOTTOM - 20,
 				"Portraits, court and voices are generated live — about a minute.",
 				ui(17, hex(COLORS.muted)),
@@ -192,11 +205,11 @@ export class SummonScene extends Phaser.Scene {
 		this.field.style.display = "none";
 		this.field.blur();
 		const shade = this.add
-			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.88)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.88)
 			.setDepth(90)
 			.setInteractive();
 		const label = this.add
-			.text(W / 2, H * 0.46, "", {
+			.text(CX, H * 0.46, "", {
 				...title(28, hex(COLORS.gold)),
 				fontStyle: "500",
 				align: "center",
@@ -205,14 +218,14 @@ export class SummonScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setDepth(91);
 		const barBg = this.add
-			.rectangle(W / 2, H * 0.53, 460, 10, 0x000000, 0.6)
+			.rectangle(CX, H * 0.53, 460, 10, 0x000000, 0.6)
 			.setDepth(91);
 		const bar = this.add
-			.rectangle(W / 2 - 230, H * 0.53, 0, 10, COLORS.gold)
+			.rectangle(CX - 230, H * 0.53, 0, 10, COLORS.gold)
 			.setOrigin(0, 0.5)
 			.setDepth(92);
 		const quill = this.add
-			.text(W / 2, H * 0.36, "✒", {
+			.text(CX, H * 0.36, "✒", {
 				fontFamily: FONT.ui,
 				fontSize: "96px",
 				color: hex(COLORS.gold),
@@ -229,7 +242,7 @@ export class SummonScene extends Phaser.Scene {
 			ease: "Sine.inOut",
 		});
 		const p = this.add
-			.particles(W / 2, H * 0.4, "spark", {
+			.particles(CX, H * 0.4, "spark", {
 				speed: { min: 10, max: 60 },
 				scale: { start: 0.5, end: 0 },
 				lifespan: 1500,

@@ -1,7 +1,17 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, hex, title, W } from "./theme.ts";
+import {
+	CANVAS_W,
+	COLORS,
+	CX,
+	FONT,
+	H,
+	hex,
+	SAFE_TOP,
+	title,
+	W,
+} from "./theme.ts";
 
 export const motion = () => (settings.reducedMotion ? 0.35 : 1);
 
@@ -406,7 +416,8 @@ export function iconButton(
 	t.setShadow(0, 1, "#000000", 6, false, true);
 
 	c.add([g, t]);
-	const hitSize = Math.max(size + 20, 72);
+	// ≥88 canvas px keeps the hit zone near 44pt even at phone fit-scale (~0.55)
+	const hitSize = Math.max(size + 24, 88);
 	c.setSize(hitSize, hitSize).setInteractive({ useHandCursor: true });
 	c.on("pointerover", () => {
 		scene.tweens.add({
@@ -451,7 +462,7 @@ export function iconButton(
 /** Full-screen dark overlay with vignette, used behind panels. */
 export function dim(scene: Phaser.Scene, alpha = 0.7) {
 	const r = scene.add
-		.rectangle(W / 2, 640, W, 1280, COLORS.night, alpha)
+		.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, alpha)
 		.setInteractive();
 	return r;
 }
@@ -508,7 +519,7 @@ export function heading(
 	text: string,
 	size = 40,
 ) {
-	const c = scene.add.container(W / 2, y);
+	const c = scene.add.container(CX, y);
 	const t = scene.add
 		.text(0, 0, text.toUpperCase(), title(size, hex(COLORS.gold)))
 		.setOrigin(0.5);
@@ -581,8 +592,8 @@ export class Subtitle extends Phaser.GameObjects.Container {
 		return this.containerY + this.contentBottom + 26;
 	}
 
-	constructor(scene: Phaser.Scene, y: number) {
-		super(scene, W / 2, y);
+	constructor(scene: Phaser.Scene, y: number, x = CX) {
+		super(scene, x, y);
 		this.containerY = y;
 		this.bg = scene.add.graphics();
 		this.who = scene.add
@@ -820,8 +831,10 @@ export class Subtitle extends Phaser.GameObjects.Container {
 
 /** Toast banner at top of screen with royal decree plaque. */
 export function toast(scene: Phaser.Scene, text: string, color = COLORS.gold) {
+	// Sit below the reliquary gauge strip (panel bottom = SAFE_TOP + 108)
+	// so notifications never cover the Legacy meter mid-court.
 	const c = scene.add
-		.container(W / 2, 130)
+		.container(CX, SAFE_TOP + 142)
 		.setDepth(1000)
 		.setAlpha(0);
 	const t = scene.add
