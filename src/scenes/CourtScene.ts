@@ -34,6 +34,7 @@ import type {
 	Advisor,
 	AdvisorRole,
 	Choice,
+	DeferredConsequence,
 	Effects,
 	Emotion,
 	GameState,
@@ -50,15 +51,19 @@ import { RoyalPetitions } from "../ui/RoyalPetitions.ts";
 import { RoyalSeals } from "../ui/RoyalSeals.ts";
 import { TimerRing } from "../ui/TimerRing.ts";
 import {
+	CANVAS_W,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
+	LANDSCAPE,
 	ROLE_META,
 	SAFE_BOTTOM,
 	SAFE_TOP,
 	title,
 	ui,
+	VIS_CX,
 	W,
 } from "../ui/theme.ts";
 import { VoiceRibbon } from "../ui/VoiceRibbon.ts";
@@ -79,6 +84,26 @@ const COURT_ACOUSTICS: Record<string, CourtAcoustics> = {
 	elizabeth: "chamber",
 };
 const TIMER_SECONDS = 10;
+
+/** Generated/content consequences arrive untyped — clamp them to sane bounds. */
+function normalizeConsequence(
+	c: Choice["consequence"],
+): DeferredConsequence | null {
+	if (!c || typeof c.text !== "string" || !c.effects) return null;
+	const text = c.text.trim().slice(0, 180) || "Your past decree echoes back.";
+	const delay = Phaser.Math.Clamp(Math.round(c.delay ?? 2), 1, 3);
+	const clampEff = (v: unknown) =>
+		Phaser.Math.Clamp(Math.round(typeof v === "number" ? v : 0), -2, 2);
+	return {
+		text,
+		delay,
+		effects: {
+			gold: clampEff(c.effects.gold),
+			stability: clampEff(c.effects.stability),
+			legacy: clampEff(c.effects.legacy),
+		},
+	};
+}
 
 function contextualEmotion(
 	baseEmotion: Emotion,
@@ -113,6 +138,7 @@ export class CourtScene extends Phaser.Scene {
 	private turnLabel!: Phaser.GameObjects.Text;
 	private nameplate!: Phaser.GameObjects.Container;
 	private alive = true;
+	private whisperedSeasons = new Set<number>();
 
 	constructor() {
 		super("Court");
@@ -132,7 +158,7 @@ export class CourtScene extends Phaser.Scene {
 		if (!this.g) return;
 		queueLeaderArt(this, this.g.leader);
 		const t = this.add
-			.text(W / 2, H / 2, "Entering the court…", ui(24, hex(COLORS.muted)))
+			.text(CX, H / 2, "Entering the court…", ui(24, hex(COLORS.muted)))
 			.setOrigin(0.5);
 		this.load.once(Phaser.Loader.Events.COMPLETE, () => t.destroy());
 	}
@@ -145,7 +171,7 @@ export class CourtScene extends Phaser.Scene {
 		this.backdrop = new Backdrop(this, l, sk.far, sk.near);
 		this.backdrop.setAtmosphere(this.g.stats.stability, this.g.stats.gold);
 		this.gauges = new Gauges(this, SAFE_TOP + 66, this.g.stats);
-		this.subtitle = new Subtitle(this, H - 330);
+		this.subtitle = new Subtitle(this, H - 330, VIS_CX);
 		this.subtitle.setDepth(45);
 		this.turnLabel = this.add
 			.text(W / 2, SAFE_TOP + 12, "", ui(17, hex(COLORS.muted)))
@@ -153,6 +179,10 @@ export class CourtScene extends Phaser.Scene {
 			.setDepth(50);
 		this.turnLabel.setLetterSpacing(3);
 		this.nameplate = this.add.container(0, 0).setDepth(46).setAlpha(0);
+		if (LANDSCAPE) {
+			// Hairline seam between the council column and the court visual.
+			this.add.rectangle(W, H / 2, 2, H, COLORS.gold, 0.16).setDepth(-9);
+		}
 		iconButton(this, W - 52, SAFE_TOP + 12, "⚙", () => this.openSettings(), 52);
 		iconButton(this, 52, SAFE_TOP + 12, "‹", () => this.leave(), 52);
 		playLeaderMusic(l);
@@ -213,8 +243,14 @@ export class CourtScene extends Phaser.Scene {
 			const special = g.season > 1 ? cascadeFor(g.stats) : null;
 			const waiting = this.showWaiting("The scribes consult the archives…");
 			try {
-				const { chapter } = await getChapter(g, g.season, special);
+				const { chapter } = await getChapter(
+					g,
+					g.season,
+					special,
+					settings.campaignLength,
+				);
 				g.chapter = chapter;
+				g.chapterSpecial = special;
 				g.turnIndex = 0;
 				saveGame(g);
 			} finally {
@@ -246,8 +282,10 @@ export class CourtScene extends Phaser.Scene {
 				}
 			}
 			await this.chapterCard(ch.season_title, ch.intro);
+			if (g.chapterSpecial) this.specialBanner(g.chapterSpecial);
 		}
 		const totalTurns = Math.min(ch.turns.length, settings.campaignLength ?? 10);
+		const finished = g.turnIndex >= totalTurns;
 		if (g.turnIndex > 0 && ch.turns[g.turnIndex]) {
 			const t = ch.turns[g.turnIndex];
 			warm(
@@ -276,11 +314,13 @@ export class CourtScene extends Phaser.Scene {
 			if (g.collapse) return;
 		}
 		if (!this.alive) return;
-		g.turnIndex = totalTurns;
-		g.seasonsPlayed += 1;
-		saveGame(g);
-		settings.playedOnce = true;
-		saveSettings();
+		if (!finished) {
+			g.turnIndex = totalTurns;
+			g.seasonsPlayed += 1;
+			saveGame(g);
+			settings.playedOnce = true;
+			saveSettings();
+		}
 		go(this, "Verdict");
 	}
 
@@ -289,6 +329,10 @@ export class CourtScene extends Phaser.Scene {
 		this.turnLabel.setText(
 			`CHAPTER ${g.season}  ·  ${i + 1} / ${n}  ·  ${turn.year}`,
 		);
+		await this.fireDeferredFlags(g);
+		if (!this.alive) return;
+		await this.courtWhisper(turn, g);
+		if (!this.alive) return;
 		const advisor = this.advisorOf(turn.advisor);
 		warm(turn.reveal, VOICES.narrator);
 		warm(turn.fun_fact, VOICES.narrator);
@@ -345,8 +389,8 @@ export class CourtScene extends Phaser.Scene {
 			if (nextT) warm(nextT.speech, this.advisorOf(nextT.advisor).voice);
 		}
 
-		this.speaker = this.portrait(turn.advisor, W / 2 + 20, H * 0.5, 900);
-		this.speaker.enter(W + 300, 240);
+		this.speaker = this.portrait(turn.advisor, VIS_CX + 20, H * 0.5, 900);
+		this.speaker.enter(CANVAS_W + 300, 240);
 		this.speaker.setEmotion(turn.emotion);
 		this.showNameplate(advisor, turn.emotion);
 		if (turn.special) this.specialBanner(turn.special);
@@ -372,7 +416,7 @@ export class CourtScene extends Phaser.Scene {
 			this.speaker.setScale(0.82);
 			this.tweens.add({
 				targets: this.speaker,
-				x: W * 0.72,
+				x: VIS_CX + W * 0.22,
 				scale: 0.78,
 				alpha: 0.75,
 				duration: 220,
@@ -380,11 +424,12 @@ export class CourtScene extends Phaser.Scene {
 			});
 			this.second = this.portrait(
 				turn.rebuttal.advisor,
-				W * 0.3,
+				VIS_CX - W * 0.2,
 				H * 0.52,
 				780,
 			);
-			this.second.enter(-300, 220);
+			// emerges from behind the council column in landscape
+			this.second.enter(VIS_CX - W / 2 - 300, 220);
 			this.second.setEmotion(turn.rebuttal.emotion);
 			this.showNameplate(r, turn.rebuttal.emotion);
 			// Primary speaker visually reacts to being interrupted by rival!
@@ -405,14 +450,15 @@ export class CourtScene extends Phaser.Scene {
 				ROLE_META[turn.rebuttal.advisor].color,
 				rebuttalStyle,
 				-0.28,
-				turn.rebuttal.advisor,
+				// no role: only the counsel-giving advisor can be the liar,
+				// so accusing the rebutter was a guaranteed-false trap
 			);
 			if (!this.alive) return;
-			this.second.leave(-300, 180);
+			this.second.leave(VIS_CX - W / 2 - 300, 180);
 			this.second = null;
 			this.tweens.add({
 				targets: this.speaker,
-				x: W / 2 + 20,
+				x: VIS_CX + 20,
 				scale: 1,
 				alpha: 1,
 				duration: 220,
@@ -434,45 +480,59 @@ export class CourtScene extends Phaser.Scene {
 			: choice.historical;
 		this.nameplate.setAlpha(0);
 
-		// --- Oracle wager
-		audio.setMusicSituation("oracle");
-		let oracle!: Oracle;
-		const bet = await new Promise<boolean>((res) => {
-			oracle = new Oracle(this, g.combo, res);
-		});
-		const matched = bet === choice.historical;
+		// --- Oracle wager (skipped for custom decrees: betting "counterfactual"
+		// would always win since every custom path is non-historical)
+		let matched = false;
 		let legacyGain = 0;
-		if (matched) {
-			g.combo = Math.min(3, g.combo + 1);
-			legacyGain = g.combo;
-
-			if (hasRelic(g, "relic_cleopatra")) {
-				g.stats.gold = clamp10(g.stats.gold + 1);
-				this.gauges.emitCoinRain(W / 2, H * 0.4, 6);
-				toast(
-					this,
-					"Scarab of Khepri: +1 Gold blessed by the Oracle!",
-					COLORS.gold,
-				);
-			}
-
-			const restored = restoreRandomSeal(g);
-			if (restored) {
-				toast(this, "Oracle's Grace: Royal Seal restored!", COLORS.gold);
-			}
-
-			if (g.combo === 3) {
-				unlockRelic("relic_alexander");
-			}
+		if (choice.custom) {
+			toast(
+				this,
+				"A path of your own making — the Oracle cannot weigh it.",
+				COLORS.sky,
+			);
 		} else {
-			if (hasRelic(g, "relic_alexander")) {
-				g.combo = 1;
-				toast(this, "Gordian Knot: Streak preserved at 1x combo!", COLORS.sky);
+			audio.setMusicSituation("oracle");
+			let oracle!: Oracle;
+			const bet = await new Promise<boolean>((res) => {
+				oracle = new Oracle(this, g.combo, res);
+			});
+			matched = bet === choice.historical;
+			if (matched) {
+				g.combo = Math.min(3, g.combo + 1);
+				legacyGain = g.combo;
+
+				if (hasRelic(g, "relic_cleopatra")) {
+					g.stats.gold = clamp10(g.stats.gold + 1);
+					this.gauges.emitCoinRain(W / 2, H * 0.4, 6);
+					toast(
+						this,
+						"Scarab of Khepri: +1 Gold blessed by the Oracle!",
+						COLORS.gold,
+					);
+				}
+
+				const restored = restoreRandomSeal(g);
+				if (restored) {
+					toast(this, "Oracle's Grace: Royal Seal restored!", COLORS.gold);
+				}
+
+				if (g.combo === 3) {
+					unlockRelic("relic_alexander");
+				}
 			} else {
-				g.combo = 0;
+				if (hasRelic(g, "relic_alexander")) {
+					g.combo = 1;
+					toast(
+						this,
+						"Gordian Knot: Streak preserved at 1x combo!",
+						COLORS.sky,
+					);
+				} else {
+					g.combo = 0;
+				}
 			}
+			await oracle.resolve(matched, legacyGain);
 		}
-		await oracle.resolve(matched, legacyGain);
 		if (!this.alive) return;
 		this.updateMusicSituation(turn);
 
@@ -503,7 +563,7 @@ export class CourtScene extends Phaser.Scene {
 		}
 		if (!this.alive) return;
 		this.backdrop.setMood(kind === "history" ? 0x3a2f14 : 0x3a1420, 0.35);
-		this.backdrop.burst(W / 2, H * 0.3, 30);
+		this.backdrop.burst(VIS_CX, H * 0.3, 30);
 		const reveal = new Reveal(this, kind, text);
 		const narr = say(text, VOICES.narrator);
 		// stats + trust
@@ -521,15 +581,16 @@ export class CourtScene extends Phaser.Scene {
 			legacy: choice.effects.legacy + legacyGain,
 		};
 		const next = applyEffects(g.stats, delta);
+		const statDelta: Effects = {
+			gold: next.gold - g.stats.gold,
+			stability: next.stability - g.stats.stability,
+			legacy: next.legacy - g.stats.legacy,
+		};
 		if (delta.gold > 0) {
 			this.gauges.emitCoinRain(W / 2, H * 0.65, 8);
 		}
 		this.time.delayedCall(900, () => {
-			this.gauges.apply(next, {
-				gold: next.gold - g.stats.gold,
-				stability: next.stability - g.stats.stability,
-				legacy: next.legacy - g.stats.legacy,
-			});
+			this.gauges.apply(next, statDelta);
 			this.backdrop.setAtmosphere(next.stability, next.gold);
 			this.updateMusicSituation();
 		});
@@ -540,6 +601,31 @@ export class CourtScene extends Phaser.Scene {
 			-3,
 			3,
 		);
+		// Court factions: heeding an advisor raises their standing; a rebuttal
+		// advisor who spoke against the crowned choice smarts at being
+		// overruled — or is vindicated when the speaker is ignored.
+		g.favor ??= { war: 0, gold: 0, faith: 0 };
+		if (followedAdvisor) g.favor[turn.advisor] += 1;
+		if (turn.rebuttal && turn.rebuttal.advisor !== turn.advisor) {
+			const rival = turn.rebuttal.advisor;
+			g.trust[rival] = Phaser.Math.Clamp(
+				g.trust[rival] + (followedAdvisor ? -1 : 1),
+				-3,
+				3,
+			);
+			if (followedAdvisor)
+				toast(
+					this,
+					`${this.advisorOf(rival).name} smarts at being overruled (-1 trust)`,
+					COLORS.muted,
+				);
+		}
+		// A decree whose echoes return a few turns later.
+		const cons = normalizeConsequence(choice.consequence);
+		if (cons) {
+			g.flags ??= [];
+			g.flags.push({ ...cons, turnsLeft: cons.delay });
+		}
 		// Prefetch the next turn's lines while the reveal narrates.
 		const nt = this.g.chapter!.turns[i + 1];
 		if (nt && i + 1 < n) {
@@ -586,40 +672,27 @@ export class CourtScene extends Phaser.Scene {
 				title: `${turn.title} — ${choice.label}`,
 				text,
 			});
+		// The decision is committed — resume on the NEXT turn after a
+		// reload/restart instead of replaying (and duplicating) this one.
+		g.turnIndex = i + 1;
 		saveGame(g);
 		const collapse = checkCollapse(g.stats);
-		if (collapse) {
-			if (
-				collapse === "revolt" &&
-				hasRelic(g, "relic_ashoka") &&
-				!g.avertedRevolt
-			) {
-				g.avertedRevolt = true;
-				g.stats.stability = 3;
-				this.gauges.apply(g.stats, { gold: 0, stability: 3, legacy: 0 });
-				toast(
-					this,
-					"Dharma Chakra: Popular revolt pacified! (+3 Stability)",
-					COLORS.sage,
-				);
-				audio.sfx("fanfare");
-			} else {
-				audio.setMusicSituation("collapse");
-				g.collapse = collapse;
-				saveGame(g);
-				await this.wait(1000);
-				if (!this.alive) return;
-				this.specialBanner(collapse, "THE REALM HAS FALLEN");
-				await this.wait(2200);
-				audio.stopVoice();
-				const h = await narr;
-				h.stop();
-				if (!this.alive) return;
-				settings.playedOnce = true;
-				saveSettings();
-				go(this, "Verdict");
-				return;
-			}
+		if (collapse && !(collapse === "revolt" && this.applyAshokaAvert())) {
+			audio.setMusicSituation("collapse");
+			g.collapse = collapse;
+			saveGame(g);
+			await this.wait(1000);
+			if (!this.alive) return;
+			this.specialBanner(collapse, "THE REALM HAS FALLEN");
+			await this.wait(2200);
+			audio.stopVoice();
+			const h = await narr;
+			h.stop();
+			if (!this.alive) return;
+			settings.playedOnce = true;
+			saveSettings();
+			go(this, "Verdict");
+			return;
 		}
 		this.time.delayedCall(700, () => {
 			if (this.alive) reveal.showFact(turn.fun_fact, () => audio.sfx("chime"));
@@ -693,11 +766,13 @@ export class CourtScene extends Phaser.Scene {
 					this.gauges.apply(next, { gold: 2, stability: -1, legacy: 0 });
 					this.gauges.emitCoinRain(W / 2, sealsY);
 					this.g.stats = next;
+					saveGame(this.g);
 					toast(
 						this,
 						"Treasury Edict: +2 Gold levied, -1 Stability!",
 						COLORS.gold,
 					);
+					if (this.applyCollapseCheck()) go(this, "Verdict");
 				},
 				onDecree: () => {
 					const next = applyEffects(this.g.stats, {
@@ -715,6 +790,7 @@ export class CourtScene extends Phaser.Scene {
 							3,
 						);
 					}
+					saveGame(this.g);
 					toast(
 						this,
 						"Imperial Decree: +2 Stability, council trust restored!",
@@ -732,27 +808,38 @@ export class CourtScene extends Phaser.Scene {
 				const ribbonY = cards.top - 30;
 				ribbon = new VoiceRibbon(this, W / 2, ribbonY);
 
+				let vadProcessing = false;
 				vad = new VoiceActivityDetector({
 					speechThreshold: 0.12,
 					silenceDurationMs: 800,
 					maxDurationMs: 8000,
 					onSpeechStart: () => {
-						if (done) return;
+						if (done || vadProcessing) return;
 						audio.duck(true);
 						ribbon?.setSpeaking();
 					},
 					onLevel: (lvl) => {
-						if (done) return;
+						if (done || vadProcessing) return;
 						ribbon?.setLevel(lvl);
 					},
 					onSpeechEnd: async (blob) => {
-						if (done) return;
+						if (done || vadProcessing) return;
+						// Pause the detector while interpreting — a second utterance
+						// must not race a concurrent STT/interpret round-trip, and the
+						// advisor's own TTS reply must not retrigger detection.
+						vadProcessing = true;
+						vad?.pause();
 						audio.duck(false);
 						ribbon?.setProcessing();
+						const resumeListening = () => {
+							vadProcessing = false;
+							if (!done) vad?.resume();
+						};
 						try {
 							const transcript = (await stt(blob)).trim();
 							if (!transcript) {
 								ribbon?.setRetry("The hall echoes in silence…");
+								resumeListening();
 								return;
 							}
 
@@ -779,10 +866,11 @@ export class CourtScene extends Phaser.Scene {
 									historical: false,
 									effects: { gold: 0, stability: -1, legacy: 1 },
 									whatif: res.whatif ?? undefined,
+									custom: true,
 								};
 								toast(this, `A path of your own: ${res.label}`, COLORS.gold);
 								this.time.delayedCall(700, () => {
-									finish(custom, 3);
+									finish(custom, -1);
 								});
 							} else {
 								ribbon?.setRetry(
@@ -797,15 +885,26 @@ export class CourtScene extends Phaser.Scene {
 									advisor.voice,
 								);
 								this.speaker?.speak(h);
+								await h.done;
+								resumeListening();
 							}
 						} catch (err) {
 							console.warn("[VAD] voice interpretation error:", err);
 							ribbon?.setRetry();
+							resumeListening();
 						}
 					},
 				});
 
-				void vad.start();
+				// Release the microphone if the scene leaves mid-decision.
+				this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => vad?.stop());
+				void vad.start().then((ok) => {
+					if (!ok && !done) {
+						// Permission denied or mic unavailable — drop the dead ribbon.
+						ribbon?.destroy();
+						ribbon = null;
+					}
+				});
 			}
 
 			if (settings.timer && settings.playedOnce) {
@@ -823,7 +922,11 @@ export class CourtScene extends Phaser.Scene {
 									"Sire, a decision, if you please.",
 								][Math.floor(Math.random() * 3)],
 								advisor.voice,
-							).then((h) => this.speaker?.speak(h));
+							)
+								.then((h) => {
+									if (this.alive) this.speaker?.speak(h);
+								})
+								.catch(() => {});
 					},
 					() => {
 						if (done) return;
@@ -844,7 +947,7 @@ export class CourtScene extends Phaser.Scene {
 	private runRoyalAudience(): Promise<void> {
 		return new Promise((resolve) => {
 			const petitions = getRandomPetitions(3);
-			new RoyalPetitions(this, {
+			const widget = new RoyalPetitions(this, {
 				petitions,
 				onDecision: (p: Petition, accepted: boolean) => {
 					const effects = accepted ? p.acceptEffects : p.rejectEffects;
@@ -863,12 +966,7 @@ export class CourtScene extends Phaser.Scene {
 					}
 					this.g.stats = next;
 					saveGame(this.g);
-
-					const collapse = checkCollapse(this.g.stats);
-					if (collapse) {
-						this.g.collapse = collapse;
-						saveGame(this.g);
-					}
+					if (this.applyCollapseCheck()) widget.abandon();
 				},
 				onComplete: () => {
 					toast(
@@ -883,6 +981,38 @@ export class CourtScene extends Phaser.Scene {
 	}
 
 	// ---------------- helpers ----------------
+
+	/** Ashoka's once-per-reign revolt avert. Returns true when the Dharma
+	 * Chakra fired — the caller continues play instead of collapsing. */
+	private applyAshokaAvert(): boolean {
+		const g = this.g;
+		if (!hasRelic(g, "relic_ashoka") || g.avertedRevolt) return false;
+		g.avertedRevolt = true;
+		g.stats.stability = 3;
+		this.gauges.apply(g.stats, { gold: 0, stability: 3, legacy: 0 });
+		toast(
+			this,
+			"Dharma Chakra: Popular revolt pacified! (+3 Stability)",
+			COLORS.sage,
+		);
+		audio.sfx("fanfare");
+		saveGame(g);
+		return true;
+	}
+
+	/** Collapse check after mid-turn stat mutations (seals, accusations,
+	 * petitions). Honors Ashoka's once-per-reign avert. Returns true when the
+	 * realm actually collapsed — the caller decides how to leave the scene. */
+	private applyCollapseCheck(): boolean {
+		const g = this.g;
+		const collapse = checkCollapse(g.stats);
+		if (!collapse) return false;
+		if (collapse === "revolt" && this.applyAshokaAvert()) return false;
+		audio.setMusicSituation("collapse");
+		g.collapse = collapse;
+		saveGame(g);
+		return true;
+	}
 
 	private updateMusicSituation(turn?: Turn) {
 		const s = this.g.stats;
@@ -931,8 +1061,12 @@ export class CourtScene extends Phaser.Scene {
 			if (ptr.y > 140 && Math.abs(ptr.y - ptr.downY) < 40) skipped = true;
 		};
 		this.input.on(Phaser.Input.Events.POINTER_UP, prefetchSkip);
-		const h = await say(text, voice, emotion, pan);
-		this.input.off(Phaser.Input.Events.POINTER_UP, prefetchSkip);
+		let h: VoiceHandle;
+		try {
+			h = await say(text, voice, emotion, pan);
+		} finally {
+			this.input.off(Phaser.Input.Events.POINTER_UP, prefetchSkip);
+		}
 		if (!this.alive) return;
 		p.speak(h);
 		if (skipped) {
@@ -944,9 +1078,12 @@ export class CourtScene extends Phaser.Scene {
 
 		let stamp: AccusationStamp | null = null;
 		if (role) {
+			// Anchor just under the proclamation scroll (bottomY = scroll bottom
+			// + 26px gap); the stamp is centered, so add its half-height (27)
+			// and only clamp when the plate would dip into the home-indicator area.
 			stamp = new AccusationStamp(
 				this,
-				Math.min(H - SAFE_BOTTOM - 20, this.subtitle.bottomY),
+				Math.min(H - SAFE_BOTTOM - 35, this.subtitle.bottomY + 27),
 				{
 					advisorName: name,
 					onAccuse: () => {
@@ -981,11 +1118,20 @@ export class CourtScene extends Phaser.Scene {
 			p.speak(null);
 			g.exposedLiar = role;
 			g.liar = null;
+
+			// The Laurel Wreath must be owned BEFORE the unmasking for +3 —
+			// the accusation that earns it yields +2. Check before unlocking.
+			const legacyBonus = hasRelic(g, "relic_caesar") ? 3 : 2;
 			unlockRelic("relic_caesar");
 
-			const legacyBonus = hasRelic(g, "relic_caesar") ? 3 : 2;
 			g.stats.legacy = clamp10(g.stats.legacy + legacyBonus);
 			g.combo = Math.min(3, g.combo + 1);
+			this.gauges.apply(g.stats, {
+				gold: 0,
+				stability: 0,
+				legacy: legacyBonus,
+			});
+			saveGame(g);
 
 			const restored = restoreRandomSeal(g);
 			const restoreMsg = restored ? " · Royal Seal recharged!" : "";
@@ -1008,6 +1154,8 @@ export class CourtScene extends Phaser.Scene {
 			audio.sfx("fail");
 			g.stats.stability = clamp10(g.stats.stability - 1);
 			g.trust[role] = Phaser.Math.Clamp(g.trust[role] - 2, -3, 3);
+			this.gauges.apply(g.stats, { gold: 0, stability: -1, legacy: 0 });
+			saveGame(g);
 
 			toast(this, "False Accusation! (-1 Stability, -2 Trust)", COLORS.blood);
 			this.subtitle.show(
@@ -1017,6 +1165,7 @@ export class CourtScene extends Phaser.Scene {
 				3200,
 			);
 			await this.wait(2500);
+			if (this.applyCollapseCheck()) go(this, "Verdict");
 		}
 	}
 
@@ -1029,8 +1178,11 @@ export class CourtScene extends Phaser.Scene {
 			}
 		};
 		this.input.on(Phaser.Input.Events.POINTER_UP, skip);
-		await h.done;
-		this.input.off(Phaser.Input.Events.POINTER_UP, skip);
+		try {
+			await h.done;
+		} finally {
+			this.input.off(Phaser.Input.Events.POINTER_UP, skip);
+		}
 	}
 
 	private showNameplate(a: Advisor, emotion: Emotion) {
@@ -1055,7 +1207,7 @@ export class CourtScene extends Phaser.Scene {
 		g.fillStyle(col, 1);
 		g.fillRoundedRect(-w / 2, -36, 8, 72, { tl: 12, bl: 12, tr: 0, br: 0 });
 		this.nameplate.add([g, name, sub]);
-		this.nameplate.setPosition(W / 2, H - 460);
+		this.nameplate.setPosition(VIS_CX, H - 460);
 		this.nameplate.setAlpha(0);
 		this.tweens.add({
 			targets: this.nameplate,
@@ -1070,7 +1222,7 @@ export class CourtScene extends Phaser.Scene {
 		let skipped = false;
 		let activeVoice: VoiceHandle | null = null;
 		const shade = this.add
-			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.8)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.8)
 			.setDepth(90)
 			.setInteractive({ useHandCursor: true });
 		shade.once("pointerup", () => {
@@ -1079,18 +1231,13 @@ export class CourtScene extends Phaser.Scene {
 			this.subtitle.finish();
 		});
 		const k = this.add
-			.text(
-				W / 2,
-				H * 0.42,
-				`CHAPTER ${this.g.season}`,
-				ui(22, hex(COLORS.gold)),
-			)
+			.text(CX, H * 0.42, `CHAPTER ${this.g.season}`, ui(22, hex(COLORS.gold)))
 			.setOrigin(0.5)
 			.setDepth(91)
 			.setAlpha(0);
 		k.setLetterSpacing(8);
 		const t = this.add
-			.text(W / 2, H * 0.48, titleText, {
+			.text(CX, H * 0.48, titleText, {
 				...title(48, hex(COLORS.text)),
 				wordWrap: { width: W - 100 },
 			})
@@ -1099,7 +1246,7 @@ export class CourtScene extends Phaser.Scene {
 			.setAlpha(0);
 		t.setShadow(0, 4, "#000", 14, false, true);
 		const rule = this.add
-			.rectangle(W / 2, H * 0.55, 0, 2, COLORS.gold)
+			.rectangle(CX, H * 0.55, 0, 2, COLORS.gold)
 			.setDepth(91);
 		audio.sfx("drum");
 		this.tweens.add({
@@ -1147,6 +1294,96 @@ export class CourtScene extends Phaser.Scene {
 		await this.wait(400);
 	}
 
+	/**
+	 * Deferred consequences: flags tick each turn; matured ones resurface as
+	 * a banner plus their stat deltas — the past never stays buried.
+	 */
+	private async fireDeferredFlags(g: GameState) {
+		if (!g.flags?.length) return;
+		const fired: typeof g.flags = [];
+		for (const f of g.flags) {
+			f.turnsLeft--;
+			if (f.turnsLeft <= 0) fired.push(f);
+		}
+		if (!fired.length) {
+			saveGame(g);
+			return;
+		}
+		g.flags = g.flags.filter((f) => !fired.includes(f));
+		for (const f of fired) {
+			if (!this.alive) return;
+			this.deferredBanner(f.text);
+			const next = applyEffects(g.stats, f.effects);
+			this.gauges.apply(next, f.effects);
+			this.backdrop.setAtmosphere(next.stability, next.gold);
+			g.stats = next;
+			saveGame(g);
+			audio.sfx("gavel");
+			await this.wait(2400);
+		}
+	}
+
+	private deferredBanner(text: string) {
+		const head = this.add
+			.text(CX, H * 0.24, "AN ECHO RETURNS", title(40, hex(COLORS.sky)))
+			.setOrigin(0.5)
+			.setDepth(85)
+			.setAlpha(0);
+		head.setLetterSpacing(10);
+		head.setShadow(0, 0, hex(COLORS.sky), 20, false, true);
+		const sub = this.add
+			.text(CX, H * 0.33, `\u201C${text}\u201D`, {
+				...ui(20, hex(COLORS.gold)),
+				fontFamily: FONT.body,
+				fontStyle: "italic",
+				align: "center",
+				wordWrap: { width: W - 140 },
+			})
+			.setOrigin(0.5, 0)
+			.setDepth(85)
+			.setAlpha(0);
+		this.tweens.chain({
+			targets: [head, sub],
+			tweens: [
+				{
+					alpha: 1,
+					scale: { from: 1.3, to: 1 },
+					duration: 400,
+					ease: "Cubic.out",
+				},
+				{ alpha: 0, duration: 500, delay: 1400 },
+			],
+		});
+	}
+
+	/**
+	 * Court whisper: when one advisor towers over a slighted rival in the
+	 * ruler's trust, the favorite leans in once per chapter — which also
+	 * surfaces the liar risk that low-trust advisors carry.
+	 */
+	private async courtWhisper(turn: Turn, g: GameState) {
+		if (this.whisperedSeasons.has(g.season)) return;
+		const favored = ADVISOR_ROLES.reduce((a, b) =>
+			g.trust[a] >= g.trust[b] ? a : b,
+		);
+		const slighted = ADVISOR_ROLES.reduce((a, b) =>
+			g.trust[a] <= g.trust[b] ? a : b,
+		);
+		if (favored === slighted || g.trust[favored] - g.trust[slighted] < 4)
+			return;
+		if (slighted === turn.advisor) return; // his bitterness shows on its own
+		this.whisperedSeasons.add(g.season);
+		const favA = this.advisorOf(favored);
+		const rival = this.advisorOf(slighted);
+		this.subtitle.show(
+			favA.name,
+			`Majesty, a word aside — ${rival.name} still seethes at being passed over. Weigh his counsel with care.`,
+			COLORS.sky,
+			2800,
+		);
+		await this.wait(2800);
+	}
+
 	private specialBanner(
 		kind: NonNullable<Turn["special"]>,
 		subtitleText?: string,
@@ -1158,7 +1395,7 @@ export class CourtScene extends Phaser.Scene {
 		}[kind];
 		const col = kind === "prophecy" ? COLORS.sky : COLORS.blood;
 		const b = this.add
-			.text(W / 2, H * 0.28, txt, title(64, hex(col)))
+			.text(CX, H * 0.28, txt, title(64, hex(col)))
 			.setOrigin(0.5)
 			.setDepth(85)
 			.setAlpha(0);
@@ -1183,7 +1420,7 @@ export class CourtScene extends Phaser.Scene {
 		});
 		if (subtitleText) {
 			const sub = this.add
-				.text(W / 2, H * 0.36, subtitleText, {
+				.text(CX, H * 0.36, subtitleText, {
 					...title(28, hex(col)),
 					fontStyle: "700",
 				})
@@ -1208,8 +1445,8 @@ export class CourtScene extends Phaser.Scene {
 	}
 
 	private showWaiting(text: string) {
-		const c = this.add.container(W / 2, H * 0.5).setDepth(95);
-		const shade = this.add.rectangle(0, 0, W, H, COLORS.night, 0.7);
+		const c = this.add.container(CX, H * 0.5).setDepth(95);
+		const shade = this.add.rectangle(0, 0, CANVAS_W, H, COLORS.night, 0.7);
 		const t = this.add
 			.text(0, 60, text, { ...title(26, hex(COLORS.gold)), fontStyle: "500" })
 			.setOrigin(0.5);
