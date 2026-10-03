@@ -72,7 +72,12 @@ class AudioEngine {
 	/** Must be called from a user gesture (iOS). */
 	unlock() {
 		if (!this.ctx) {
-			this.ctx = new AudioContext();
+			try {
+				this.ctx = new AudioContext();
+			} catch {
+				// No WebAudio support at all — callers guard on ctx/decode errors.
+				return;
+			}
 			this.master = this.ctx.createGain();
 			this.master.connect(this.ctx.destination);
 			this.musicFilter = this.ctx.createBiquadFilter();
@@ -119,7 +124,7 @@ class AudioEngine {
 
 			this.applyCourtAcoustics(this.courtAcoustics, this.courtWetLevel);
 		}
-		if (this.ctx.state === "suspended") void this.ctx.resume();
+		if (this.ctx?.state === "suspended") void this.ctx.resume();
 	}
 
 	/**
@@ -205,12 +210,24 @@ class AudioEngine {
 		if (!this.ctx || !this.roomPresenceGain) return;
 		if (type === "none") {
 			if (this.roomPresenceNode) {
+				// Fade out then actually stop the loop — leaving it running at
+				// gain 0 burns CPU on an inaudible noise source forever.
+				const node = this.roomPresenceNode;
+				this.roomPresenceNode = null;
 				try {
 					this.roomPresenceGain.gain.setTargetAtTime(
 						0,
 						this.ctx.currentTime,
 						0.4,
 					);
+					node.stop(this.ctx.currentTime + 2);
+					node.onended = () => {
+						try {
+							node.disconnect();
+						} catch {
+							/* noop */
+						}
+					};
 				} catch {
 					/* noop */
 				}
@@ -306,13 +323,15 @@ class AudioEngine {
 
 	async decode(buf: ArrayBuffer): Promise<AudioBuffer> {
 		this.unlock();
-		return this.ctx!.decodeAudioData(buf.slice(0));
+		if (!this.ctx) throw new Error("WebAudio unavailable");
+		return this.ctx.decodeAudioData(buf.slice(0));
 	}
 
 	/** Plays a voice clip with optional stereo panning, ducking the music while it speaks. */
 	speak(buffer: AudioBuffer, pan = 0): VoiceHandle {
 		this.unlock();
-		const ctx = this.ctx!;
+		if (!this.ctx) throw new Error("WebAudio unavailable");
+		const ctx = this.ctx;
 		this.stopVoice();
 		const src = ctx.createBufferSource();
 		src.buffer = buffer;
