@@ -22,6 +22,15 @@
 							"gold": 1,
 							"stability": 1,
 							"legacy": 1
+						},
+						"consequence": {
+							"text": "Cairo's gold prices take a decade to recover from your largesse.",
+							"effects": {
+								"gold": -1,
+								"stability": 0,
+								"legacy": 0
+							},
+							"delay": 3
 						}
 					},
 					{

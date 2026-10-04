@@ -23,7 +23,16 @@
 							"stability": 1,
 							"legacy": 2
 						},
-						"whatif": null
+						"whatif": null,
+						"consequence": {
+							"text": "The widows of conscripted sons haunt every village fête.",
+							"effects": {
+								"gold": 0,
+								"stability": -1,
+								"legacy": 0
+							},
+							"delay": 2
+						}
 					},
 					{
 						"label": "March safely along the Riviera",

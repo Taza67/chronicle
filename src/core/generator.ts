@@ -91,6 +91,18 @@ const CHAPTER_SCHEMA = {
 									description:
 										"For non-historical choices only: a plausible 45-70 word counterfactual narrated by the narrator, ending by reminding what really happened in one sentence.",
 								},
+								consequence: {
+									type: "OBJECT",
+									nullable: true,
+									description:
+										"Optional deferred repercussion of this decree, resurfacing a few turns later: 'text' narrates the echo (max 20 words), 'effects' its stat deltas (-2..2), 'delay' the turns until it returns (2-3). At most one choice per chapter.",
+									properties: {
+										text: { type: "STRING" },
+										effects: EFFECT_SCHEMA,
+										delay: { type: "INTEGER" },
+									},
+									required: ["text", "effects", "delay"],
+								},
 							},
 							required: ["label", "historical", "effects"],
 						},
@@ -147,6 +159,7 @@ export async function generateChapter(
 	g: GameState,
 	season: number,
 	special: Turn["special"],
+	turnCount = 8,
 ): Promise<Chapter> {
 	const l = g.leader;
 	const covered = g.history.map((h) => h.title).join(", ");
@@ -162,8 +175,8 @@ export async function generateChapter(
 			"\nLegacy is legendary. Turn 1 must be a special 'Prophecy': the faith advisor foretells how posterity will remember this reign, offering a bold opportunity.";
 	if (season === 1) extra += TUTORIAL_HINT;
 	const prompt = `${leaderBrief(l)}
-Write chapter ${season} of this reign: exactly 8 turns, chronological, each a REAL documented dilemma this leader faced (or a decision with real historical consequences). ${covered ? `Do NOT reuse these already-played dilemmas: ${covered}.` : ""}
-Exactly one choice per turn is what history records (historical:true); the two others are plausible alternatives (historical:false, each with a whatif). Effects are integers between -2 and 2 and reflect realistic consequences for gold, stability and legacy. Vary which advisor speaks. Include a rebuttal on at least 4 turns.${reignBrief(g)}${extra}`;
+Write chapter ${season} of this reign: exactly ${turnCount} turns, chronological, each a REAL documented dilemma this leader faced (or a decision with real historical consequences). ${covered ? `Do NOT reuse these already-played dilemmas: ${covered}.` : ""}
+Exactly one choice per turn is what history records (historical:true); the two others are plausible alternatives (historical:false, each with a whatif). Effects are integers between -2 and 2 and reflect realistic consequences for gold, stability and legacy. Vary which advisor speaks. Include a rebuttal on at least 4 turns. At most one choice in the chapter may carry a 'consequence' — a documented later repercussion of that decree, only where the historical record actually has one.${reignBrief(g)}${extra}`;
 	return gemini<Chapter>({
 		system: RULES,
 		parts: [{ text: prompt }],
@@ -422,9 +435,14 @@ export async function loadFallbackChapters(
 
 function deriveFallbackYears(era: string, season: number): string[] {
 	const isBC = /\b(bc|bce)\b/i.test(era);
-	const nums = era.match(/\d+/g);
-	if (nums && nums.length > 0) {
-		const baseYear = parseInt(nums[0], 10);
+	// Only treat 3+ digit numbers as years — "18th Dynasty" must not yield "18 BC".
+	let baseYear = (era.match(/\d+/g) ?? []).map(Number).find((n) => n >= 100);
+	if (baseYear === undefined) {
+		// "3rd century BC" → a plausible mid-century year.
+		const cent = era.match(/(\d+)(?:st|nd|rd|th)\s+centur(?:y|ies)/i);
+		if (cent) baseYear = parseInt(cent[1], 10) * 100 - 50;
+	}
+	if (baseYear !== undefined) {
 		const step = 3;
 		const offset = (season - 1) * 24;
 		return Array.from({ length: 8 }, (_, i) => {
@@ -492,6 +510,11 @@ export function createArchetypeFallbackChapter(
 					label: "Purge conspirators and centralize rule",
 					historical: true,
 					effects: { gold: -1, stability: 2, legacy: 1 },
+					consequence: {
+						text: "The kin of the purged still whisper in dark halls.",
+						effects: { gold: 0, stability: -1, legacy: 0 },
+						delay: 2,
+					},
 				},
 				{
 					label: "Offer pardons and seat rivals on council",
@@ -503,6 +526,11 @@ export function createArchetypeFallbackChapter(
 					label: "Impose harsh martial law across realm",
 					historical: false,
 					effects: { gold: -2, stability: 1, legacy: -2 },
+					consequence: {
+						text: "Occupied markets stay shuttered; merchants count their dead.",
+						effects: { gold: -1, stability: -1, legacy: 0 },
+						delay: 2,
+					},
 					whatif: `Stationing armed cohorts in every marketplace choked commerce and stirred bitter resentment among the common folk of ${l.civ}. Royal revenue plunged under military upkeep. In truth, ${l.name} balanced authority with institutional legitimacy to maintain civil peace.`,
 				},
 			],
@@ -526,6 +554,11 @@ export function createArchetypeFallbackChapter(
 					label: "Reform tax collection and secure trade",
 					historical: true,
 					effects: { gold: 2, stability: 1, legacy: 0 },
+					consequence: {
+						text: "Governors stripped of old levies send fewer gifts to court.",
+						effects: { gold: -1, stability: 0, legacy: 0 },
+						delay: 3,
+					},
 				},
 				{
 					label: "Debase the silver and gold currency",
@@ -765,6 +798,7 @@ export async function getChapter(
 	g: GameState,
 	season: number,
 	special: Turn["special"],
+	turnCount = 8,
 ): Promise<{ chapter: Chapter; live: boolean }> {
 	const fallback = await loadFallbackChapters(g.leader.id);
 	// First chapter of a default leader: prefer the reviewed, pre-generated one (reliable demo, instant TTS cache).
@@ -777,7 +811,7 @@ export async function getChapter(
 		return { chapter: fallback[0], live: false };
 	if (online()) {
 		try {
-			const chapter = await generateChapter(g, season, special);
+			const chapter = await generateChapter(g, season, special, turnCount);
 			if (chapter.turns?.length >= 3) return { chapter, live: true };
 		} catch (e) {
 			console.warn("chapter generation failed, using fallback", e);

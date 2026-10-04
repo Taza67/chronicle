@@ -23,7 +23,16 @@
 							"stability": -1,
 							"legacy": 2
 						},
-						"whatif": null
+						"whatif": null,
+						"consequence": {
+							"text": "Ptolemy's supporters bide their time in Alexandria's alleys.",
+							"effects": {
+								"gold": 0,
+								"stability": -1,
+								"legacy": 0
+							},
+							"delay": 2
+						}
 					},
 					{
 						"label": "Rule jointly in harmony",

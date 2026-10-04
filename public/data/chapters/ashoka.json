@@ -22,6 +22,15 @@
 							"gold": 0,
 							"stability": 2,
 							"legacy": -2
+						},
+						"consequence": {
+							"text": "Kalinga's ashes still choke the rivers; monks mourn in silence.",
+							"effects": {
+								"gold": 0,
+								"stability": 0,
+								"legacy": -1
+							},
+							"delay": 2
 						}
 					},
 					{

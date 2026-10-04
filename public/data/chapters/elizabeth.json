@@ -23,7 +23,16 @@
 							"stability": -2,
 							"legacy": -1
 						},
-						"whatif": "Embracing Rome would have placated King Philip of Spain, yet ignited fierce revolts among England's growing Protestant merchant class. London would have boiled into civil strife, forcing bloody inquisitions that ruined the crown's legitimacy. In truth, Elizabeth rejected Roman supremacy, steering the realm toward a moderate Protestant settlement that preserved both order and her royal sovereignty."
+						"whatif": "Embracing Rome would have placated King Philip of Spain, yet ignited fierce revolts among England's growing Protestant merchant class. London would have boiled into civil strife, forcing bloody inquisitions that ruined the crown's legitimacy. In truth, Elizabeth rejected Roman supremacy, steering the realm toward a moderate Protestant settlement that preserved both order and her royal sovereignty.",
+						"consequence": {
+							"text": "The dispossessed Mary's partisans exchange letters in cipher.",
+							"effects": {
+								"gold": 0,
+								"stability": -1,
+								"legacy": 0
+							},
+							"delay": 2
+						}
 					},
 					{
 						"label": "Craft a moderate Protestant settlement",
