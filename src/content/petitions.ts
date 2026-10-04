@@ -98,6 +98,12 @@ export const PETITIONS: Petition[] = [
 ];
 
 export function getRandomPetitions(count = 3): Petition[] {
-	const shuffled = [...PETITIONS].sort(() => Math.random() - 0.5);
+	// Fisher–Yates: sort(() => Math.random() - 0.5) is biased — early entries
+	// would statistically resurface more often than later ones.
+	const shuffled = [...PETITIONS];
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+	}
 	return shuffled.slice(0, count);
 }

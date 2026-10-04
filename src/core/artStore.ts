@@ -20,7 +20,14 @@ function tx<T>(
 	return open().then(
 		(db) =>
 			new Promise<T>((res, rej) => {
-				const req = fn(db.transaction(STORE, mode).objectStore(STORE));
+				const t = db.transaction(STORE, mode);
+				// Every call opens a connection — close it once the transaction
+				// settles so hydrate-at-boot doesn't leak one DB handle per leader.
+				const close = () => db.close();
+				t.oncomplete = close;
+				t.onerror = close;
+				t.onabort = close;
+				const req = fn(t.objectStore(STORE));
 				req.onsuccess = () => res(req.result);
 				req.onerror = () => rej(req.error);
 			}),
