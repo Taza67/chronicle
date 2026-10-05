@@ -10,7 +10,10 @@ import {
 } from "../core/state.ts";
 import { ScrollList } from "../ui/ScrollList.ts";
 import {
+	CANVAS_W,
+	COL_X,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
@@ -163,20 +166,20 @@ export class CodexScene extends Phaser.Scene {
 		fadeIn(this);
 
 		// Deep imperial night backdrop
-		this.add.rectangle(W / 2, H / 2, W, H, COLORS.night);
-		const bg = this.add.image(W / 2, H / 2, "title_bg");
-		bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1)
+		this.add.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night);
+		const bg = this.add.image(CX, H / 2, "title_bg");
+		bg.setScale(Math.max(CANVAS_W / bg.width, H / bg.height) * 1.1)
 			.setAlpha(0.18)
 			.setTint(0x3a2818);
 
 		// Vignette shadow overlay
-		const vignette = this.add.image(W / 2, H / 2, "vignette");
-		vignette.setDisplaySize(W, H).setAlpha(0.75);
+		const vignette = this.add.image(CX, H / 2, "vignette");
+		vignette.setDisplaySize(CANVAS_W, H).setAlpha(0.75);
 
 		// Grand Imperial Archives Header
 		heading(this, SAFE_TOP + 18, "Imperial Codex", 36);
 		this.add
-			.text(W / 2, SAFE_TOP + 48, "GRAND IMPERIAL ARCHIVES", {
+			.text(CX, SAFE_TOP + 48, "GRAND IMPERIAL ARCHIVES", {
 				fontFamily: FONT.title,
 				fontSize: "12px",
 				color: hex(COLORS.goldDeep),
@@ -185,7 +188,7 @@ export class CodexScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setLetterSpacing(4);
 
-		iconButton(this, 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
+		iconButton(this, COL_X + 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
 
 		// Archival summary ribbon pill
 		const total = codex.length;
@@ -195,13 +198,13 @@ export class CodexScene extends Phaser.Scene {
 		const summaryBg = this.add.graphics();
 		summaryBg.fillStyle(0x130f1d, 0.85);
 		const pillY = SAFE_TOP + 66;
-		summaryBg.fillRoundedRect(W / 2 - 250, pillY, 500, 26, 13);
+		summaryBg.fillRoundedRect(CX - 250, pillY, 500, 26, 13);
 		summaryBg.lineStyle(1, COLORS.goldDeep, 0.65);
-		summaryBg.strokeRoundedRect(W / 2 - 250, pillY, 500, 26, 13);
+		summaryBg.strokeRoundedRect(CX - 250, pillY, 500, 26, 13);
 
 		this.add
 			.text(
-				W / 2,
+				CX,
 				pillY + 13,
 				`✦  ${total} ${total === 1 ? "RECORD" : "RECORDS"}  ·  ${factsCount} HISTORICAL  ·  ${whatifsCount} COUNTERFACTUAL  ✦`,
 				{
@@ -228,9 +231,9 @@ export class CodexScene extends Phaser.Scene {
 		const tabW = 206;
 		const tabH = 50;
 		const tabY = SAFE_TOP + 104;
-		const tab1X = 41;
-		const tab2X = 257;
-		const tab3X = 473;
+		const tab1X = COL_X + 41;
+		const tab2X = COL_X + 257;
+		const tab3X = COL_X + 473;
 
 		const makeRibbonContainer = (x: number, kind: Tab) => {
 			const c = this.add.container(x, tabY);
@@ -791,7 +794,7 @@ export class CodexScene extends Phaser.Scene {
 		const unlockedCount = RELICS.filter((r) =>
 			unlockedRelics.includes(r.id),
 		).length;
-		const banner = this.add.container(W / 2, y + 20);
+		const banner = this.add.container(CX, y + 20);
 		const bg = this.add.graphics();
 		bg.fillStyle(0x130f1d, 0.88);
 		bg.fillRoundedRect(-240, -18, 480, 36, 18);

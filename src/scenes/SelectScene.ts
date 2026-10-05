@@ -4,7 +4,18 @@ import { queueLeaderArt, texKey } from "../core/art.ts";
 import { audio } from "../core/audio.ts";
 import { customLeaders, newGame, saveGame, settings } from "../core/state.ts";
 import type { Leader } from "../types.ts";
-import { COLORS, FONT, H, hex, SAFE_BOTTOM, SAFE_TOP, W } from "../ui/theme.ts";
+import {
+	CANVAS_W,
+	COL_X,
+	COLORS,
+	CX,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	W,
+} from "../ui/theme.ts";
 import { Button, fadeIn, go, motion } from "../ui/widgets.ts";
 
 const PORTRAIT_W = 480;
@@ -15,7 +26,11 @@ const FRAME_H = PORTRAIT_H + MOULDING * 2; // 684
 const GAP = 560;
 const getTrackY = () => Math.round(H * 0.403);
 const getPipY = () => getTrackY() + 364;
-const getStelaY = () => getPipY() + 112;
+// Stela center: below the pips by default, but never so low that its 176px
+// plate (STELA_H/2 = 88) collides with "Take the Throne" (top edge at
+// H - SAFE_BOTTOM - 175, see create()); keep a 16px breathing gap.
+const getStelaY = () =>
+	Math.min(getPipY() + 112, H - SAFE_BOTTOM - 175 - 16 - STELA_H / 2);
 const STELA_W = 620;
 const STELA_H = 176;
 
@@ -84,7 +99,7 @@ export class SelectScene extends Phaser.Scene {
 		fadeIn(this);
 
 		// Background canvas with leader mood lighting
-		this.bg = this.add.image(W / 2, H / 2, "title_bg");
+		this.bg = this.add.image(CX, H / 2, "title_bg");
 		this.bg
 			.setScale(Math.max(W / this.bg.width, H / this.bg.height) * 1.1)
 			.setAlpha(0.38);
@@ -96,17 +111,17 @@ export class SelectScene extends Phaser.Scene {
 		this.bg.setTint(this.currentMoodColor);
 
 		this.moodOverlay = this.add
-			.rectangle(W / 2, H / 2, W, H, this.currentMoodColor, 0.28)
+			.rectangle(CX, H / 2, CANVAS_W, H, this.currentMoodColor, 0.28)
 			.setBlendMode(Phaser.BlendModes.MULTIPLY);
 
-		this.add.image(W / 2, H / 2, "vignette").setDisplaySize(W, H);
+		this.add.image(CX, H / 2, "vignette").setDisplaySize(CANVAS_W, H);
 
 		// Atmospheric gallery spotlight descending toward the active portrait
 		const spotlight = this.add.graphics();
 		spotlight.fillStyle(0xfff5d6, 0.08);
-		spotlight.fillCircle(W / 2, getTrackY() - 40, 280);
+		spotlight.fillCircle(CX, getTrackY() - 40, 280);
 		spotlight.fillStyle(COLORS.gold, 0.04);
-		spotlight.fillCircle(W / 2, getTrackY() - 40, 420);
+		spotlight.fillCircle(CX, getTrackY() - 40, 420);
 		spotlight.setBlendMode(Phaser.BlendModes.ADD);
 
 		// Header ribbon & imperial seal back button
@@ -115,7 +130,7 @@ export class SelectScene extends Phaser.Scene {
 		// Carousel track
 		this.track = this.add.container(0, getTrackY());
 		this.leaders.forEach((l, i) => {
-			const c = this.add.container(W / 2 + i * GAP, 0);
+			const c = this.add.container(CX + i * GAP, 0);
 			this.createGildedFrame(c, l);
 			this.track.add(c);
 			this.cards.push(c);
@@ -136,7 +151,7 @@ export class SelectScene extends Phaser.Scene {
 
 		const btnTake = new Button(
 			this,
-			W / 2,
+			CX,
 			takeY,
 			"Take the Throne",
 			() => this.begin(),
@@ -154,7 +169,7 @@ export class SelectScene extends Phaser.Scene {
 
 		const btnSummon = new Button(
 			this,
-			W / 2,
+			CX,
 			summonY,
 			"Summon Another Leader",
 			() => go(this, "Summon"),
@@ -175,8 +190,14 @@ export class SelectScene extends Phaser.Scene {
 			Phaser.Input.Events.POINTER_DOWN,
 			(p: Phaser.Input.Pointer) => {
 				const onArrow =
-					(p.x < 76 || p.x > W - 76) && Math.abs(p.y - getTrackY()) < 52;
-				if (p.y > H * 0.12 && p.y < H * 0.86 && !onArrow) {
+					(p.x < COL_X + 76 || p.x > COL_X + W - 76) &&
+					Math.abs(p.y - getTrackY()) < 52;
+				// Confine swipes to the gallery band so taps on the bottom
+				// action buttons can't start an accidental drag on tall phones.
+				const inBand =
+					p.y > getTrackY() - FRAME_H / 2 - 44 &&
+					p.y < getTrackY() + FRAME_H / 2 + 44;
+				if (inBand && !onArrow) {
 					this.dragging = true;
 					this.dragX = p.x;
 					this.idleTween?.stop();
@@ -212,7 +233,7 @@ export class SelectScene extends Phaser.Scene {
 			else {
 				// Tap on side card brings it directly to the front
 				const rel =
-					p.x < W / 2 - FRAME_W / 2 ? -1 : p.x > W / 2 + FRAME_W / 2 ? 1 : 0;
+					p.x < CX - FRAME_W / 2 ? -1 : p.x > CX + FRAME_W / 2 ? 1 : 0;
 				if (rel !== 0 && Math.abs(p.y - getTrackY()) < FRAME_H / 2) {
 					this.step(rel);
 				} else {
@@ -229,7 +250,7 @@ export class SelectScene extends Phaser.Scene {
 		const headerY = SAFE_TOP + 24;
 
 		// Refined imperial seal back button
-		const backBtn = this.add.container(56, headerY);
+		const backBtn = this.add.container(COL_X + 56, headerY);
 		const bg = this.add.graphics();
 		bg.fillStyle(COLORS.ink, 0.88);
 		bg.fillCircle(0, 0, 26);
@@ -249,7 +270,7 @@ export class SelectScene extends Phaser.Scene {
 		t.setShadow(0, 1, "#000", 4, false, true);
 
 		backBtn.add([bg, t]);
-		backBtn.setSize(72, 72).setInteractive({ useHandCursor: true });
+		backBtn.setSize(88, 88).setInteractive({ useHandCursor: true });
 		backBtn.on("pointerdown", () => {
 			audio.sfx("tap");
 			this.tweens.add({
@@ -271,7 +292,7 @@ export class SelectScene extends Phaser.Scene {
 
 		// Header titles
 		const subTitle = this.add
-			.text(W / 2, headerY - 24, "IMPERIAL GALLERY", {
+			.text(CX, headerY - 24, "IMPERIAL GALLERY", {
 				fontFamily: FONT.title,
 				fontSize: "13px",
 				color: hex(COLORS.goldDeep),
@@ -282,7 +303,7 @@ export class SelectScene extends Phaser.Scene {
 		subTitle.setShadow(0, 2, "#000", 6, false, true);
 
 		const mainHeading = this.add
-			.text(W / 2, headerY + 4, "CHOOSE YOUR REIGN", {
+			.text(CX, headerY + 4, "CHOOSE YOUR REIGN", {
 				fontFamily: FONT.title,
 				fontSize: "30px",
 				color: hex(COLORS.gold),
@@ -295,24 +316,14 @@ export class SelectScene extends Phaser.Scene {
 		// Filigree underline
 		const headerDivider = this.add.graphics();
 		headerDivider.lineStyle(1.5, 0x8a6723, 0.7);
-		headerDivider.lineBetween(
-			W / 2 - 120,
-			headerY + 28,
-			W / 2 - 14,
-			headerY + 28,
-		);
-		headerDivider.lineBetween(
-			W / 2 + 14,
-			headerY + 28,
-			W / 2 + 120,
-			headerY + 28,
-		);
+		headerDivider.lineBetween(CX - 120, headerY + 28, CX - 14, headerY + 28);
+		headerDivider.lineBetween(CX + 14, headerY + 28, CX + 120, headerY + 28);
 		headerDivider.fillStyle(COLORS.gold, 0.9);
 		headerDivider.fillPoints([
-			{ x: W / 2, y: headerY + 24 },
-			{ x: W / 2 + 4, y: headerY + 28 },
-			{ x: W / 2, y: headerY + 32 },
-			{ x: W / 2 - 4, y: headerY + 28 },
+			{ x: CX, y: headerY + 24 },
+			{ x: CX + 4, y: headerY + 28 },
+			{ x: CX, y: headerY + 32 },
+			{ x: CX - 4, y: headerY + 28 },
 		]);
 	}
 
@@ -500,7 +511,7 @@ export class SelectScene extends Phaser.Scene {
 	}
 
 	private createStelaPlinth() {
-		const stela = this.add.container(W / 2, getStelaY());
+		const stela = this.add.container(CX, getStelaY());
 
 		const bg = this.add.graphics();
 		const sw = STELA_W / 2; // 310
@@ -672,7 +683,7 @@ export class SelectScene extends Phaser.Scene {
 			32,
 			Math.floor((W - 180) / Math.max(1, numLeaders - 1)),
 		);
-		const pipStartX = W / 2 - ((numLeaders - 1) / 2) * pipSpacing;
+		const pipStartX = CX - ((numLeaders - 1) / 2) * pipSpacing;
 
 		this.leaders.forEach((_, i) => {
 			const px = pipStartX + i * pipSpacing;
@@ -694,7 +705,7 @@ export class SelectScene extends Phaser.Scene {
 			this.drawJewel(jewel, i === this.index);
 
 			pc.add([aura, jewel]);
-			pc.setSize(44, 44).setInteractive({ useHandCursor: true });
+			pc.setSize(64, 64).setInteractive({ useHandCursor: true });
 
 			pc.on("pointerdown", () => {
 				if (this.index !== i) {
@@ -848,7 +859,7 @@ export class SelectScene extends Phaser.Scene {
 		direction: -1 | 1,
 		onTap: () => void,
 	): RegalChevron {
-		const x = direction === -1 ? 40 : W - 40;
+		const x = direction === -1 ? COL_X + 40 : COL_X + W - 40;
 		const y = getTrackY();
 		const c = this.add.container(x, y);
 
@@ -881,7 +892,7 @@ export class SelectScene extends Phaser.Scene {
 		glyph.setShadow(0, 2, "rgba(0, 0, 0, 0.9)", 4, false, true);
 
 		c.add([aura, bg, glyph]);
-		c.setSize(48, 80).setInteractive({ useHandCursor: true });
+		c.setSize(72, 96).setInteractive({ useHandCursor: true });
 
 		let isEnabled = true;
 
@@ -959,7 +970,7 @@ export class SelectScene extends Phaser.Scene {
 	private updateCardsDuringDrag() {
 		for (const c of this.cards) {
 			const screenX = this.track.x + c.x;
-			const dist = Math.abs(screenX - W / 2);
+			const dist = Math.abs(screenX - CX);
 			const t = Phaser.Math.Clamp(1 - dist / GAP, 0, 1);
 			const ease = Phaser.Math.Easing.Cubic.Out(t);
 			c.setScale(Phaser.Math.Linear(0.86, 1, ease));
@@ -1085,7 +1096,7 @@ export class SelectScene extends Phaser.Scene {
 			if (!mg?.active) continue;
 			mg.setScale(c.scale);
 			mg.x = this.track.x + c.x * (1 - c.scale);
-			mg.y = getTrackY() * (1 - c.scale) + c.y;
+			mg.y = this.track.y * (1 - c.scale) + c.y;
 		}
 	}
 

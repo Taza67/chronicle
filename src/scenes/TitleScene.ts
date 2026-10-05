@@ -2,9 +2,28 @@ import Phaser from "phaser";
 import { LEADERS } from "../content/leaders.ts";
 import { audio } from "../core/audio.ts";
 import { playTitleMusic } from "../core/music.ts";
-import { loadGame, reigns, settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, SAFE_BOTTOM, SAFE_TOP, W } from "../ui/theme.ts";
-import { Button, fadeIn, go, iconButton, motion } from "../ui/widgets.ts";
+import { loadGame, reigns, settings, takeSaveLost } from "../core/state.ts";
+import {
+	CANVAS_W,
+	COL_X,
+	COLORS,
+	CX,
+	FONT,
+	H,
+	hex,
+	LANDSCAPE,
+	SAFE_BOTTOM,
+	SAFE_TOP,
+	W,
+} from "../ui/theme.ts";
+import {
+	Button,
+	fadeIn,
+	go,
+	iconButton,
+	motion,
+	toast,
+} from "../ui/widgets.ts";
 
 export class TitleScene extends Phaser.Scene {
 	constructor() {
@@ -15,18 +34,18 @@ export class TitleScene extends Phaser.Scene {
 		fadeIn(this, 800);
 
 		// 1. Living archive backdrop with gentle slow cinematic drift
-		const bg = this.add.image(W / 2, H / 2, "title_bg");
+		const bg = this.add.image(CX, H / 2, "title_bg");
 		bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1).setAlpha(0.52);
 		this.tweens.add({
 			targets: bg,
-			x: W / 2 + 18,
+			x: CX + 18,
 			y: H / 2 - 12,
 			duration: 14000,
 			yoyo: true,
 			repeat: -1,
 			ease: "Sine.inOut",
 		});
-		this.add.image(W / 2, H / 2, "vignette").setDisplaySize(W, H);
+		this.add.image(CX, H / 2, "vignette").setDisplaySize(CANVAS_W, H);
 
 		// 2. Atmospheric Golden Archive Embers & Ambient Dust
 		this.createArchiveAtmosphere();
@@ -52,9 +71,9 @@ export class TitleScene extends Phaser.Scene {
 		// Soft warm ambient archive light glow behind the leader council
 		const archiveBackglow = this.add.graphics();
 		archiveBackglow.fillStyle(COLORS.goldDeep, 0.12);
-		archiveBackglow.fillEllipse(W / 2, H * 0.505, 620, 240);
+		archiveBackglow.fillEllipse(CX, H * 0.505, 620, 240);
 		archiveBackglow.fillStyle(0xffe299, 0.06);
-		archiveBackglow.fillEllipse(W / 2, H * 0.505, 380, 150);
+		archiveBackglow.fillEllipse(CX, H * 0.505, 380, 150);
 		archiveBackglow.setBlendMode(Phaser.BlendModes.ADD);
 		archiveBackglow.setDepth(1);
 
@@ -111,6 +130,10 @@ export class TitleScene extends Phaser.Scene {
 	/** Council of sovereign leaders awakening with celestial halos and depth highlights. */
 	private createLeadersAwakening() {
 		const n = LEADERS.length;
+		// The 810-tall landscape canvas can't fit the portrait layout at
+		// full size — compact the council fan and lift it off the buttons.
+		const fanScale = LANDSCAPE ? 0.6 : 1;
+		const fanY = LANDSCAPE ? 0.44 : 0.505;
 
 		// Soft archival mist/plinth feathering the bottom edge of the leaders
 		const plinthGlow = this.add.graphics();
@@ -118,19 +141,19 @@ export class TitleScene extends Phaser.Scene {
 		for (let s = 0; s < 10; s++) {
 			const a = 0.08 * (s + 1);
 			plinthGlow.fillStyle(COLORS.night, a);
-			plinthGlow.fillRect(0, H * 0.505 + 68 + s * 4, W, 6);
+			plinthGlow.fillRect(0, H * fanY + 68 * fanScale + s * 4, W, 6);
 		}
 
 		LEADERS.forEach((l, i) => {
 			const dist = Math.abs(i - 2); // 0 at center (Akbar), 1 mid, 2 outer
-			const x = W / 2 + (i - (n - 1) / 2) * 128;
-			const targetY = H * 0.505 + dist * 20;
-			const baseScale = 0.272 - dist * 0.014;
+			const x = CX + (i - (n - 1) / 2) * 128 * fanScale;
+			const targetY = H * fanY + dist * 20 * fanScale;
+			const baseScale = (0.272 - dist * 0.014) * fanScale;
 
 			// Ethereal golden halo disk behind each leader
 			const halo = this.add.graphics();
 			halo.setDepth(3 - dist);
-			const haloRadius = dist === 0 ? 112 : dist === 1 ? 94 : 80;
+			const haloRadius = (dist === 0 ? 112 : dist === 1 ? 94 : 80) * fanScale;
 			const accentCol = Phaser.Display.Color.HexStringToColor(
 				l.palette.accent ?? "#e0b64a",
 			).color;
@@ -274,7 +297,7 @@ export class TitleScene extends Phaser.Scene {
 		logoGlow.fillStyle(0xfff0c2, 0.08);
 		logoGlow.fillCircle(0, 0, 240);
 		logoGlow.setScale(1.75, 0.42);
-		logoGlow.setPosition(W / 2, logoY);
+		logoGlow.setPosition(CX, logoY);
 		logoGlow.setBlendMode(Phaser.BlendModes.ADD);
 		logoGlow.setAlpha(0);
 		this.tweens.add({
@@ -287,7 +310,7 @@ export class TitleScene extends Phaser.Scene {
 
 		// CHRONICLE primary title
 		const logo = this.add
-			.text(W / 2, logoY, "CHRONICLE", {
+			.text(CX, logoY, "CHRONICLE", {
 				fontFamily: FONT.title,
 				fontSize: "76px",
 				color: hex(COLORS.gold),
@@ -317,11 +340,11 @@ export class TitleScene extends Phaser.Scene {
 		sweep.fillRect(-8, -75, 16, 150);
 		sweep.setBlendMode(Phaser.BlendModes.ADD);
 		sweep.setAngle(20);
-		sweep.setPosition(W / 2 - 340, logoY);
+		sweep.setPosition(CX - 340, logoY);
 		sweep.setMask(logo.createBitmapMask());
 		this.tweens.add({
 			targets: sweep,
-			x: W / 2 + 340,
+			x: CX + 340,
 			duration: 1350 * motion(),
 			repeat: -1,
 			repeatDelay: 3200,
@@ -332,7 +355,7 @@ export class TitleScene extends Phaser.Scene {
 		// Tagline in elegant Cormorant Garamond
 		const tagY = logoY + 70;
 		const tag = this.add
-			.text(W / 2, tagY, "Rule as they did. Or don't.", {
+			.text(CX, tagY, "Rule as they did. Or don't.", {
 				fontFamily: FONT.body,
 				fontSize: "26px",
 				color: hex(COLORS.parchment),
@@ -355,7 +378,7 @@ export class TitleScene extends Phaser.Scene {
 
 		// Imperial Ornamental Crest / Divider (✦ ❖ ✦) beneath tagline
 		const crestY = tagY + 42;
-		const crestContainer = this.add.container(W / 2, crestY);
+		const crestContainer = this.add.container(CX, crestY);
 		crestContainer.setAlpha(0);
 		crestContainer.setScale(0.85, 1);
 
@@ -462,6 +485,16 @@ export class TitleScene extends Phaser.Scene {
 	/** Harmonized button layout with architectural symmetry, icon accents, and prestigious typography. */
 	private createButtonLayout() {
 		const save = loadGame();
+		const lost = takeSaveLost();
+		if (lost) {
+			this.time.delayedCall(900, () =>
+				toast(
+					this,
+					`The chronicle of ${lost} was lost — the summoned art faded from this device's archive.`,
+					COLORS.blood,
+				),
+			);
+		}
 		const buttonBaseDelay = 800;
 
 		if (save) {
@@ -472,7 +505,7 @@ export class TitleScene extends Phaser.Scene {
 
 			const btnContinue = new Button(
 				this,
-				W / 2,
+				CX,
 				yContinue,
 				`✦  Continue: ${save.leader.name}`,
 				() => this.start("Court", { resume: true }),
@@ -482,7 +515,7 @@ export class TitleScene extends Phaser.Scene {
 
 			const btnNew = new Button(
 				this,
-				W / 2,
+				CX,
 				yNew,
 				"⚔  New Reign",
 				() => this.start("Select"),
@@ -498,7 +531,7 @@ export class TitleScene extends Phaser.Scene {
 
 			const btnBegin = new Button(
 				this,
-				W / 2,
+				CX,
 				yBegin,
 				"✦  Begin Your Reign",
 				() => this.start("Select"),
@@ -521,8 +554,12 @@ export class TitleScene extends Phaser.Scene {
 		}
 
 		// Top right settings gear
-		const settingsBtn = iconButton(this, W - 60, SAFE_TOP + 16, "⚙", () =>
-			this.start("Settings", { back: "Title" }),
+		const settingsBtn = iconButton(
+			this,
+			COL_X + W - 60,
+			SAFE_TOP + 16,
+			"⚙",
+			() => this.start("Settings", { back: "Title" }),
 		);
 		settingsBtn.setAlpha(0).setScale(0.8);
 		this.tweens.add({
@@ -537,7 +574,7 @@ export class TitleScene extends Phaser.Scene {
 		// Prestigious imperial footer inscription
 		const footer = this.add
 			.text(
-				W / 2,
+				CX,
 				H - SAFE_BOTTOM + 16,
 				"✦  GEMINI  ·  GRADIUM  ·  LYRIA  ·  PHASER  ✦",
 				{
@@ -575,7 +612,7 @@ export class TitleScene extends Phaser.Scene {
 
 		// 2 buttons of width 240 with 20px gap: total 500px, symmetrically spanning 110 to 610
 		row.forEach((item, i) => {
-			const x = W / 2 + (i - 0.5) * 260;
+			const x = CX + (i - 0.5) * 260;
 			const btn = new Button(
 				this,
 				x,

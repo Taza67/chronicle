@@ -7,10 +7,14 @@ import {
 	settings,
 } from "../core/state.ts";
 import {
+	CANVAS_W,
+	COL_X,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
+	LANDSCAPE,
 	SAFE_BOTTOM,
 	SAFE_TOP,
 	ui,
@@ -20,6 +24,10 @@ import { Button, fadeIn, go } from "../ui/widgets.ts";
 
 /** Cabinet faceplate height: wraps the controls down to the hallmark plaque. */
 const CABINET_H = 810;
+
+// The cabinet was authored for a 1280-tall column — landscape's 810
+// canvas needs the whole fitting compressed so it clears the buttons.
+const ly = (y: number) => Math.round(126 + (y - 126) * (LANDSCAPE ? 0.6 : 1));
 
 /**
  * SettingsScene: Antique Imperial Chronometer & Royal Horological Cabinet.
@@ -45,17 +53,19 @@ export class SettingsScene extends Phaser.Scene {
 		// 1. Background Atmosphere & Vignette
 		if (!this.overlay) {
 			fadeIn(this);
-			this.add.rectangle(W / 2, H / 2, W, H, COLORS.night);
-			const bg = this.add.image(W / 2, H / 2, "title_bg");
-			bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1).setAlpha(0.16);
+			this.add.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night);
+			const bg = this.add.image(CX, H / 2, "title_bg");
+			bg.setScale(Math.max(CANVAS_W / bg.width, H / bg.height) * 1.1).setAlpha(
+				0.16,
+			);
 
 			// Warm wood & bronze peripheral vignette
 			const vignette = this.add.graphics();
 			vignette.fillStyle(0x060408, 0.45);
-			vignette.fillRect(0, 0, W, H);
+			vignette.fillRect(0, 0, CANVAS_W, H);
 		} else {
 			const shade = this.add
-				.rectangle(W / 2, H / 2, W, H, COLORS.night, 0)
+				.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0)
 				.setInteractive();
 			this.tweens.add({ targets: shade, fillAlpha: 0.86, duration: 240 });
 		}
@@ -68,7 +78,7 @@ export class SettingsScene extends Phaser.Scene {
 		// y=126); on taller/safer screens the whole cabinet is shifted down so it
 		// clears the header and sits centred between header and action buttons.
 		const cabinetTop = 126;
-		const cabinetBottom = 126 + CABINET_H;
+		const cabinetBottom = ly(126 + CABINET_H);
 		const buttonsTop = this.overlay
 			? H - SAFE_BOTTOM - 130 - 34
 			: H - SAFE_BOTTOM - 90 - 36;
@@ -81,7 +91,7 @@ export class SettingsScene extends Phaser.Scene {
 		this.createCabinet(cabinetContainer);
 
 		// 4. Section I: Acoustic Escapement (Subtitles & Volumes)
-		this.createFiligreeDivider(180, "I · ACOUSTIC ESCAPEMENT");
+		this.createFiligreeDivider(ly(180), "I · ACOUSTIC ESCAPEMENT");
 
 		this.createBrassToggle(
 			"Subtitles",
@@ -90,7 +100,7 @@ export class SettingsScene extends Phaser.Scene {
 			(v) => {
 				settings.subtitles = v;
 			},
-			242,
+			ly(242),
 		);
 
 		this.createGraduatedScale(
@@ -100,7 +110,7 @@ export class SettingsScene extends Phaser.Scene {
 			(v) => {
 				audio.voiceVolume = settings.voiceVolume = v;
 			},
-			346,
+			ly(346),
 		);
 
 		this.createGraduatedScale(
@@ -110,11 +120,11 @@ export class SettingsScene extends Phaser.Scene {
 			(v) => {
 				audio.musicVolume = settings.musicVolume = v;
 			},
-			452,
+			ly(452),
 		);
 
 		// 5. Section II: Temporal Springs (Hourglass & Reduced Motion)
-		this.createFiligreeDivider(536, "II · TEMPORAL SPRINGS");
+		this.createFiligreeDivider(ly(536), "II · TEMPORAL SPRINGS");
 
 		this.createBrassToggle(
 			"Court hourglass",
@@ -123,10 +133,10 @@ export class SettingsScene extends Phaser.Scene {
 			(v) => {
 				settings.timer = v;
 			},
-			602,
+			ly(602),
 		);
 
-		this.createCampaignLengthSelector(692);
+		this.createCampaignLengthSelector(ly(692));
 
 		this.createBrassToggle(
 			"Reduce motion",
@@ -139,12 +149,12 @@ export class SettingsScene extends Phaser.Scene {
 					else tw.resume();
 				}
 			},
-			780,
+			ly(780),
 		);
 
 		// 6. Horological Hallmark & Inspection Cartouche
-		this.createFiligreeDivider(842);
-		this.createHallmarkPlaque(876);
+		this.createFiligreeDivider(ly(842));
+		this.createHallmarkPlaque(ly(876));
 
 		if (shiftY !== 0) {
 			for (const obj of this.children.list.slice(firstShifted)) {
@@ -156,50 +166,29 @@ export class SettingsScene extends Phaser.Scene {
 		if (this.overlay) {
 			const returnY = H - SAFE_BOTTOM - 130;
 			const abandonY = H - SAFE_BOTTOM - 54;
-			new Button(
-				this,
-				W / 2,
-				returnY,
-				"‹  Return to Court",
-				() => this.close(),
-				{
-					w: 430,
-					h: 68,
-				},
-			);
-			new Button(
-				this,
-				W / 2,
-				abandonY,
-				"⚔  Abandon Reign",
-				() => this.abandon(),
-				{
-					w: 390,
-					h: 58,
-					primary: false,
-					color: COLORS.blood,
-					size: 21,
-				},
-			);
+			new Button(this, CX, returnY, "‹  Return to Court", () => this.close(), {
+				w: 430,
+				h: 68,
+			});
+			new Button(this, CX, abandonY, "⚔  Abandon Reign", () => this.abandon(), {
+				w: 390,
+				h: 58,
+				primary: false,
+				color: COLORS.blood,
+				size: 21,
+			});
 		} else {
 			const sealY = H - SAFE_BOTTOM - 90;
-			new Button(
-				this,
-				W / 2,
-				sealY,
-				"◆  Seal Chronometer",
-				() => this.close(),
-				{
-					w: 390,
-					h: 72,
-				},
-			);
+			new Button(this, CX, sealY, "◆  Seal Chronometer", () => this.close(), {
+				w: 390,
+				h: 72,
+			});
 		}
 
 		// 8. Footer Hackathon Credit
 		this.add
 			.text(
-				W / 2,
+				CX,
 				H - SAFE_BOTTOM + 16,
 				"Chronicle · made for the Voodoo × Gradium × Cognition × DeepMind hackathon",
 				ui(14, hex(COLORS.muted)),
@@ -213,7 +202,7 @@ export class SettingsScene extends Phaser.Scene {
 		const headerY = SAFE_TOP + 18;
 
 		// Antique Brass Winding Crown / Back Escutcheon
-		const btn = this.add.container(62, headerY);
+		const btn = this.add.container(COL_X + 62, headerY);
 		const bg = this.add.graphics();
 		const crownR = 25;
 
@@ -270,12 +259,7 @@ export class SettingsScene extends Phaser.Scene {
 
 		// Header Titles
 		const t = this.add
-			.text(
-				W / 2,
-				headerY - 8,
-				"IMPERIAL CHRONOMETER",
-				ui(28, hex(COLORS.gold)),
-			)
+			.text(CX, headerY - 8, "IMPERIAL CHRONOMETER", ui(28, hex(COLORS.gold)))
 			.setOrigin(0.5);
 		t.setFontFamily(FONT.title);
 		t.setFontStyle("700");
@@ -284,7 +268,7 @@ export class SettingsScene extends Phaser.Scene {
 
 		const sub = this.add
 			.text(
-				W / 2,
+				CX,
 				headerY + 24,
 				"COURT REGULATION · ARCHIVE WORKSHOP",
 				ui(12, hex(COLORS.parchmentDark)),
@@ -297,10 +281,10 @@ export class SettingsScene extends Phaser.Scene {
 
 	/** Builds the brass cabinet faceplate, corner brackets, and rotating clockwork gears. */
 	private createCabinet(container: Phaser.GameObjects.Container) {
-		const x0 = 36;
+		const x0 = COL_X + 36;
 		const y0 = 126;
 		const w = 648;
-		const h = CABINET_H;
+		const h = LANDSCAPE ? Math.round(CABINET_H * 0.6) : CABINET_H;
 
 		const g = this.add.graphics();
 		container.add(g);
@@ -333,8 +317,8 @@ export class SettingsScene extends Phaser.Scene {
 
 		// Astrolabe longitude arcs engraved on faceplate
 		g.lineStyle(1, COLORS.gold, 0.08);
-		g.strokeCircle(W / 2, 490, 260);
-		g.strokeCircle(W / 2, 490, 310);
+		g.strokeCircle(CX, 490, 260);
+		g.strokeCircle(CX, 490, 310);
 		g.lineStyle(0.8, COLORS.gold, 0.05);
 		g.lineBetween(x0 + 30, 490, x0 + w - 30, 490);
 
@@ -412,7 +396,7 @@ export class SettingsScene extends Phaser.Scene {
 		];
 
 		for (const cfg of configs) {
-			const gc = this.add.container(cfg.x, cfg.y);
+			const gc = this.add.container(cfg.x + COL_X, ly(cfg.y));
 			const g = this.add.graphics();
 			this.renderGearGraphics(g, cfg.r, cfg.teeth);
 			gc.add(g);
@@ -500,7 +484,7 @@ export class SettingsScene extends Phaser.Scene {
 
 	/** Elegant filigree divider with central rosette or ribbon badge. */
 	private createFiligreeDivider(y: number, text?: string) {
-		const c = this.add.container(W / 2, y);
+		const c = this.add.container(CX, y);
 		const g = this.add.graphics();
 		c.add(g);
 
@@ -644,7 +628,7 @@ export class SettingsScene extends Phaser.Scene {
 	) {
 		// Row title & descriptive hint
 		this.add
-			.text(72, y - 14, label, {
+			.text(COL_X + 72, y - 14, label, {
 				fontFamily: FONT.title,
 				fontSize: "23px",
 				color: hex(COLORS.text),
@@ -653,11 +637,11 @@ export class SettingsScene extends Phaser.Scene {
 			.setOrigin(0, 0.5);
 
 		this.add
-			.text(72, y + 17, hint, ui(15, hex(COLORS.muted)))
+			.text(COL_X + 72, y + 17, hint, ui(15, hex(COLORS.muted)))
 			.setOrigin(0, 0.5);
 
 		// Toggle assembly on the right
-		const toggleX = W - 116;
+		const toggleX = COL_X + W - 116;
 		const toggleContainer = this.add.container(toggleX, y);
 
 		const trackW = 96;
@@ -821,7 +805,7 @@ export class SettingsScene extends Phaser.Scene {
 	/** Creates a 3-way antique brass selector for council campaign length (5, 8, 10 dilemmas). */
 	private createCampaignLengthSelector(y: number) {
 		this.add
-			.text(72, y - 14, "Reign duration", {
+			.text(COL_X + 72, y - 14, "Reign duration", {
 				fontFamily: FONT.title,
 				fontSize: "23px",
 				color: hex(COLORS.text),
@@ -831,7 +815,7 @@ export class SettingsScene extends Phaser.Scene {
 
 		this.add
 			.text(
-				72,
+				COL_X + 72,
 				y + 14,
 				"5, 8 or 10 dilemmas per council",
 				ui(15, hex(COLORS.muted)),
@@ -844,7 +828,7 @@ export class SettingsScene extends Phaser.Scene {
 			{ length: 10, label: "10" },
 		];
 
-		const startX = W - 225;
+		const startX = COL_X + W - 225;
 		const pillButtons: {
 			bg: Phaser.GameObjects.Graphics;
 			text: Phaser.GameObjects.Text;
@@ -910,7 +894,7 @@ export class SettingsScene extends Phaser.Scene {
 	) {
 		// Left: Title and Hint
 		this.add
-			.text(72, y - 16, label, {
+			.text(COL_X + 72, y - 16, label, {
 				fontFamily: FONT.title,
 				fontSize: "23px",
 				color: hex(COLORS.text),
@@ -919,11 +903,15 @@ export class SettingsScene extends Phaser.Scene {
 			.setOrigin(0, 0.5);
 
 		this.add
-			.text(72, y + 14, hint, ui(15, hex(COLORS.muted)))
+			.text(COL_X + 72, y + 14, hint, ui(15, hex(COLORS.muted)))
 			.setOrigin(0, 0.5);
 
-		// Engraved Brass Value Readout Badge
-		const badge = this.add.container(72, y + 42);
+		// Engraved Brass Value Readout Badge — under the hint in portrait,
+		// beside it in landscape where the compressed rows can't fit three lines.
+		const badge = this.add.container(
+			LANDSCAPE ? COL_X + 268 : COL_X + 72,
+			y + (LANDSCAPE ? 14 : 42),
+		);
 		const badgeG = this.add.graphics();
 		badgeG.fillStyle(0x150f1c, 0.95);
 		badgeG.fillRoundedRect(0, -11, 68, 22, 5);
@@ -944,7 +932,7 @@ export class SettingsScene extends Phaser.Scene {
 
 		// Right: Graduated Brass Ruler & Ivory Knob
 		const w = 236;
-		const x0 = W - 328;
+		const x0 = COL_X + W - 328;
 
 		const rulerG = this.add.graphics();
 		const fillG = this.add.graphics();
@@ -1105,7 +1093,8 @@ export class SettingsScene extends Phaser.Scene {
 			}
 
 			set(v);
-			saveSettings();
+			// localStorage write happens on pointer release — writing ~60x/s
+			// during a drag is wasted synchronous work on the main thread.
 		};
 
 		zone.on("pointerdown", (p: Phaser.Input.Pointer) => {
@@ -1126,6 +1115,7 @@ export class SettingsScene extends Phaser.Scene {
 		const upHandler = () => {
 			if (held) {
 				held = false;
+				saveSettings();
 				this.tweens.add({
 					targets: knobContainer,
 					scale: 1,
@@ -1146,7 +1136,7 @@ export class SettingsScene extends Phaser.Scene {
 
 	/** Hallmark brass inspection cartouche certifying royal precision escapement. */
 	private createHallmarkPlaque(y: number) {
-		const c = this.add.container(W / 2, y);
+		const c = this.add.container(CX, y);
 		const g = this.add.graphics();
 		c.add(g);
 

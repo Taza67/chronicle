@@ -2,7 +2,10 @@ import Phaser from "phaser";
 import { type ReignRecord, reigns } from "../core/state.ts";
 import { ScrollList } from "../ui/ScrollList.ts";
 import {
+	CANVAS_W,
+	COL_X,
 	COLORS,
+	CX,
 	FONT,
 	H,
 	hex,
@@ -195,20 +198,20 @@ export class ChronicleScene extends Phaser.Scene {
 		fadeIn(this);
 
 		// Deep imperial night backdrop
-		this.add.rectangle(W / 2, H / 2, W, H, COLORS.night);
-		const bg = this.add.image(W / 2, H / 2, "title_bg");
-		bg.setScale(Math.max(W / bg.width, H / bg.height) * 1.1)
+		this.add.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night);
+		const bg = this.add.image(CX, H / 2, "title_bg");
+		bg.setScale(Math.max(CANVAS_W / bg.width, H / bg.height) * 1.1)
 			.setAlpha(0.18)
 			.setTint(0x321e1a);
 
 		// Vignette shadow overlay
-		const vignette = this.add.image(W / 2, H / 2, "vignette");
-		vignette.setDisplaySize(W, H).setAlpha(0.75);
+		const vignette = this.add.image(CX, H / 2, "vignette");
+		vignette.setDisplaySize(CANVAS_W, H).setAlpha(0.75);
 
 		// Imperial Header
 		heading(this, SAFE_TOP + 18, "Imperial Chronicle", 32);
 		this.add
-			.text(W / 2, SAFE_TOP + 48, "GENEALOGICAL ROLL OF REIGNS", {
+			.text(CX, SAFE_TOP + 48, "GENEALOGICAL ROLL OF REIGNS", {
 				fontFamily: FONT.title,
 				fontSize: "12px",
 				color: hex(COLORS.goldDeep),
@@ -217,7 +220,7 @@ export class ChronicleScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setLetterSpacing(4);
 
-		iconButton(this, 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
+		iconButton(this, COL_X + 56, SAFE_TOP + 18, "‹", () => go(this, "Title"));
 
 		// Grand Imperial Roll Summary Ribbon Pill
 		const totalDecrees = reigns.reduce((n, r) => n + r.total, 0);
@@ -228,16 +231,16 @@ export class ChronicleScene extends Phaser.Scene {
 		const summaryBg = this.add.graphics();
 		summaryBg.fillStyle(0x130f1d, 0.85);
 		const pillY = SAFE_TOP + 66;
-		summaryBg.fillRoundedRect(W / 2 - 260, pillY, 520, 26, 13);
+		summaryBg.fillRoundedRect(CX - 260, pillY, 520, 26, 13);
 		summaryBg.lineStyle(1, COLORS.goldDeep, 0.65);
-		summaryBg.strokeRoundedRect(W / 2 - 260, pillY, 520, 26, 13);
+		summaryBg.strokeRoundedRect(CX - 260, pillY, 520, 26, 13);
 
 		const summaryText = reigns.length
 			? `✦  ${reigns.length} ${reigns.length === 1 ? "REIGN" : "REIGNS"} RECORDED  ·  ${matchedDecrees}/${totalDecrees} HISTORICAL DECREES (${fidelityPct}%)  ✦`
 			: "✦  NO REIGNS RECORDED IN THE IMPERIAL ARCHIVES YET  ✦";
 
 		this.add
-			.text(W / 2, pillY + 13, summaryText, {
+			.text(CX, pillY + 13, summaryText, {
 				fontFamily: FONT.ui,
 				fontSize: "11px",
 				color: hex(COLORS.gold),
@@ -257,7 +260,7 @@ export class ChronicleScene extends Phaser.Scene {
 			const eg = this.add.graphics();
 
 			const emptyTitle = this.add
-				.text(W / 2, 76, "THE IMPERIAL ROLL LIES UNWRITTEN", {
+				.text(CX, 76, "THE IMPERIAL ROLL LIES UNWRITTEN", {
 					fontFamily: FONT.title,
 					fontSize: "20px",
 					color: hex(COLORS.gold),
@@ -268,7 +271,7 @@ export class ChronicleScene extends Phaser.Scene {
 
 			const emptyBody = this.add
 				.text(
-					W / 2,
+					CX,
 					104,
 					"Ascend the throne, decree your royal will before the court,\nand the imperial chroniclers shall inscribe your lineage in wax and gold.",
 					{
