@@ -3,7 +3,7 @@ import { online, stt } from "../core/api.ts";
 import { audio, type MusicSituation } from "../core/audio.ts";
 import { micSupported, type Recording, record } from "../core/recorder.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, title, W } from "./theme.ts";
+import { CANVAS_W, COLORS, CX, FONT, H, hex, title } from "./theme.ts";
 import { toast } from "./widgets.ts";
 
 export type VoiceResult =
@@ -105,14 +105,14 @@ export class VoiceResonator extends Phaser.GameObjects.Container {
 
 		// 1. Full-screen dark velvet interactive veil
 		this.shade = scene.add
-			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.82)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.82)
 			.setDepth(91)
 			.setInteractive();
 		this.shade.setAlpha(0);
 
 		// 2. Central ritual hub
 		const hubY = H * 0.5;
-		this.hub = scene.add.container(W / 2, hubY).setDepth(92);
+		this.hub = scene.add.container(CX, hubY).setDepth(92);
 		this.hub.setScale(0.85).setAlpha(0);
 
 		// 3. Ambient golden breathing aura
@@ -242,9 +242,10 @@ export class VoiceResonator extends Phaser.GameObjects.Container {
 			}
 		});
 
-		// Scene shutdown hook
+		// Scene shutdown hook (mid-scene destroy is covered via DESTROY)
 		scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
 		scene.events.on(Phaser.Scenes.Events.UPDATE, this.updateAnimation, this);
+		this.once(Phaser.GameObjects.Events.DESTROY, () => this.cleanupEvents());
 	}
 
 	private createCloseButton(scene: Phaser.Scene, x: number, y: number) {

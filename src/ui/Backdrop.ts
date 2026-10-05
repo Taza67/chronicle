@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { settings } from "../core/state.ts";
 import type { Leader } from "../types.ts";
-import { H, W } from "./theme.ts";
+import { CANVAS_W, CX, H, VIS_CX, W } from "./theme.ts";
 
 /** Parallax throne-room backdrop: far/near layers, tilt/pointer parallax, civ particles, vignette, mood light. */
 export class Backdrop extends Phaser.GameObjects.Container {
@@ -32,15 +32,16 @@ export class Backdrop extends Phaser.GameObjects.Container {
 			const s = Math.max((W * extra) / img.width, (H * extra) / img.height);
 			img.setScale(s);
 		};
-		this.far = scene.add.image(W / 2, H / 2, farKey);
+		// Art anchors the visual column (right half in landscape, center in portrait).
+		this.far = scene.add.image(VIS_CX, H / 2, farKey);
 		cover(this.far, 1.14);
-		this.near = scene.add.image(W / 2, H / 2, nearKey);
+		this.near = scene.add.image(VIS_CX, H / 2, nearKey);
 		cover(this.near, 1.2);
 		this.near.setAlpha(0.0);
 		// near layer: only the lower half (foreground) so the far layer gives depth at the top
 		const maskG = scene.make.graphics({ x: 0, y: 0 });
 		maskG.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 0, 0, 1, 1);
-		maskG.fillRect(0, H * 0.35, W, H * 0.65);
+		maskG.fillRect(VIS_CX - W / 2, H * 0.35, W, H * 0.65);
 		this.near.setMask(maskG.createGeometryMask());
 		this.near.setAlpha(0.95);
 
@@ -50,7 +51,7 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		const bgHex = leader.palette.bg ?? leader.palette.primary ?? "#062a33";
 		this.mood = scene.add
 			.rectangle(
-				W / 2,
+				VIS_CX,
 				H / 2,
 				W * 1.2,
 				H * 1.2,
@@ -59,15 +60,15 @@ export class Backdrop extends Phaser.GameObjects.Container {
 			)
 			.setBlendMode(Phaser.BlendModes.MULTIPLY);
 		this.vignette = scene.add
-			.image(W / 2, H / 2, "vignette")
-			.setDisplaySize(W * 1.15, H * 1.15)
+			.image(CX, H / 2, "vignette")
+			.setDisplaySize(CANVAS_W * 1.15, H * 1.15)
 			.setAlpha(0.75);
 		const grain = scene.add
-			.tileSprite(W / 2, H / 2, W * 1.2, H * 1.2, "grain")
+			.tileSprite(CX, H / 2, CANVAS_W * 1.2, H * 1.2, "grain")
 			.setAlpha(0.06)
 			.setBlendMode(Phaser.BlendModes.OVERLAY);
 		this.emitter = scene.add.particles(0, 0, "spark", {
-			x: { min: -40, max: W + 40 },
+			x: { min: VIS_CX - W / 2 - 40, max: VIS_CX + W / 2 + 40 },
 			y: { min: H * 0.05, max: H * 1.05 },
 			lifespan: { min: 5000, max: 9000 },
 			speedY: { min: -14, max: -34 },
@@ -93,20 +94,22 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		scene.input.on(
 			Phaser.Input.Events.POINTER_MOVE,
 			(p: Phaser.Input.Pointer) => {
-				this.tx = (p.x / W - 0.5) * 2;
+				this.tx = (p.x / CANVAS_W - 0.5) * 2;
 				this.ty = (p.y / H - 0.5) * 2;
 			},
 		);
 		window.addEventListener("deviceorientation", this.onTilt);
+		const grainTick = (_t: number, d: number) => {
+			grain.tilePositionX += d * 0.7;
+			grain.tilePositionY -= d * 0.9;
+		};
 		scene.events.on(Phaser.Scenes.Events.UPDATE, this.tick, this);
+		scene.events.on(Phaser.Scenes.Events.UPDATE, grainTick);
 		this.once(Phaser.GameObjects.Events.DESTROY, () => {
 			window.removeEventListener("deviceorientation", this.onTilt);
 			scene.events.off(Phaser.Scenes.Events.UPDATE, this.tick, this);
+			scene.events.off(Phaser.Scenes.Events.UPDATE, grainTick);
 			scene.tweens.killTweensOf(this.vignette);
-		});
-		scene.events.on(Phaser.Scenes.Events.UPDATE, (_t: number, d: number) => {
-			grain.tilePositionX += d * 0.7;
-			grain.tilePositionY -= d * 0.9;
 		});
 	}
 
@@ -196,9 +199,12 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		const amt = settings.reducedMotion ? 0.25 : 1;
 		this.px += (this.tx - this.px) * k;
 		this.py += (this.ty - this.py) * k;
-		this.far.setPosition(W / 2 - this.px * 10 * amt, H / 2 - this.py * 8 * amt);
+		this.far.setPosition(
+			VIS_CX - this.px * 10 * amt,
+			H / 2 - this.py * 8 * amt,
+		);
 		this.near.setPosition(
-			W / 2 - this.px * 26 * amt,
+			VIS_CX - this.px * 26 * amt,
 			H / 2 - this.py * 18 * amt,
 		);
 	}

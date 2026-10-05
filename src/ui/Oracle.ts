@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, title, W } from "./theme.ts";
+import { CANVAS_W, COLORS, CX, FONT, H, hex, title, W } from "./theme.ts";
 
 type OracleSfx =
 	| "oracle_open"
@@ -107,24 +107,23 @@ export class Oracle extends Phaser.GameObjects.Container {
 
 		ensureOracleTextures(scene);
 
-		const cx = W / 2;
 		const astrolabeY = H * 0.35;
 		const plinthY = H * 0.44;
 
 		// --- 1. Temple Atmosphere & Mystical Veil ---
 		const shade = scene.add
-			.rectangle(cx, H / 2, W, H, COLORS.night, 0.96)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.96)
 			.setInteractive();
 
 		const vignette = scene.add
-			.image(cx, H / 2, "vignette")
-			.setDisplaySize(W, H)
+			.image(CX, H / 2, "vignette")
+			.setDisplaySize(CANVAS_W, H)
 			.setAlpha(0.68)
 			.setDepth(1);
 
 		// Torchlight ambient sanctuary glow
 		const torchGlow = scene.add
-			.image(cx, astrolabeY, "spark")
+			.image(CX, astrolabeY, "spark")
 			.setScale(26)
 			.setTint(0xffbe4d)
 			.setAlpha(0.14)
@@ -181,7 +180,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		}
 
 		// --- 2. Ancient Armillary Astrolabe ---
-		this.astrolabe = scene.add.container(cx, astrolabeY);
+		this.astrolabe = scene.add.container(CX, astrolabeY);
 
 		// Outer Ring: 36 astronomical ticks & gear teeth
 		this.ringOuter = scene.add.graphics();
@@ -310,19 +309,19 @@ export class Oracle extends Phaser.GameObjects.Container {
 
 		// Tier 1: Foundation obsidian slate
 		altar.fillStyle(0x0c0a14, 0.95);
-		altar.fillRoundedRect(cx - 160, plinthY + 16, 320, 24, 8);
+		altar.fillRoundedRect(CX - 160, plinthY + 16, 320, 24, 8);
 		altar.lineStyle(1.5, COLORS.goldDeep, 0.55);
-		altar.strokeRoundedRect(cx - 160, plinthY + 16, 320, 24, 8);
+		altar.strokeRoundedRect(CX - 160, plinthY + 16, 320, 24, 8);
 
 		// Tier 2: Carved granite frieze with antique gold inlay
 		altar.fillStyle(0x151122, 0.92);
-		altar.fillRoundedRect(cx - 130, plinthY + 2, 260, 18, 6);
+		altar.fillRoundedRect(CX - 130, plinthY + 2, 260, 18, 6);
 		altar.lineStyle(1.5, COLORS.goldDeep, 0.7);
-		altar.strokeRoundedRect(cx - 130, plinthY + 2, 260, 18, 6);
+		altar.strokeRoundedRect(CX - 130, plinthY + 2, 260, 18, 6);
 
 		// Filigree diamond pattern across the frieze
 		altar.lineStyle(1, COLORS.gold, 0.4);
-		for (let fx = cx - 110; fx <= cx + 110; fx += 22) {
+		for (let fx = CX - 110; fx <= CX + 110; fx += 22) {
 			altar.beginPath();
 			altar.moveTo(fx, plinthY + 11);
 			altar.lineTo(fx + 6, plinthY + 7);
@@ -334,21 +333,21 @@ export class Oracle extends Phaser.GameObjects.Container {
 
 		// Tier 3: Dark Velvet Cushion Plinth
 		altar.fillStyle(0x13071d, 0.98);
-		altar.fillRoundedRect(cx - 105, plinthY - 10, 210, 16, 8);
+		altar.fillRoundedRect(CX - 105, plinthY - 10, 210, 16, 8);
 		altar.lineStyle(1.5, COLORS.gold, 0.85);
-		altar.strokeRoundedRect(cx - 105, plinthY - 10, 210, 16, 8);
+		altar.strokeRoundedRect(CX - 105, plinthY - 10, 210, 16, 8);
 
 		// Velvet top nap highlight cord
 		altar.lineStyle(1, 0xffe9a6, 0.4);
-		altar.lineBetween(cx - 90, plinthY - 8, cx + 90, plinthY - 8);
+		altar.lineBetween(CX - 90, plinthY - 8, CX + 90, plinthY - 8);
 
 		// Ground Shadow on the velvet cushion
 		this.shadow = scene.add
-			.ellipse(cx, plinthY - 2, 110, 24, 0x000000, 0.58)
+			.ellipse(CX, plinthY - 2, 110, 24, 0x000000, 0.58)
 			.setDepth(3);
 
 		// --- 4. Pseudo-3D Coin Composite Container ---
-		this.coinContainer = scene.add.container(cx, astrolabeY).setDepth(5);
+		this.coinContainer = scene.add.container(CX, astrolabeY).setDepth(5);
 
 		this.coinFace = scene.add.image(0, 0, "coin").setScale(0.45);
 		this.coinEdge = scene.add
@@ -422,7 +421,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		// --- 5. Classical Typography & Headers ---
 		const header = scene.add
 			.text(
-				cx,
+				CX,
 				H * 0.165,
 				"THE ORACLE OF CHRONICLES",
 				title(26, hex(COLORS.gold)),
@@ -433,7 +432,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		header.setShadow(0, 3, "#000000", 12, false, true);
 
 		this.prompt = scene.add
-			.text(cx, H * 0.56, "Did history choose the path you took?", {
+			.text(CX, H * 0.56, "Did history choose the path you took?", {
 				fontFamily: FONT.body,
 				fontSize: "34px",
 				color: hex(COLORS.text),
@@ -447,7 +446,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 			combo > 0
 				? scene.add
 						.text(
-							cx,
+							CX,
 							H * 0.62,
 							`✦ COMBO ×${Math.min(3, combo + 1)} IF TRUE ✦`,
 							{
@@ -676,7 +675,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		};
 
 		makeStele(
-			W / 2 - 164,
+			CX - 164,
 			true,
 			"☼",
 			"✦ Historical ✦",
@@ -685,7 +684,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		);
 
 		makeStele(
-			W / 2 + 164,
+			CX + 164,
 			false,
 			"☾",
 			"✦ Counterfactual ✦",
@@ -740,7 +739,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 				// Chosen stele glides gracefully into central plinth position
 				s.tweens.add({
 					targets: t,
-					x: W / 2,
+					x: CX,
 					y: H * 0.72,
 					scale: 1.04,
 					duration: 420,
@@ -939,7 +938,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 
 					// Shockwave Ring on velvet plinth
 					const shockwave = s.add
-						.ellipse(W / 2, plinthSurfaceY + 2, 54, 18)
+						.ellipse(CX, plinthSurfaceY + 2, 54, 18)
 						.setDepth(4);
 					const verdictCol = matched ? COLORS.gold : 0xd9534f;
 					shockwave.setStrokeStyle(2.5, verdictCol, 0.9);
@@ -1026,7 +1025,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 						: "FATE HELD ANOTHER COURSE";
 
 					this.verdictText = s.add
-						.text(W / 2, H * 0.51, verdictHeader, title(32, hex(verdictTint)))
+						.text(CX, H * 0.51, verdictHeader, title(32, hex(verdictTint)))
 						.setOrigin(0.5)
 						.setAlpha(0);
 					this.verdictText.setLetterSpacing(5);
@@ -1052,7 +1051,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 
 					// Triumphant golden starlight cascade on match
 					if (matched && !settings.reducedMotion) {
-						const p = s.add.particles(W / 2, plinthSurfaceY, "spark", {
+						const p = s.add.particles(CX, plinthSurfaceY, "spark", {
 							speed: { min: 80, max: 280 },
 							scale: { start: 0.9, end: 0 },
 							lifespan: 1200,

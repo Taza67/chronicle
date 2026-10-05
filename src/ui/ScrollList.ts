@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { H, W } from "./theme.ts";
+import { COL_X, H, W } from "./theme.ts";
 
 /** Vertically scrollable container (touch drag + wheel) clipped to a viewport. */
 export class ScrollList extends Phaser.GameObjects.Container {
@@ -12,44 +12,48 @@ export class ScrollList extends Phaser.GameObjects.Container {
 	private readonly viewH: number;
 
 	constructor(scene: Phaser.Scene, top: number, bottom: number) {
-		super(scene, 0, top);
+		// Anchored at the content column origin — children position in
+		// column coordinates, the container shifts them under the mask.
+		super(scene, COL_X, top);
 		this.top = top;
 		this.viewH = bottom - top;
 		const mg = scene.make.graphics({ x: 0, y: 0 });
 		mg.fillStyle(0xffffff);
-		mg.fillRect(0, top, W, this.viewH);
+		mg.fillRect(COL_X, top, W, this.viewH);
 		this.setMask(mg.createGeometryMask());
 		scene.add.existing(this);
-		scene.input.on(
-			Phaser.Input.Events.POINTER_DOWN,
-			(p: Phaser.Input.Pointer) => {
-				if (p.y < top || p.y > bottom) return;
-				this.dragging = true;
-				this.startY = p.y;
-				this.startScroll = this.y;
-				this.vel = 0;
-			},
-		);
-		scene.input.on(
-			Phaser.Input.Events.POINTER_MOVE,
-			(p: Phaser.Input.Pointer) => {
-				if (!this.dragging) return;
-				const ny = this.startScroll + (p.y - this.startY);
-				this.vel = ny - this.y;
-				this.y = ny;
-			},
-		);
-		scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
+		const onDown = (p: Phaser.Input.Pointer) => {
+			if (p.y < top || p.y > bottom) return;
+			this.dragging = true;
+			this.startY = p.y;
+			this.startScroll = this.y;
+			this.vel = 0;
+		};
+		const onMove = (p: Phaser.Input.Pointer) => {
+			if (!this.dragging) return;
+			const ny = this.startScroll + (p.y - this.startY);
+			this.vel = ny - this.y;
+			this.y = ny;
+		};
+		const onUp = () => {
 			this.dragging = false;
-		});
-		scene.input.on(
-			Phaser.Input.Events.POINTER_WHEEL,
-			(_p: unknown, _o: unknown, _dx: number, dy: number) => {
-				this.y -= dy;
-				this.clamp();
-			},
-		);
+		};
+		const onWheel = (_p: unknown, _o: unknown, _dx: number, dy: number) => {
+			this.y -= dy;
+			this.clamp();
+		};
+		scene.input.on(Phaser.Input.Events.POINTER_DOWN, onDown);
+		scene.input.on(Phaser.Input.Events.POINTER_MOVE, onMove);
+		scene.input.on(Phaser.Input.Events.POINTER_UP, onUp);
+		scene.input.on(Phaser.Input.Events.POINTER_WHEEL, onWheel);
 		scene.events.on(Phaser.Scenes.Events.UPDATE, this.tick, this);
+		this.once(Phaser.GameObjects.Events.DESTROY, () => {
+			scene.input.off(Phaser.Input.Events.POINTER_DOWN, onDown);
+			scene.input.off(Phaser.Input.Events.POINTER_MOVE, onMove);
+			scene.input.off(Phaser.Input.Events.POINTER_UP, onUp);
+			scene.input.off(Phaser.Input.Events.POINTER_WHEEL, onWheel);
+			scene.events.off(Phaser.Scenes.Events.UPDATE, this.tick, this);
+		});
 	}
 
 	setContentHeight(h: number) {
