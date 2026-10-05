@@ -1,7 +1,17 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, SAFE_BOTTOM, title, W } from "./theme.ts";
+import {
+	CANVAS_W,
+	COLORS,
+	CX,
+	FONT,
+	H,
+	hex,
+	SAFE_BOTTOM,
+	title,
+	W,
+} from "./theme.ts";
 import { Button } from "./widgets.ts";
 
 /**
@@ -27,19 +37,19 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 		// 1. Dimmed night backdrop with soft interactive barrier
 		const shade = scene.add
-			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.52)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.52)
 			.setInteractive();
 
 		// 2. Vellum Parchment Scroll Graphics (shadows, aged texture, borders, corner fleurons)
 		const paperG = scene.add.graphics();
-		this.drawVellum(paperG, W / 2 - this.pw / 2, this.top, this.pw, this.ph);
+		this.drawVellum(paperG, CX - this.pw / 2, this.top, this.pw, this.ph);
 
 		// 3. Ornate Decree Heading
 		const subTitleText = isHist
 			? "✦ IMPERIAL ARCHIVES · HISTORICAL RECORD ✦"
 			: "✦ CHRONICA INCERTA · ALTERNATE DESTINY ✦";
 		const decSub = scene.add
-			.text(W / 2, this.top + 72, subTitleText, {
+			.text(CX, this.top + 72, subTitleText, {
 				fontFamily: FONT.title,
 				fontSize: "12px",
 				fontStyle: "700",
@@ -53,17 +63,17 @@ export class Reveal extends Phaser.GameObjects.Container {
 			? "WHAT HISTORY RECORDS"
 			: "WHAT MIGHT HAVE BEEN";
 		const decHead = scene.add
-			.text(W / 2, this.top + 100, mainTitleText, title(25, hex(primaryColor)))
+			.text(CX, this.top + 100, mainTitleText, title(25, hex(primaryColor)))
 			.setOrigin(0.5);
 		decHead.setLetterSpacing(5);
 
 		// 4. Filigree Rule Divider
 		const filigreeG = scene.add.graphics();
-		this.drawFiligreeDivider(filigreeG, W / 2, this.top + 130, primaryColor);
+		this.drawFiligreeDivider(filigreeG, CX, this.top + 130, primaryColor);
 
 		// 5. Calligraphic Opening Quote Accent
 		const quoteGlyph = scene.add
-			.text(W / 2, this.top + 146, "“", {
+			.text(CX, this.top + 146, "“", {
 				fontFamily: FONT.title,
 				fontSize: "34px",
 				fontStyle: "700",
@@ -75,7 +85,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 		// 6. Narrative Calligraphic Text
 		this.textObj = scene.add
-			.text(W / 2, this.top + 166, text, {
+			.text(CX, this.top + 166, text, {
 				fontFamily: FONT.body,
 				fontSize: "28px",
 				color: hex(0x19120b),
@@ -87,7 +97,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 		// 7. Calligraphic Terminal Fleuron
 		const closingFleuron = scene.add
-			.text(W / 2, this.top + 172 + this.textObj.height + 10, "❧", {
+			.text(CX, this.top + 172 + this.textObj.height + 10, "❧", {
 				fontFamily: FONT.body,
 				fontSize: "24px",
 				color: hex(primaryColor),
@@ -120,11 +130,11 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 		// 9. Top Stationary Brass Rod with Turned Finials (unmasked, fixed at top)
 		const topRodG = scene.add.graphics();
-		this.drawBrassRod(topRodG, W / 2, this.top, this.pw, false);
+		this.drawBrassRod(topRodG, CX, this.top, this.pw, false);
 
 		// 10. Ornamental Wax Seal Stamped at Top (stamped onto the top-right corner, clear of the decree heading)
 		const waxSealContainer = scene.add.container(
-			W / 2 + this.pw / 2 - 58,
+			CX + this.pw / 2 - 58,
 			this.top + 30,
 		);
 		const waxSealG = scene.add.graphics();
@@ -143,7 +153,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 		});
 
 		// 11. Bottom Unrolling Brass Rod with Turned Finials & Rolled Vellum Lip
-		const bottomRodContainer = scene.add.container(W / 2, this.top);
+		const bottomRodContainer = scene.add.container(CX, this.top);
 		const bottomRodG = scene.add.graphics();
 		this.drawBrassRod(bottomRodG, 0, 0, this.pw, true);
 		bottomRodContainer.add(bottomRodG);
@@ -249,7 +259,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 			}
 		}
 
-		const c = s.add.container(W / 2, y);
+		const c = s.add.container(CX, y);
 
 		// Re-center text vertically within card
 		headerText.setY(-h / 2 + 20);
@@ -285,12 +295,12 @@ export class Reveal extends Phaser.GameObjects.Container {
 		badgeContainer.add([glowG, badgeG, celestialStar]);
 
 		c.add([cardBgG, badgeContainer, headerText, bodyText]);
-		c.setAlpha(0).setX(W / 2 + 45);
+		c.setAlpha(0).setX(CX + 45);
 
 		s.tweens.add({
 			targets: c,
 			alpha: 1,
-			x: W / 2,
+			x: CX,
 			duration: settings.reducedMotion ? 200 : 450,
 			ease: "Back.out",
 		});
@@ -320,7 +330,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 		// If preserved in Royal Codex, show ornate archival wafer chip
 		if (onCodex) {
 			const chipY = y + h / 2 + 22;
-			const chipContainer = s.add.container(W / 2, chipY);
+			const chipContainer = s.add.container(CX, chipY);
 
 			const chipG = s.add.graphics();
 			const chipW = 260;
@@ -362,7 +372,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 		return new Promise((done) => {
 			this.continueBtn = new Button(
 				this.scene,
-				W / 2,
+				CX,
 				H - SAFE_BOTTOM - 60,
 				label,
 				() => {

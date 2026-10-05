@@ -148,7 +148,7 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 			.setOrigin(0.5);
 
 		c.add([glow, bg, icon, label, badge]);
-		c.setSize(56, 56).setInteractive({ useHandCursor: true });
+		c.setSize(72, 72).setInteractive({ useHandCursor: true });
 
 		c.on("pointerover", () => {
 			scene.tweens.add({ targets: c, scale: 1.08, duration: 120 });

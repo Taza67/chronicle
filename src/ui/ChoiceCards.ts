@@ -289,6 +289,17 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 			.setOrigin(0, 0.5);
 		t.setShadow(0, 1, "rgba(255, 252, 240, 0.6)", 0, false, true);
 
+		// Keep the decree inside the parchment: a wrap that needs more than the
+		// card height is trimmed to the last fitting words with an ellipsis.
+		if (t.height > h - 20) {
+			const words = label.split(" ");
+			while (words.length > 3) {
+				words.pop();
+				t.setText(`${words.join(" ")}…`);
+				if (t.height <= h - 20) break;
+			}
+		}
+
 		// 9. Tactile hover & flash glow overlay
 		glowGfx.lineStyle(2.5, 0xfffaea, 0.85);
 		glowGfx.strokeRoundedRect(-w / 2, -h / 2, w, h, r);

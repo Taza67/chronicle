@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import type { Petition } from "../content/petitions.ts";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { COLORS, FONT, H, hex, W } from "./theme.ts";
+import { CANVAS_W, COLORS, CX, FONT, H, hex, W } from "./theme.ts";
 
 export interface RoyalPetitionsOpts {
 	petitions: Petition[];
@@ -27,12 +27,14 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 
 		// 1. Dark semi-transparent atmospheric backdrop
 		const bg = scene.add
-			.rectangle(W / 2, H / 2, W, H, COLORS.night, 0.78)
+			.rectangle(CX, H / 2, CANVAS_W, H, COLORS.night, 0.78)
 			.setInteractive();
 		this.add(bg);
 
-		// 2. Audience Header Banner
-		this.banner = scene.add.container(W / 2, 210);
+		// 2. Audience Header Banner — authored at 210 for H=1280; scale with
+		// canvas height (capped) so tall phones don't strand it at the top.
+		const bannerY = Math.round(210 * Math.min(1.3, H / 1280));
+		this.banner = scene.add.container(CX, bannerY);
 		const bGfx = scene.add.graphics();
 		bGfx.fillStyle(0x130f1e, 0.95);
 		bGfx.fillRoundedRect(-240, -32, 480, 64, 18);
@@ -63,7 +65,7 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 
 		// 3. Progress indicator pips
 		this.progressDots = scene.add.graphics();
-		this.progressDots.setPosition(W / 2, 260);
+		this.progressDots.setPosition(CX, bannerY + 50);
 		this.add(this.progressDots);
 		this.updateProgressDots();
 
@@ -110,7 +112,7 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 
 		const cardW = 580;
 		const cardH = 480;
-		const card = scene.add.container(W / 2, H * 0.52);
+		const card = scene.add.container(CX, H * 0.52);
 
 		// Ambient drop shadow
 		const shadow = scene.add.graphics();
@@ -291,6 +293,12 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 				this.showPetition(this.currentIndex + 1);
 			},
 		});
+	}
+
+	/** Adjourn the audience early — e.g. the realm collapsed mid-petition. */
+	public abandon() {
+		if (!this.active) return;
+		this.finish();
 	}
 
 	private finish() {

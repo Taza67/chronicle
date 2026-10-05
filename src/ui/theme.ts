@@ -2,30 +2,86 @@
 export const W = 720;
 export const BASE_H = 1280;
 
+/** Landscape split-screen: 1440×810 logical — left 720 column holds the
+ * council UI, right 720 column holds the court visuals (portraits, backdrop). */
+export const LANDSCAPE_W = 1440;
+export const LANDSCAPE_H = 810;
+
+/** Hidden probe reading env(safe-area-inset-*) — real values only appear
+ * in fullscreen/PWA contexts (viewport-fit=cover is set in index.html). */
+let safeProbe: HTMLElement | null = null;
+function probeSafeAreaInsets(): { top: number; bottom: number } {
+	try {
+		if (!safeProbe && typeof document !== "undefined") {
+			safeProbe = document.createElement("div");
+			safeProbe.style.cssText =
+				"position:fixed;top:0;left:0;width:0;height:0;pointer-events:none;" +
+				"visibility:hidden;overflow:hidden;" +
+				"padding-top:env(safe-area-inset-top,0px);" +
+				"padding-bottom:env(safe-area-inset-bottom,0px);";
+			document.body.appendChild(safeProbe);
+		}
+		if (!safeProbe) return { top: 0, bottom: 0 };
+		const cs = getComputedStyle(safeProbe);
+		return {
+			top: parseFloat(cs.paddingTop) || 0,
+			bottom: parseFloat(cs.paddingBottom) || 0,
+		};
+	} catch {
+		return { top: 0, bottom: 0 };
+	}
+}
+
 /** Computes dynamic dimensions and safe area insets based on device viewport. */
 export function computeViewportMetrics() {
 	if (typeof window === "undefined") {
-		return { width: W, height: BASE_H, safeTop: 48, safeBottom: 40 };
+		return {
+			width: W,
+			height: BASE_H,
+			canvasW: W,
+			landscape: false,
+			safeTop: 48,
+			safeBottom: 40,
+		};
 	}
 	const winW = window.innerWidth;
 	const winH = window.innerHeight;
 	const aspect = winH / winW;
 
+	// Clearly-wide viewports (landscape tablets, desktops) get the 1440×810
+	// split-screen canvas. Squarish windows (aspect ≥ ~1.15) keep the
+	// portrait column, and small phones in landscape are still blocked by
+	// the CSS orientation guard (<580px tall).
+	const landscape = aspect < 1.15;
+
 	// In portrait orientation where aspect is taller than 16:9 (1.777)
 	// adapt height up to 22:9 (~2.44) to completely fill modern mobile screens (19.5:9, 20:9).
 	let targetH = BASE_H;
-	if (aspect >= 16 / 9) {
+	if (!landscape && aspect >= 16 / 9) {
 		targetH = Math.round(W * Math.min(22 / 9, aspect));
 	}
+	const canvasW = landscape ? LANDSCAPE_W : W;
+	if (landscape) targetH = LANDSCAPE_H;
 
-	// Safe areas adapt to taller screens (notches, dynamic islands, home gesture bars)
+	// Baseline gutters adapt to taller screens; on notched devices the real
+	// env() insets (converted CSS px → game px via the FIT scale) win.
 	const isTall = targetH > 1360;
-	const safeTop = isTall ? 64 : 48;
-	const safeBottom = isTall ? 56 : 40;
+	const fitScale = Math.min(winW / canvasW, winH / targetH) || 1;
+	const insets = probeSafeAreaInsets();
+	const safeTop = Math.max(
+		isTall ? 64 : 48,
+		Math.ceil(insets.top / fitScale) + 12,
+	);
+	const safeBottom = Math.max(
+		isTall ? 56 : 40,
+		Math.ceil(insets.bottom / fitScale) + 12,
+	);
 
 	return {
 		width: W,
 		height: targetH,
+		canvasW,
+		landscape,
 		safeTop,
 		safeBottom,
 	};
@@ -37,15 +93,35 @@ export let SAFE_TOP = initialMetrics.safeTop;
 export let SAFE_BOTTOM = initialMetrics.safeBottom;
 export let TOP_BAR_Y = SAFE_TOP + 12;
 
+/** Landscape canvas width (720 portrait, 1440 landscape). */
+export let CANVAS_W = initialMetrics.canvasW;
+/** Whether the split-screen landscape layout is active. */
+export let LANDSCAPE = initialMetrics.landscape;
+/** X center of the whole canvas — centered content anchors here. */
+export let CX = CANVAS_W / 2;
+/** X origin of the centered 720-wide content column. */
+export let COL_X = CX - W / 2;
+/** X center of the visual column (right column in landscape, center in portrait). */
+export let VIS_CX = initialMetrics.landscape
+	? initialMetrics.canvasW - W / 2
+	: W / 2;
+
 export function updateThemeMetrics(
 	newH: number,
 	safeTop?: number,
 	safeBottom?: number,
+	canvasW = W,
+	landscape = false,
 ) {
 	H = newH;
 	if (safeTop !== undefined) SAFE_TOP = safeTop;
 	if (safeBottom !== undefined) SAFE_BOTTOM = safeBottom;
 	TOP_BAR_Y = SAFE_TOP + 12;
+	CANVAS_W = canvasW;
+	LANDSCAPE = landscape;
+	CX = CANVAS_W / 2;
+	COL_X = CX - W / 2;
+	VIS_CX = landscape ? CANVAS_W - W / 2 : W / 2;
 }
 
 export const SAFE_INSET_LEFT = 24;
