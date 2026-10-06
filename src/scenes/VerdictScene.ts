@@ -211,7 +211,7 @@ export class VerdictScene extends Phaser.Scene {
 			const underglow = this.add.graphics();
 			underglow.setDepth(2);
 			underglow.fillStyle(COLORS.blood, 0.22);
-			underglow.fillRect(0, H * 0.65, W, H * 0.35);
+			underglow.fillRect(0, H * 0.65, CANVAS_W, H * 0.35);
 
 			if (!settings.reducedMotion) {
 				this.tweens.add({
@@ -227,7 +227,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Rising deep crimson embers
 			this.add
 				.particles(0, 0, "spark", {
-					x: { min: COL_X + 20, max: COL_X + W - 20 },
+					x: { min: 20, max: CANVAS_W - 20 },
 					y: { min: H * 0.55, max: H * 1.02 },
 					lifespan: { min: 2600, max: 4600 },
 					speedY: { min: -45, max: -160 },
@@ -276,7 +276,7 @@ export class VerdictScene extends Phaser.Scene {
 			// Floating golden sanctuary motes
 			this.add
 				.particles(0, 0, "spark", {
-					x: { min: COL_X + 20, max: COL_X + W - 20 },
+					x: { min: 20, max: CANVAS_W - 20 },
 					y: { min: 40, max: H - 40 },
 					lifespan: { min: 4500, max: 8000 },
 					speedY: { min: -10, max: -30 },
@@ -1050,7 +1050,7 @@ export class VerdictScene extends Phaser.Scene {
 		} else if (matched >= totalDecisions / 2) {
 			// Triumphant dual-fountain particle burst with gold & sky sparks
 			const leftFountain = this.add
-				.particles(W * 0.16, 420, "spark", {
+				.particles(CANVAS_W * 0.16, 420, "spark", {
 					speed: { min: 320, max: 650 },
 					angle: { min: -85, max: -45 },
 					gravityY: 550,
@@ -1063,7 +1063,7 @@ export class VerdictScene extends Phaser.Scene {
 				.setDepth(4);
 
 			const rightFountain = this.add
-				.particles(W * 0.84, 420, "spark", {
+				.particles(CANVAS_W * 0.84, 420, "spark", {
 					speed: { min: 320, max: 650 },
 					angle: { min: -135, max: -95 },
 					gravityY: 550,
