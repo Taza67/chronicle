@@ -260,7 +260,7 @@ export class ChronicleScene extends Phaser.Scene {
 			const eg = this.add.graphics();
 
 			const emptyTitle = this.add
-				.text(CX, 76, "THE IMPERIAL ROLL LIES UNWRITTEN", {
+				.text(W / 2, 76, "THE IMPERIAL ROLL LIES UNWRITTEN", {
 					fontFamily: FONT.title,
 					fontSize: "20px",
 					color: hex(COLORS.gold),
@@ -271,7 +271,7 @@ export class ChronicleScene extends Phaser.Scene {
 
 			const emptyBody = this.add
 				.text(
-					CX,
+					W / 2,
 					104,
 					"Ascend the throne, decree your royal will before the court,\nand the imperial chroniclers shall inscribe your lineage in wax and gold.",
 					{
