@@ -8,8 +8,11 @@ import {
 	FONT,
 	H,
 	hex,
+	LANDSCAPE,
+	SAFE_BOTTOM,
 	SAFE_TOP,
 	title,
+	VIS_CX,
 	W,
 } from "./theme.ts";
 
@@ -586,6 +589,7 @@ export class Subtitle extends Phaser.GameObjects.Container {
 	private contentBottom = 154;
 
 	private containerY = 0;
+	private anchorY = 0;
 
 	/** Absolute screen Y below the scroll where content can safely start. */
 	get bottomY(): number {
@@ -595,6 +599,7 @@ export class Subtitle extends Phaser.GameObjects.Container {
 	constructor(scene: Phaser.Scene, y: number, x = CX) {
 		super(scene, x, y);
 		this.containerY = y;
+		this.anchorY = y;
 		this.bg = scene.add.graphics();
 		this.who = scene.add
 			.text(0, -82, "", {
@@ -622,6 +627,17 @@ export class Subtitle extends Phaser.GameObjects.Container {
 		this.add([this.bg, this.who, this.txt]);
 		this.setAlpha(0);
 		scene.add.existing(this);
+	}
+
+	/** Repositioning also moves the dock anchor (VerdictScene re-anchors the
+	 * scroll between narrator and leader lines before the next show()). */
+	override setY(value?: number): this {
+		super.setY(value);
+		if (value !== undefined) {
+			this.anchorY = value;
+			this.containerY = value;
+		}
+		return this;
 	}
 
 	show(name: string, text: string, color: number, durationMs: number) {
@@ -652,6 +668,16 @@ export class Subtitle extends Phaser.GameObjects.Container {
 		const topY = -86;
 		const bh = Math.max(154, textH + 68);
 		this.contentBottom = bh; // bottom edge of the scroll, relative to container y
+
+		// The scroll grows DOWNWARD from the anchor: when a long speech would
+		// push its bottom edge past the safe band (leaving no room for the
+		// AccusationStamp below), slide the whole container up instead of
+		// letting the text slide under the stamp.
+		const limit = H - SAFE_BOTTOM - 84;
+		const overflow = this.anchorY + topY + bh - limit;
+		const dockedY = this.anchorY - Math.max(0, overflow);
+		this.containerY = dockedY;
+		this.y = dockedY;
 
 		// Render the proclamation scroll
 		const g = this.bg;
@@ -833,8 +859,14 @@ export class Subtitle extends Phaser.GameObjects.Container {
 export function toast(scene: Phaser.Scene, text: string, color = COLORS.gold) {
 	// Sit below the reliquary gauge strip (panel bottom = SAFE_TOP + 108)
 	// so notifications never cover the Legacy meter mid-court.
+	// Landscape: the council column's top strip is packed (gauges, overlay
+	// titles) — float notices over the top of the visual column instead,
+	// above any CX-anchored overlay banner.
 	const c = scene.add
-		.container(CX, SAFE_TOP + 142)
+		.container(
+			LANDSCAPE ? VIS_CX : CX,
+			LANDSCAPE ? SAFE_TOP + 56 : SAFE_TOP + 142,
+		)
 		.setDepth(1000)
 		.setAlpha(0);
 	const t = scene.add
