@@ -83,13 +83,25 @@ for (const vp of VIEWPORT_MATRIX) {
 			"Orientation guard hidden in portrait",
 			metrics.guardVisible === false,
 		);
-	} else if (vp.type === "tablet" || vp.type === "desktop") {
+	} else if (vp.type === "tablet") {
 		check("Pillarboxed canvas has 0 top gap", metrics.topGap === 0);
 		check("Pillarboxed canvas has 0 bottom gap", metrics.bottomGap === 0);
 		check(
 			"Canvas is perfectly symmetrically centered horizontally",
 			Math.abs(metrics.leftGap - metrics.rightGap) <= 1,
 		);
+		check(
+			"Orientation guard hidden on large screen",
+			metrics.guardVisible === false,
+		);
+	} else if (vp.type === "desktop") {
+		check(
+			"Landscape canvas is symmetrically letterboxed vertically",
+			Math.abs(metrics.topGap - metrics.bottomGap) <= 1,
+		);
+		check("Landscape canvas has 0 left gap", metrics.leftGap === 0);
+		check("Landscape canvas has 0 right gap", metrics.rightGap === 0);
+		check("Landscape canvas is 1440x810", metrics.gameW === 1440 && metrics.gameH === 810);
 		check(
 			"Orientation guard hidden on large screen",
 			metrics.guardVisible === false,
