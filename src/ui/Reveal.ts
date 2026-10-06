@@ -95,9 +95,15 @@ export class Reveal extends Phaser.GameObjects.Container {
 			})
 			.setOrigin(0.5, 0);
 
+		// Shrink the decree to the sheet: landscape parchments are much
+		// shorter than portrait ones, long texts would clip at the bottom rod.
+		const avail = this.ph - 166 - 44;
+		if (this.textObj.height > avail)
+			this.textObj.setScale(avail / this.textObj.height);
+
 		// 7. Calligraphic Terminal Fleuron
 		const closingFleuron = scene.add
-			.text(CX, this.top + 172 + this.textObj.height + 10, "❧", {
+			.text(CX, this.top + 172 + this.textObj.displayHeight + 10, "❧", {
 				fontFamily: FONT.body,
 				fontSize: "24px",
 				color: hex(primaryColor),
@@ -109,7 +115,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 		// 8. Geometry Mask for physical unrolling effect
 		this.maskG = scene.make.graphics({ x: 0, y: 0 });
 		this.maskG.fillStyle(0xffffff);
-		this.maskG.fillRect(0, 0, W, this.top);
+		this.maskG.fillRect(0, 0, CANVAS_W, this.top);
 		const geomMask = this.maskG.createGeometryMask();
 
 		const maskedItems: (
@@ -190,7 +196,7 @@ export class Reveal extends Phaser.GameObjects.Container {
 
 				this.maskG.clear();
 				this.maskG.fillStyle(0xffffff);
-				this.maskG.fillRect(0, 0, W, currentY + 4);
+				this.maskG.fillRect(0, 0, CANVAS_W, currentY + 4);
 			},
 			onComplete: () => {
 				// Settle bottom rod as imperial weighted hanging bar with subtle shimmer
