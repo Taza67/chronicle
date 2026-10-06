@@ -184,7 +184,16 @@ export class CourtScene extends Phaser.Scene {
 			// Hairline seam between the council column and the court visual.
 			this.add.rectangle(W, H / 2, 2, H, COLORS.gold, 0.16).setDepth(-9);
 		}
-		iconButton(this, W - 52, SAFE_TOP + 12, "⚙", () => this.openSettings(), 52);
+		// Landscape: the gauges own the column's top-right and the seam pillar
+		// owns its edge — park the gear next to the back button instead.
+		iconButton(
+			this,
+			LANDSCAPE ? 116 : W - 52,
+			SAFE_TOP + 12,
+			"⚙",
+			() => this.openSettings(),
+			52,
+		);
 		iconButton(this, 52, SAFE_TOP + 12, "‹", () => this.leave(), 52);
 		playLeaderMusic(l);
 		(
