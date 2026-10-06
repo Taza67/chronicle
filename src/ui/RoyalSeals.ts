@@ -127,7 +127,7 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 			.setOrigin(0.5);
 
 		const label = scene.add
-			.text(0, 16, def.name.toUpperCase(), {
+			.text(0, 18, def.name.toUpperCase(), {
 				fontFamily: FONT.title,
 				fontSize: "11px",
 				color: hex(available ? COLORS.gold : COLORS.muted),
@@ -135,6 +135,8 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 			})
 			.setOrigin(0.5);
 		label.setLetterSpacing(1);
+		// The name must not spill past the wax disc's footprint.
+		if (label.width > 68) label.setScale(68 / label.width);
 
 		const badge = scene.add
 			.text(16, -16, available ? "1" : "0", {
