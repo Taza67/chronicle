@@ -79,7 +79,7 @@ export class TitleScene extends Phaser.Scene {
 
 		// Emitter 1: Delicate floating archive gold dust (micro-motes)
 		const dust = this.add.particles(0, 0, "spark", {
-			x: { min: 0, max: W },
+			x: { min: 0, max: CANVAS_W },
 			y: { min: 0, max: H },
 			lifespan: { min: 7500, max: 13000 },
 			speedX: { min: -10, max: 10 },
@@ -96,7 +96,7 @@ export class TitleScene extends Phaser.Scene {
 		if (!settings.reducedMotion) {
 			for (let i = 0; i < 28; i++) {
 				dust.emitParticleAt(
-					Phaser.Math.Between(20, W - 20),
+					Phaser.Math.Between(20, CANVAS_W - 20),
 					Phaser.Math.Between(40, H - 40),
 				);
 			}
@@ -104,7 +104,7 @@ export class TitleScene extends Phaser.Scene {
 
 		// Emitter 2: Luminous rising archive embers (warm ascending sparks)
 		const embers = this.add.particles(0, 0, "spark", {
-			x: { min: 30, max: W - 30 },
+			x: { min: 30, max: CANVAS_W - 30 },
 			y: { min: H * 0.38, max: H * 0.96 },
 			lifespan: { min: 4200, max: 7200 },
 			speedX: { min: -15, max: 15 },
@@ -120,7 +120,7 @@ export class TitleScene extends Phaser.Scene {
 		if (!settings.reducedMotion) {
 			for (let i = 0; i < 16; i++) {
 				embers.emitParticleAt(
-					Phaser.Math.Between(40, W - 40),
+					Phaser.Math.Between(40, CANVAS_W - 40),
 					Phaser.Math.Between(Math.round(H * 0.45), Math.round(H * 0.9)),
 				);
 			}
@@ -135,14 +135,24 @@ export class TitleScene extends Phaser.Scene {
 		const fanScale = LANDSCAPE ? 0.6 : 1;
 		const fanY = LANDSCAPE ? 0.44 : 0.505;
 
-		// Soft archival mist/plinth feathering the bottom edge of the leaders
+		// Soft archival mist/plinth feathering the bottom edge of the leaders —
+		// a smooth gradient into night, no hard band across the backdrop.
 		const plinthGlow = this.add.graphics();
 		plinthGlow.setDepth(7);
-		for (let s = 0; s < 10; s++) {
-			const a = 0.08 * (s + 1);
-			plinthGlow.fillStyle(COLORS.night, a);
-			plinthGlow.fillRect(0, H * fanY + 68 * fanScale + s * 4, W, 6);
-		}
+		const mistY = H * fanY + 68 * fanScale;
+		plinthGlow.fillGradientStyle(
+			COLORS.night,
+			COLORS.night,
+			COLORS.night,
+			COLORS.night,
+			0,
+			0,
+			0.85,
+			0.85,
+		);
+		plinthGlow.fillRect(0, mistY, CANVAS_W, 48);
+		plinthGlow.fillStyle(COLORS.night, 0.85);
+		plinthGlow.fillRect(0, mistY + 48, CANVAS_W, H - mistY - 48);
 
 		LEADERS.forEach((l, i) => {
 			const dist = Math.abs(i - 2); // 0 at center (Akbar), 1 mid, 2 outer
