@@ -100,6 +100,7 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 	}
 
 	private showPetition(index: number) {
+		if (!this.active) return;
 		if (index >= this.opts.petitions.length) {
 			this.finish();
 			return;
@@ -290,7 +291,9 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 				card.destroy();
 				this.locked = false;
 				this.opts.onDecision(p, accepted);
-				this.showPetition(this.currentIndex + 1);
+				// The audience may have been adjourned (destroyed) while the
+				// card was in flight — bail instead of touching dead children.
+				if (this.active) this.showPetition(this.currentIndex + 1);
 			},
 		});
 	}
