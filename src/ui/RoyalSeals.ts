@@ -75,7 +75,7 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 		this.cb = cb;
 
 		const bannerW = 460;
-		const bannerH = 68;
+		const bannerH = 72;
 
 		// Subtle royal docket backing plate
 		const docket = scene.add.graphics();
@@ -126,8 +126,9 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 			})
 			.setOrigin(0.5);
 
+		// Below the wax disc (r=24 + 2px shadow) — not tucked under its rim.
 		const label = scene.add
-			.text(0, 18, def.name.toUpperCase(), {
+			.text(0, 30, def.name.toUpperCase(), {
 				fontFamily: FONT.title,
 				fontSize: "11px",
 				color: hex(available ? COLORS.gold : COLORS.muted),
