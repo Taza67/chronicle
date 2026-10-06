@@ -8,11 +8,9 @@ import {
 	FONT,
 	H,
 	hex,
-	LANDSCAPE,
 	SAFE_BOTTOM,
 	SAFE_TOP,
 	title,
-	VIS_CX,
 	W,
 } from "./theme.ts";
 
@@ -859,14 +857,8 @@ export class Subtitle extends Phaser.GameObjects.Container {
 export function toast(scene: Phaser.Scene, text: string, color = COLORS.gold) {
 	// Sit below the reliquary gauge strip (panel bottom = SAFE_TOP + 108)
 	// so notifications never cover the Legacy meter mid-court.
-	// Landscape: the council column's top strip is packed (gauges, overlay
-	// titles) — float notices over the top of the visual column instead,
-	// above any CX-anchored overlay banner.
 	const c = scene.add
-		.container(
-			LANDSCAPE ? VIS_CX : CX,
-			LANDSCAPE ? SAFE_TOP + 56 : SAFE_TOP + 142,
-		)
+		.container(CX, SAFE_TOP + 142)
 		.setDepth(1000)
 		.setAlpha(0);
 	const t = scene.add

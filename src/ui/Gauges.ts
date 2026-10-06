@@ -547,7 +547,9 @@ export class Gauges extends Phaser.GameObjects.Container {
 		const r = 8;
 
 		// 1. Ornate floating seal chip
-		const chip = this.scene.add.container(b.cx, this.y + 18).setDepth(65);
+		const chip = this.scene.add
+			.container(this.x + b.cx, this.y + 18)
+			.setDepth(65);
 		this.activeChips.add(chip);
 
 		const cg = this.scene.add.graphics();
@@ -611,7 +613,7 @@ export class Gauges extends Phaser.GameObjects.Container {
 		// 2. Tube impact flash
 		const flash = this.scene.add
 			.rectangle(
-				b.cx,
+				this.x + b.cx,
 				this.y + this.gy + this.gh / 2,
 				this.gw + 12,
 				this.gh + 8,
@@ -631,14 +633,19 @@ export class Gauges extends Phaser.GameObjects.Container {
 
 		// 3. Ambient spark burst
 		if (this.scene.textures.exists("spark") && !settings.reducedMotion) {
-			const burst = this.scene.add.particles(b.cx, this.y + 20, "spark", {
-				speed: { min: 35, max: 110 },
-				scale: { start: 0.35, end: 0 },
-				lifespan: 400,
-				tint: isPos ? [COLORS.gold, 0xffffff] : [COLORS.blood, 0xff7777],
-				quantity: 6,
-				blendMode: Phaser.BlendModes.ADD,
-			});
+			const burst = this.scene.add.particles(
+				this.x + b.cx,
+				this.y + 20,
+				"spark",
+				{
+					speed: { min: 35, max: 110 },
+					scale: { start: 0.35, end: 0 },
+					lifespan: 400,
+					tint: isPos ? [COLORS.gold, 0xffffff] : [COLORS.blood, 0xff7777],
+					quantity: 6,
+					blendMode: Phaser.BlendModes.ADD,
+				},
+			);
 			this.scene.time.delayedCall(450, () => burst.destroy());
 		}
 
@@ -650,7 +657,8 @@ export class Gauges extends Phaser.GameObjects.Container {
 
 	/** Emit a fountain of gold coins arcing into the treasury gauge. */
 	emitCoinRain(fromX: number, fromY: number, count = 10) {
-		const targetX = this.bars.gold ? this.bars.gold.cx : W / 4;
+		const targetX =
+			this.bars.gold != null ? this.x + this.bars.gold.cx : this.x + W / 4;
 		const targetY = this.y + 20;
 
 		for (let i = 0; i < count; i++) {

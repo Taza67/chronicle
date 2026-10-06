@@ -48,10 +48,11 @@ export function computeViewportMetrics() {
 	const winH = window.innerHeight;
 	const aspect = winH / winW;
 
-	// Clearly-wide viewports (landscape tablets, desktops) get the 1440×810
-	// split-screen canvas. Squarish windows (aspect ≥ ~1.15) keep the
-	// portrait column, and small phones in landscape are still blocked by
-	// the CSS orientation guard (<580px tall).
+	// Clearly-wide viewports (landscape tablets, desktops) get a wide canvas
+	// whose width matches the window aspect exactly: the 720-wide game column
+	// stays centered and the backdrop art fills the side margins. Squarish
+	// windows (aspect ≥ ~1.15) keep the portrait column, and small phones in
+	// landscape are still blocked by the CSS orientation guard (<580px tall).
 	const landscape = aspect < 1.15;
 
 	// In portrait orientation where aspect is taller than 16:9 (1.777)
@@ -60,8 +61,13 @@ export function computeViewportMetrics() {
 	if (!landscape && aspect >= 16 / 9) {
 		targetH = Math.round(W * Math.min(22 / 9, aspect));
 	}
-	const canvasW = landscape ? LANDSCAPE_W : W;
-	if (landscape) targetH = LANDSCAPE_H;
+	let canvasW = W;
+	if (landscape) {
+		targetH = LANDSCAPE_H;
+		// Fill the window width exactly; capped so extreme ultrawides don't
+		// over-zoom the side art into a blurry smear (they letterbox instead).
+		canvasW = Math.min(1920, Math.max(W, Math.round(LANDSCAPE_H / aspect)));
+	}
 
 	// Baseline gutters adapt to taller screens; on notched devices the real
 	// env() insets (converted CSS px → game px via the FIT scale) win.
@@ -93,18 +99,16 @@ export let SAFE_TOP = initialMetrics.safeTop;
 export let SAFE_BOTTOM = initialMetrics.safeBottom;
 export let TOP_BAR_Y = SAFE_TOP + 12;
 
-/** Landscape canvas width (720 portrait, 1440 landscape). */
+/** Landscape canvas width (720 portrait, window-aspect-matched wide). */
 export let CANVAS_W = initialMetrics.canvasW;
-/** Whether the split-screen landscape layout is active. */
+/** Whether the wide-canvas landscape layout is active. */
 export let LANDSCAPE = initialMetrics.landscape;
 /** X center of the whole canvas — centered content anchors here. */
 export let CX = CANVAS_W / 2;
 /** X origin of the centered 720-wide content column. */
 export let COL_X = CX - W / 2;
-/** X center of the visual column (right column in landscape, center in portrait). */
-export let VIS_CX = initialMetrics.landscape
-	? initialMetrics.canvasW - W / 2
-	: W / 2;
+/** X center of the visual column — the centered game column in every mode. */
+export let VIS_CX = CX;
 
 export function updateThemeMetrics(
 	newH: number,
@@ -121,7 +125,7 @@ export function updateThemeMetrics(
 	LANDSCAPE = landscape;
 	CX = CANVAS_W / 2;
 	COL_X = CX - W / 2;
-	VIS_CX = landscape ? CANVAS_W - W / 2 : W / 2;
+	VIS_CX = CX;
 }
 
 export const SAFE_INSET_LEFT = 24;

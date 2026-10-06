@@ -52,12 +52,12 @@ import { RoyalSeals } from "../ui/RoyalSeals.ts";
 import { TimerRing } from "../ui/TimerRing.ts";
 import {
 	CANVAS_W,
+	COL_X,
 	COLORS,
 	CX,
 	FONT,
 	H,
 	hex,
-	LANDSCAPE,
 	ROLE_META,
 	SAFE_BOTTOM,
 	SAFE_TOP,
@@ -171,30 +171,24 @@ export class CourtScene extends Phaser.Scene {
 		const sk = sceneKeys(l);
 		this.backdrop = new Backdrop(this, l, sk.far, sk.near);
 		this.backdrop.setAtmosphere(this.g.stats.stability, this.g.stats.gold);
-		this.gauges = new Gauges(this, SAFE_TOP + 66, this.g.stats);
+		this.gauges = new Gauges(this, SAFE_TOP + 66, this.g.stats).setX(COL_X);
 		this.subtitle = new Subtitle(this, H - 330, VIS_CX);
 		this.subtitle.setDepth(45);
 		this.turnLabel = this.add
-			.text(W / 2, SAFE_TOP + 12, "", ui(17, hex(COLORS.muted)))
+			.text(CX, SAFE_TOP + 12, "", ui(17, hex(COLORS.muted)))
 			.setOrigin(0.5)
 			.setDepth(50);
 		this.turnLabel.setLetterSpacing(3);
 		this.nameplate = this.add.container(0, 0).setDepth(46).setAlpha(0);
-		if (LANDSCAPE) {
-			// Hairline seam between the council column and the court visual.
-			this.add.rectangle(W, H / 2, 2, H, COLORS.gold, 0.16).setDepth(-9);
-		}
-		// Landscape: the gauges own the column's top-right and the seam pillar
-		// owns its edge — park the gear next to the back button instead.
 		iconButton(
 			this,
-			LANDSCAPE ? 116 : W - 52,
+			COL_X + W - 52,
 			SAFE_TOP + 12,
 			"⚙",
 			() => this.openSettings(),
 			52,
 		);
-		iconButton(this, 52, SAFE_TOP + 12, "‹", () => this.leave(), 52);
+		iconButton(this, COL_X + 52, SAFE_TOP + 12, "‹", () => this.leave(), 52);
 		playLeaderMusic(l);
 		(
 			this as unknown as {
@@ -516,7 +510,7 @@ export class CourtScene extends Phaser.Scene {
 
 				if (hasRelic(g, "relic_cleopatra")) {
 					g.stats.gold = clamp10(g.stats.gold + 1);
-					this.gauges.emitCoinRain(W / 2, H * 0.4, 6);
+					this.gauges.emitCoinRain(CX, H * 0.4, 6);
 					toast(
 						this,
 						"Scarab of Khepri: +1 Gold blessed by the Oracle!",
@@ -600,7 +594,7 @@ export class CourtScene extends Phaser.Scene {
 			legacy: next.legacy - g.stats.legacy,
 		};
 		if (delta.gold > 0) {
-			this.gauges.emitCoinRain(W / 2, H * 0.65, 8);
+			this.gauges.emitCoinRain(CX, H * 0.65, 8);
 		}
 		this.time.delayedCall(900, () => {
 			this.gauges.apply(next, statDelta);
@@ -730,7 +724,7 @@ export class CourtScene extends Phaser.Scene {
 		h.stop();
 		factRef.h?.stop();
 		if (!this.alive) return;
-		this.speaker?.leave(W + 300);
+		this.speaker?.leave(CANVAS_W + 300);
 		this.speaker = null;
 		this.backdrop.setMood(0x2a2440, 0.25);
 		await this.wait(350);
@@ -777,7 +771,7 @@ export class CourtScene extends Phaser.Scene {
 						legacy: 0,
 					});
 					this.gauges.apply(next, { gold: 2, stability: -1, legacy: 0 });
-					this.gauges.emitCoinRain(W / 2, sealsY);
+					this.gauges.emitCoinRain(CX, sealsY);
 					this.g.stats = next;
 					saveGame(this.g);
 					toast(
@@ -819,7 +813,7 @@ export class CourtScene extends Phaser.Scene {
 			// If microphone is supported and online, start hands-free Royal Voice Ribbon & VAD
 			if (micSupported() && online()) {
 				const ribbonY = cards.top - 30;
-				ribbon = new VoiceRibbon(this, W / 2, ribbonY);
+				ribbon = new VoiceRibbon(this, CX, ribbonY);
 
 				let vadProcessing = false;
 				vad = new VoiceActivityDetector({
@@ -923,7 +917,7 @@ export class CourtScene extends Phaser.Scene {
 			if (settings.timer && settings.playedOnce) {
 				timer = new TimerRing(
 					this,
-					W - 70,
+					COL_X + W - 70,
 					H - 130 - turn.choices.length * 110 - 80,
 					TIMER_SECONDS,
 					() => {
@@ -975,7 +969,7 @@ export class CourtScene extends Phaser.Scene {
 						legacy: 0,
 					});
 					if (effects.gold > 0) {
-						this.gauges.emitCoinRain(W / 2, H * 0.52, 6);
+						this.gauges.emitCoinRain(CX, H * 0.52, 6);
 					}
 					this.g.stats = next;
 					saveGame(this.g);

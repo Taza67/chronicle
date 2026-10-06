@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { settings } from "../core/state.ts";
 import type { Leader } from "../types.ts";
-import { CANVAS_W, CX, H, VIS_CX, W } from "./theme.ts";
+import { CANVAS_W, CX, H, VIS_CX } from "./theme.ts";
 
 /** Parallax throne-room backdrop: far/near layers, tilt/pointer parallax, civ particles, vignette, mood light. */
 export class Backdrop extends Phaser.GameObjects.Container {
@@ -29,19 +29,23 @@ export class Backdrop extends Phaser.GameObjects.Container {
 	) {
 		super(scene, 0, 0);
 		const cover = (img: Phaser.GameObjects.Image, extra: number) => {
-			const s = Math.max((W * extra) / img.width, (H * extra) / img.height);
+			const s = Math.max(
+				(CANVAS_W * extra) / img.width,
+				(H * extra) / img.height,
+			);
 			img.setScale(s);
 		};
-		// Art anchors the visual column (right half in landscape, center in portrait).
-		this.far = scene.add.image(VIS_CX, H / 2, farKey);
+		// Art anchors the canvas center and bleeds across the side margins in
+		// landscape (pillarbox): the game column stays centered on top of it.
+		this.far = scene.add.image(CX, H / 2, farKey);
 		cover(this.far, 1.14);
-		this.near = scene.add.image(VIS_CX, H / 2, nearKey);
+		this.near = scene.add.image(CX, H / 2, nearKey);
 		cover(this.near, 1.2);
 		this.near.setAlpha(0.0);
 		// near layer: only the lower half (foreground) so the far layer gives depth at the top
 		const maskG = scene.make.graphics({ x: 0, y: 0 });
 		maskG.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 0, 0, 1, 1);
-		maskG.fillRect(VIS_CX - W / 2, H * 0.35, W, H * 0.65);
+		maskG.fillRect(0, H * 0.35, CANVAS_W, H * 0.65);
 		this.near.setMask(maskG.createGeometryMask());
 		this.near.setAlpha(0.95);
 
@@ -51,9 +55,9 @@ export class Backdrop extends Phaser.GameObjects.Container {
 		const bgHex = leader.palette.bg ?? leader.palette.primary ?? "#062a33";
 		this.mood = scene.add
 			.rectangle(
-				VIS_CX,
+				CX,
 				H / 2,
-				W * 1.2,
+				CANVAS_W * 1.2,
 				H * 1.2,
 				Phaser.Display.Color.HexStringToColor(bgHex).color,
 				0.25,
@@ -68,7 +72,7 @@ export class Backdrop extends Phaser.GameObjects.Container {
 			.setAlpha(0.06)
 			.setBlendMode(Phaser.BlendModes.OVERLAY);
 		this.emitter = scene.add.particles(0, 0, "spark", {
-			x: { min: VIS_CX - W / 2 - 40, max: VIS_CX + W / 2 + 40 },
+			x: { min: -40, max: CANVAS_W + 40 },
 			y: { min: H * 0.05, max: H * 1.05 },
 			lifespan: { min: 5000, max: 9000 },
 			speedY: { min: -14, max: -34 },

@@ -12,6 +12,7 @@ import {
 	FONT,
 	H,
 	hex,
+	LANDSCAPE,
 	SAFE_BOTTOM,
 	SAFE_TOP,
 	W,
@@ -678,6 +679,10 @@ export class SelectScene extends Phaser.Scene {
 	}
 
 	private createPips() {
+		// Landscape: the pip row lands in the 22px seam between the two
+		// bottom buttons — its hit zones would eat the buttons' edges.
+		// Chevrons and card taps already navigate there.
+		if (LANDSCAPE) return;
 		const numLeaders = this.leaders.length;
 		const pipSpacing = Math.min(
 			32,

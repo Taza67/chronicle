@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
 import type { GameState, RoyalSeals as SealsState } from "../types.ts";
-import { COLORS, FONT, hex, W } from "./theme.ts";
+import { COLORS, CX, FONT, hex } from "./theme.ts";
 import { toast } from "./widgets.ts";
 
 export interface RoyalSealsCallbacks {
@@ -70,7 +70,7 @@ export class RoyalSeals extends Phaser.GameObjects.Container {
 		g: GameState,
 		cb: RoyalSealsCallbacks,
 	) {
-		super(scene, W / 2, y);
+		super(scene, CX, y);
 		this.g = g;
 		this.cb = cb;
 

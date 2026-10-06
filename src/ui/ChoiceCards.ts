@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
 import type { Choice } from "../types.ts";
-import { COLORS, FONT, H, hex, SAFE_BOTTOM, W } from "./theme.ts";
+import { CANVAS_W, COLORS, CX, FONT, H, hex, SAFE_BOTTOM, W } from "./theme.ts";
 
 export interface ChoiceCardsOpts {
 	onPick: (index: number) => void;
@@ -39,7 +39,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 			const fanAngle = settings.reducedMotion ? 0 : (i - (n - 1) / 2) * 1.5;
 			const card = this.makeDecreeCard(
 				scene,
-				W / 2,
+				CX,
 				y,
 				W - 64,
 				ch,
@@ -76,7 +76,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 
 		if (hasMic) {
 			const my = top + n * (ch + gap) + 44;
-			this.mic = this.makeVoxRegisMedallion(scene, W / 2, my, () => {
+			this.mic = this.makeVoxRegisMedallion(scene, CX, my, () => {
 				if (this.locked) return;
 				opts.onMic?.();
 			});
@@ -644,7 +644,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 					ease: "Back.out",
 				});
 				if (!settings.reducedMotion && this.scene.textures.exists("spark")) {
-					const p = this.scene.add.particles(W / 2, H * 0.62, "spark", {
+					const p = this.scene.add.particles(CX, H * 0.62, "spark", {
 						speed: { min: 60, max: 220 },
 						scale: { start: 0.6, end: 0 },
 						lifespan: 500,
@@ -668,7 +668,7 @@ export class ChoiceCards extends Phaser.GameObjects.Container {
 				const flingAngle = j < i ? -14 : 14;
 				this.scene.tweens.add({
 					targets: c,
-					x: j < i ? -W : W * 2,
+					x: j < i ? -W : CANVAS_W + W,
 					alpha: 0,
 					angle: flingAngle,
 					duration: 380,
