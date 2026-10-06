@@ -926,13 +926,15 @@ export function toast(scene: Phaser.Scene, text: string, color = COLORS.gold) {
 	c.add([g, t]);
 
 	const m = motion();
+	const restY = c.y;
+	c.y = restY - 12;
 	scene.tweens.chain({
 		targets: c,
 		tweens: [
-			{ alpha: 1, y: 148, duration: 260 * m, ease: "Back.out(1.2)" },
+			{ alpha: 1, y: restY, duration: 260 * m, ease: "Back.out(1.2)" },
 			{
 				alpha: 0,
-				y: 142,
+				y: restY - 6,
 				duration: 380 * m,
 				delay: 1900,
 				ease: "Quad.in",
