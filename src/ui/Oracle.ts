@@ -1,7 +1,17 @@
 import Phaser from "phaser";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { CANVAS_W, COLORS, CX, FONT, H, hex, title, W } from "./theme.ts";
+import {
+	CANVAS_W,
+	COL_X,
+	COLORS,
+	CX,
+	FONT,
+	H,
+	hex,
+	title,
+	W,
+} from "./theme.ts";
 
 type OracleSfx =
 	| "oracle_open"
@@ -143,7 +153,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 		const motes: Phaser.GameObjects.Arc[] = [];
 		const moteColors = [COLORS.gold, 0xffdf80, 0xefc464, 0xfff3d1];
 		for (let i = 0; i < 22; i++) {
-			const mx = Phaser.Math.Between(40, W - 40);
+			const mx = Phaser.Math.Between(COL_X + 40, COL_X + W - 40);
 			const my = Phaser.Math.Between(H * 0.12, H * 0.85);
 			const mr = Phaser.Math.FloatBetween(1.2, 2.8);
 			const mCol = Phaser.Utils.Array.GetRandom(moteColors) as number;
@@ -165,7 +175,7 @@ export class Oracle extends Phaser.GameObjects.Container {
 				ease: "Linear",
 				onRepeat: () => {
 					mote.y = my + Phaser.Math.Between(20, 60);
-					mote.x = Phaser.Math.Between(40, W - 40);
+					mote.x = Phaser.Math.Between(COL_X + 40, COL_X + W - 40);
 				},
 			});
 

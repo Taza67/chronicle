@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import type { Petition } from "../content/petitions.ts";
 import { audio } from "../core/audio.ts";
 import { settings } from "../core/state.ts";
-import { CANVAS_W, COLORS, CX, FONT, H, hex, W } from "./theme.ts";
+import { CANVAS_W, COLORS, CX, FONT, H, hex } from "./theme.ts";
 
 export interface RoyalPetitionsOpts {
 	petitions: Petition[];
@@ -282,7 +282,7 @@ export class RoyalPetitions extends Phaser.GameObjects.Container {
 		// Fling animation left (reject) or right (accept)
 		this.scene.tweens.add({
 			targets: card,
-			x: accepted ? W + 350 : -350,
+			x: accepted ? CANVAS_W + 350 : -350,
 			angle: accepted ? 14 : -14,
 			alpha: 0,
 			duration: settings.reducedMotion ? 100 : 340,
