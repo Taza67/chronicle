@@ -139,6 +139,7 @@ export class CourtScene extends Phaser.Scene {
 	private nameplate!: Phaser.GameObjects.Container;
 	private alive = true;
 	private whisperedSeasons = new Set<number>();
+	private runGen = 0;
 
 	constructor() {
 		super("Court");
@@ -224,9 +225,12 @@ export class CourtScene extends Phaser.Scene {
 			this.alive = false;
 			audio.stopVoice();
 		});
+		// run() outlives a restart: a rejected flow from before the structural
+		// relayout must not toast into the fresh scene — gen-gate the catch.
+		const gen = ++this.runGen;
 		void this.run().catch((e) => {
 			console.error(e);
-			if (this.alive)
+			if (this.alive && gen === this.runGen)
 				toast(this, "The archives are silent. Try again.", COLORS.blood);
 		});
 	}
