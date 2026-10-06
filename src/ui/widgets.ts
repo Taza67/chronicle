@@ -851,6 +851,8 @@ export function toast(scene: Phaser.Scene, text: string, color = COLORS.gold) {
 
 	const g = scene.add.graphics();
 	const pw = Math.min(W - 48, Math.max(260, t.width + 64));
+	// Long notices must shrink to fit the plate instead of spilling past it.
+	if (t.width > pw - 40) t.setScale((pw - 40) / t.width);
 	const ph = 46;
 	const pr = 14;
 
